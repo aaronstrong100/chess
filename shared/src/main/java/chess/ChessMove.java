@@ -12,6 +12,21 @@ public class ChessMove {
                      ChessPiece.PieceType promotionPiece) {
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
+
     /**
      * @return ChessPosition of starting location
      */
