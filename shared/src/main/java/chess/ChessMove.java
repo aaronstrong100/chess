@@ -1,5 +1,5 @@
 package chess;
-
+import java.util.Objects;
 /**
  * Represents moving a chess piece on a chessboard
  * <p>
@@ -7,19 +7,24 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessMove {
-
+    private ChessPosition startPos;
+    private ChessPosition endPos;
+    private ChessPiece.PieceType promotion;
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece) {
+        this.startPos = startPosition;
+        this.endPos = endPosition;
+        this.promotion = promotionPiece;
     }
 
     @Override
     public boolean equals(Object obj) {
-        return super.equals(obj);
+        return this.hashCode()==obj.hashCode();
     }
 
     @Override
     public int hashCode() {
-        return super.hashCode();
+        return Objects.hash(this.startPos, this.endPos, this.promotion);
     }
 
     @Override
@@ -31,14 +36,14 @@ public class ChessMove {
      * @return ChessPosition of starting location
      */
     public ChessPosition getStartPosition() {
-        throw new RuntimeException("Not implemented");
+        return this.startPos;
     }
 
     /**
      * @return ChessPosition of ending location
      */
     public ChessPosition getEndPosition() {
-        throw new RuntimeException("Not implemented");
+        return this.endPos;
     }
 
     /**
@@ -48,6 +53,6 @@ public class ChessMove {
      * @return Type of piece to promote a pawn to, or null if no promotion
      */
     public ChessPiece.PieceType getPromotionPiece() {
-        throw new RuntimeException("Not implemented");
+        return this.promotion;
     }
 }
