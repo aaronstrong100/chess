@@ -40,11 +40,8 @@ public class MoveCalculator {
             for(int[] vector: moveVectors.get(piece.getPieceType()))
             {
                 ChessPosition newPosition = new ChessPosition(position.getRow()+vector[0],position.getColumn()+vector[1]);
-                if(onBoard(newPosition))
-                {
-                    if(isEmpty(position, board) || canCapture(position, board, piece))
-                        validMoves.add(new ChessMove(position, newPosition, null));
-                }
+                if(isEmpty(newPosition, board) || canCapture(newPosition, board, piece))
+                    validMoves.add(new ChessMove(position, newPosition, null));
             }
         }
         else
@@ -54,12 +51,12 @@ public class MoveCalculator {
                 ChessPosition newPosition = new ChessPosition(position.getRow()+vector[0],position.getColumn()+vector[1]);
                 for(int i = 1; onBoard(newPosition);) {
                     System.out.println(newPosition);
-                    if (isEmpty(position, board)) {
+                    if (isEmpty(newPosition, board)) {
                         validMoves.add(new ChessMove(position, newPosition, null));
                     }
                     else
                     {
-                        if(canCapture(position, board, piece))
+                        if(canCapture(newPosition, board, piece))
                         {
                             validMoves.add(new ChessMove(position, newPosition, null));
                         }
@@ -82,10 +79,10 @@ public class MoveCalculator {
         }
         ChessPosition newPosition = new ChessPosition(position.getRow()+vector[0],position.getColumn()+vector[1]);
         if (onBoard(newPosition) && !lastRank(newPosition, piece)) {
-            if (isEmpty(position, board))
+            if (isEmpty(newPosition, board))
                 validMoves.add(new ChessMove(position, newPosition, null));
         } else if (lastRank(newPosition, piece)) {
-            if (isEmpty(position, board))
+            if (isEmpty(newPosition, board))
                 for (ChessPiece.PieceType pieceType : promotionPieceTypes) {
                      validMoves.add(new ChessMove(position, newPosition, pieceType));
                 }
@@ -96,7 +93,7 @@ public class MoveCalculator {
                 vector[0] = -vector[0];
             }
             newPosition = new ChessPosition(position.getRow() + vector[0], position.getColumn() + vector[1]);
-            if(canCapture(position, board, piece)) {
+            if(canCapture(newPosition, board, piece)) {
                 if (!lastRank(newPosition, piece)) {
                     validMoves.add(new ChessMove(position, newPosition, null));
                 } else if (lastRank(newPosition, piece)) {
@@ -113,7 +110,7 @@ public class MoveCalculator {
                 vector[0] = -vector[0];
             }
             newPosition = new ChessPosition(position.getRow()+vector[0],position.getColumn()+vector[1]);
-            if (isEmpty(position, board))
+            if (isEmpty(newPosition, board))
                 validMoves.add(new ChessMove(position, newPosition, null));
         }
         return validMoves;
