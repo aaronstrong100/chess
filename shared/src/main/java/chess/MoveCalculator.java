@@ -37,12 +37,7 @@ public class MoveCalculator {
         Collection<ChessMove> validMoves = new ArrayList<>();
         if(!scales.get(piece.getPieceType()))
         {
-            for(int[] vector: moveVectors.get(piece.getPieceType()))
-            {
-                ChessPosition newPosition = new ChessPosition(position.getRow()+vector[0],position.getColumn()+vector[1]);
-                if(isEmpty(newPosition, board) || canCapture(newPosition, board, piece))
-                    validMoves.add(new ChessMove(position, newPosition, null));
-            }
+            return getNonScalarMoves(board, position, piece);
         }
         else
         {
@@ -50,7 +45,6 @@ public class MoveCalculator {
             {
                 ChessPosition newPosition = new ChessPosition(position.getRow()+vector[0],position.getColumn()+vector[1]);
                 for(int i = 1; onBoard(newPosition);) {
-                    System.out.println(newPosition);
                     if (isEmpty(newPosition, board)) {
                         validMoves.add(new ChessMove(position, newPosition, null));
                     }
@@ -66,6 +60,16 @@ public class MoveCalculator {
                     newPosition = new ChessPosition(position.getRow() + i * vector[0], position.getColumn() + i * vector[1]);
                 }
             }
+        }
+        return validMoves;
+    }
+    private static Collection<ChessMove> getNonScalarMoves(ChessBoard board, ChessPosition position, ChessPiece  piece){
+        Collection<ChessMove> validMoves = new ArrayList<>();
+        for(int[] vector: moveVectors.get(piece.getPieceType()))
+        {
+            ChessPosition newPosition = new ChessPosition(position.getRow()+vector[0],position.getColumn()+vector[1]);
+            if(isEmpty(newPosition, board) || canCapture(newPosition, board, piece))
+                validMoves.add(new ChessMove(position, newPosition, null));
         }
         return validMoves;
     }
