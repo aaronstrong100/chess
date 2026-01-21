@@ -9,7 +9,7 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
-
+    private ChessGame.TeamColor turn = ChessGame.TeamColor.WHITE;
     public ChessGame() {
 
     }
@@ -21,6 +21,8 @@ public class ChessGame {
 
     @Override
     public boolean equals(Object obj) {
+        if(this==obj) return true;
+        if(obj==null || this.getClass() != obj.getClass()) return false;
         return super.equals(obj);
     }
 
@@ -42,7 +44,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        this.turn = team;
     }
 
     /**

@@ -18,18 +18,25 @@ public class ChessMove {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return this.hashCode()==obj.hashCode();
+    public final boolean equals(Object o) {
+        if (!(o instanceof ChessMove chessMove)) {
+            return false;
+        }
+
+        return startPos.equals(chessMove.startPos) && endPos.equals(chessMove.endPos) && promotion == chessMove.promotion;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.startPos, this.endPos, this.promotion);
+        int result = startPos.hashCode();
+        result = 31 * result + endPos.hashCode();
+        result = 31 * result + Objects.hashCode(promotion);
+        return result;
     }
 
     @Override
     public String toString() {
-        return super.toString();
+        return "ChessMove[" + this.startPos.toString() + ", " +this.endPos.toString() + "]";
     }
 
     /**

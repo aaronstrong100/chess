@@ -22,8 +22,12 @@ public class ChessPiece {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return this.hashCode() == obj.hashCode();
+    public final boolean equals(Object o) {
+        if (!(o instanceof ChessPiece that)) {
+            return false;
+        }
+
+        return pieceCol == that.pieceCol && pieceType == that.pieceType;
     }
 
     @Override
@@ -65,58 +69,7 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition){
-        if(this.pieceType==ChessPiece.PieceType.KING)
-        {
-            return removeInvalidMoves(board, getKingMoves(board,myPosition));
-        }
-        if(this.pieceType==ChessPiece.PieceType.QUEEN)
-        {
-            return removeInvalidMoves(board, getQueenMoves(board,myPosition));
-        }
-        if(this.pieceType==ChessPiece.PieceType.BISHOP)
-        {
-            return removeInvalidMoves(board, getBishopMoves(board,myPosition));
-        }
-        if(this.pieceType==ChessPiece.PieceType.KNIGHT)
-        {
-            return removeInvalidMoves(board, getKnightMoves(board,myPosition));
-        }
-        if(this.pieceType==ChessPiece.PieceType.ROOK)
-        {
-            return removeInvalidMoves(board, getRookMoves(board,myPosition));
-        }
-        if(this.pieceType==ChessPiece.PieceType.PAWN)
-        {
-            return removeInvalidMoves(board, getPawnMoves(board,myPosition));
-        }
-        return null;
+        return MoveCalculator.calculateMoves(board, myPosition, this);
     }
 
-    private Collection<ChessMove> removeInvalidMoves(ChessBoard board, Collection<ChessMove> moves){
-        return null;
-    }
-
-    private Collection<ChessMove> getKingMoves(ChessBoard board, ChessPosition myPosition){
-        return null;
-    }
-
-    private Collection<ChessMove> getQueenMoves(ChessBoard board, ChessPosition myPosition){
-        return null;
-    }
-
-    private Collection<ChessMove> getBishopMoves(ChessBoard board, ChessPosition myPosition){
-        return null;
-    }
-
-    private Collection<ChessMove> getKnightMoves(ChessBoard board, ChessPosition myPosition){
-        return null;
-    }
-
-    private Collection<ChessMove> getRookMoves(ChessBoard board, ChessPosition myPosition){
-        return null;
-    }
-
-    private Collection<ChessMove> getPawnMoves(ChessBoard board, ChessPosition myPosition){
-        return null;
-    }
 }
