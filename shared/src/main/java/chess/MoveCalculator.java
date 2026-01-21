@@ -79,6 +79,15 @@ public class MoveCalculator {
     private static Collection<ChessMove> getPawnMoves(ChessPosition position, ChessPiece piece, ChessBoard board)
     {
         Collection<ChessMove> validMoves = new ArrayList<>();
+        validMoves.addAll(getPawnForward(board,position,piece));
+        validMoves.addAll(getPawnCaptures(board,position,piece));
+        return validMoves;
+    }
+    private static boolean pawnCanDouble(ChessPosition position, ChessPiece pawn, ChessBoard board){
+        return (pawn.getTeamColor()==ChessGame.TeamColor.WHITE && position.getRow()==2 && board.getPiece(new ChessPosition(position.getRow()+1, position.getColumn()))==null) || (pawn.getTeamColor()==ChessGame.TeamColor.BLACK && position.getRow()==7  && board.getPiece(new ChessPosition(position.getRow()-1, position.getColumn()))==null);
+    }
+    private static Collection<ChessMove> getPawnForward(ChessBoard board, ChessPosition position, ChessPiece piece){
+        Collection<ChessMove> validMoves = new ArrayList<>();
         int[] vector = Arrays.copyOf(moveVectors.get(piece.getPieceType())[0], 2);
         if(piece.getTeamColor()==ChessGame.TeamColor.BLACK)
         {
@@ -91,9 +100,25 @@ public class MoveCalculator {
         } else if (lastRank(newPosition, piece)) {
             if (isEmpty(newPosition, board))
                 for (ChessPiece.PieceType pieceType : promotionPieceTypes) {
-                     validMoves.add(new ChessMove(position, newPosition, pieceType));
+                    validMoves.add(new ChessMove(position, newPosition, pieceType));
                 }
         }
+        if(pawnCanDouble(position, piece, board)) {
+            vector = Arrays.copyOf(moveVectors.get(piece.getPieceType())[3], 2);
+            if(piece.getTeamColor()==ChessGame.TeamColor.BLACK)
+            {
+                vector[0] = -vector[0];
+            }
+            newPosition = new ChessPosition(position.getRow()+vector[0],position.getColumn()+vector[1]);
+            if (isEmpty(newPosition, board))
+                validMoves.add(new ChessMove(position, newPosition, null));
+        }
+        return validMoves;
+    }
+    private static Collection<ChessMove> getPawnCaptures(ChessBoard board, ChessPosition position, ChessPiece piece){
+        Collection<ChessMove> validMoves = new ArrayList<>();
+        int[] vector;
+        ChessPosition newPosition;
         for(int i = 1; i<=2; i++) {
             vector = Arrays.copyOf(moveVectors.get(piece.getPieceType())[i], 2);
             if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
@@ -110,20 +135,7 @@ public class MoveCalculator {
                 }
             }
         }
-        if(pawnCanDouble(position, piece, board)) {
-            vector = Arrays.copyOf(moveVectors.get(piece.getPieceType())[3], 2);
-            if(piece.getTeamColor()==ChessGame.TeamColor.BLACK)
-            {
-                vector[0] = -vector[0];
-            }
-            newPosition = new ChessPosition(position.getRow()+vector[0],position.getColumn()+vector[1]);
-            if (isEmpty(newPosition, board))
-                validMoves.add(new ChessMove(position, newPosition, null));
-        }
         return validMoves;
-    }
-    private static boolean pawnCanDouble(ChessPosition position, ChessPiece pawn, ChessBoard board){
-        return (pawn.getTeamColor()==ChessGame.TeamColor.WHITE && position.getRow()==2 && board.getPiece(new ChessPosition(position.getRow()+1, position.getColumn()))==null) || (pawn.getTeamColor()==ChessGame.TeamColor.BLACK && position.getRow()==7  && board.getPiece(new ChessPosition(position.getRow()-1, position.getColumn()))==null);
     }
     private static boolean onBoard(ChessPosition position){
         return position.getRow() <= 8 && position.getRow() >=1  && position.getColumn() <= 8 && position.getColumn() >= 1;
