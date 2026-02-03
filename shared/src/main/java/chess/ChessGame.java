@@ -129,6 +129,22 @@ public class ChessGame {
     }
 
     /**
+     *
+     * @param teamColor the team to get the king position from
+     * @return return the position on the board of the king from given team
+     */
+    public ChessPosition getKingPosition(TeamColor teamColor){
+        for (Iterator<ChessPosition> it = this.board.getPositionsIterator(teamColor); it.hasNext(); ) {
+            ChessPosition pos = it.next();
+            if(this.board.getPiece(pos).getPieceType()==ChessPiece.PieceType.KING)
+            {
+                return pos;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Determines if the given team is in checkmate
      *
      * @param teamColor which team to check for checkmate
