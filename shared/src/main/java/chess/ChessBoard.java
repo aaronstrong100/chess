@@ -34,6 +34,23 @@ public class ChessBoard {
     }
 
     /**
+     *
+     * @return copy of this ChessBoard
+     */
+    public ChessBoard copy(){
+        ChessBoard copyBoard = new ChessBoard();
+        copyBoard.pieces = Arrays.copyOf(this.pieces, 8);
+        for(int i = 1; i<=8; i++)
+        {
+            for(int j = 1; j<=8; j++)
+            {
+                copyBoard.addPiece(new ChessPosition(i,j), this.getPiece(new ChessPosition(i,j)));
+            }
+        }
+        return copyBoard;
+    }
+
+    /**
      * Adds a chess piece to the chessboard
      *
      * @param position where to add the piece to
