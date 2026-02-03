@@ -99,7 +99,12 @@ public class ChessGame {
      * @return all possible moves from one team, taking into account check
      */
     private Collection<ChessMove> teamValidMoves(ChessGame.TeamColor team){
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> teamMoves = new ArrayList<>();
+        for (Iterator<ChessPosition> it = this.board.getPositionsIterator(team); it.hasNext(); ) {
+            ChessPosition startPosition = it.next();
+            teamMoves.addAll(validMoves(startPosition));
+        }
+        return teamMoves;
     }
 
     /**
