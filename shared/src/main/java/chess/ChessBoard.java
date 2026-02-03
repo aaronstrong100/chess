@@ -1,5 +1,7 @@
 package chess;
 import java.util.Arrays;
+import java.util.Iterator;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -50,6 +52,40 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         return this.pieces[position.getRow()-1][position.getColumn()-1];
+    }
+
+    /**
+     *
+     * @param team which team to return piece positions from
+     * @return an iterator of all positions on the board occupied by pieces from the given team
+     */
+    public Iterator<ChessPosition> getPositionsIterator(ChessGame.TeamColor team){
+        return new Iterator<ChessPosition>() {
+            ChessGame.TeamColor teamColor = team;
+            int row = 0;
+            int col = 0;
+            boolean hasNext = true;
+            @Override
+            public boolean hasNext() {
+                return hasNext;
+            }
+
+            @Override
+            public ChessPosition next() {
+                ChessPosition position = new ChessPosition(row+1,col+1);
+                while(pieces[row][col]==null || pieces[row][col].getTeamColor()!=teamColor) {
+                    row++;
+                    if (row > 7) {
+                        row = 0;
+                        col++;
+                        if (col > 7) {
+                            hasNext = false;
+                        }
+                    }
+                }
+                return position;
+            }
+        };
     }
 
     /**
