@@ -1,6 +1,8 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -10,8 +12,10 @@ import java.util.Collection;
  */
 public class ChessGame {
     private ChessGame.TeamColor turn = ChessGame.TeamColor.WHITE;
+    ChessBoard board;
     public ChessGame() {
-
+        this.board = new ChessBoard();
+        board.resetBoard();
     }
 
     @Override
@@ -44,7 +48,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        this.turn = team;
+        throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -65,6 +69,7 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         throw new RuntimeException("Not implemented");
     }
+
 
     /**
      * Makes a move in a chess game
