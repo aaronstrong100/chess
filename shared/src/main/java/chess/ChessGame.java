@@ -81,7 +81,11 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> validMoves = this.board.getPiece(startPosition).pieceMoves(this.board, startPosition);
+        for (ChessMove move : validMoves){
+            return this.board.getPiece(startPosition).pieceMoves(this.board, startPosition);
+        }
+        return validMoves;
     }
 
     /**
@@ -138,6 +142,16 @@ public class ChessGame {
             throw new InvalidMoveException("The move is invalid");
         }
         this.turn = otherTeam(this.turn);;
+    }
+
+    /**
+     *
+     * @param move the move to apply to the chess board
+     *  applies the move to the chess board without checking if the move is valid
+     */
+    public void makeMoveUnprotected(ChessMove move){
+        this.board.addPiece(move.getEndPosition(), this.board.getPiece(move.getStartPosition()));
+        this.board.addPiece(move.getStartPosition(), null);
     }
 
     /**
