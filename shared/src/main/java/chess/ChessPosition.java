@@ -15,15 +15,19 @@ public class ChessPosition {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(rowNum, colNum);
+    public final boolean equals(Object o) {
+        if (!(o instanceof ChessPosition that)) {
+            return false;
+        }
+
+        return rowNum == that.rowNum && colNum == that.colNum;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if(this==obj) return true;
-        if(obj==null || this.getClass() != obj.getClass()) return false;
-        return this.hashCode()==obj.hashCode();
+    public int hashCode() {
+        int result = rowNum;
+        result = 31 * result + colNum;
+        return result;
     }
 
     @Override

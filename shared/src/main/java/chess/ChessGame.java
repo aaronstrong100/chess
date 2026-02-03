@@ -81,18 +81,18 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        if(this.board.getPiece(startPosition).getTeamColor()!=this.turn){
+        if(this.board.getPiece(startPosition)==null || this.board.getPiece(startPosition).getTeamColor()!=this.turn){
             return new ArrayList<ChessMove>();
         }
         else {
             Collection<ChessMove> validMoves = this.board.getPiece(startPosition).pieceMoves(this.board, startPosition);
-            for (ChessMove move : validMoves) {
-                ChessBoard currentBoard = this.board;
-                this.board = this.board.copy();
+            for (Iterator<ChessMove> moveIterator = validMoves.iterator(); moveIterator.hasNext();) {
+                ChessMove move = moveIterator.next();
+                ChessBoard currentBoard = this.board.copy();
                 this.makeMoveUnprotected(move);
                 if(this.isInCheck(this.turn))
                 {
-                    validMoves.remove(move);
+                    moveIterator.remove();
                 }
                 this.board = currentBoard;
             }
@@ -114,11 +114,11 @@ public class ChessGame {
      * @param team the team to get moves from
      * @return all possible moves from one team, taking into account check
      */
-    private Collection<ChessMove> teamValidMoves(ChessGame.TeamColor team){
+    private Collection<ChessMove> teamValidMoves(TeamColor team){
         Collection<ChessMove> teamMoves = new ArrayList<>();
         for (Iterator<ChessPosition> it = this.board.getPositionsIterator(team); it.hasNext(); ) {
             ChessPosition startPosition = it.next();
-            teamMoves.addAll(validMoves(startPosition));
+            teamMoves.addAll(this.validMoves(startPosition));
         }
         return teamMoves;
     }
@@ -128,11 +128,11 @@ public class ChessGame {
      * @param team the team to get moves from
      * @return all possible moves from one team, not taking into account team turn or being in check.
      */
-    private Collection<ChessMove> teamValidMovesUnprotected(ChessGame.TeamColor team){
+    private Collection<ChessMove> teamValidMovesUnprotected(TeamColor team){
         Collection<ChessMove> teamMoves = new ArrayList<>();
         for (Iterator<ChessPosition> it = this.board.getPositionsIterator(team); it.hasNext(); ) {
             ChessPosition startPosition = it.next();
-            teamMoves.addAll(validMovesUnprotected(startPosition));
+            teamMoves.addAll(this.validMovesUnprotected(startPosition));
         }
         return teamMoves;
     }
@@ -145,15 +145,15 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        if(this.validMoves(move.getStartPosition()).contains(move))
+        if(this.board.onBoard(move.getStartPosition()) && this.board.onBoard(move.getEndPosition()) && this.validMoves(move.getStartPosition()).contains(move))
         {
             this.board.addPiece(move.getEndPosition(), this.board.getPiece(move.getStartPosition()));
             this.board.addPiece(move.getStartPosition(), null);
+            this.turn = otherTeam(this.turn);
         }
         else{
             throw new InvalidMoveException("The move is invalid");
         }
-        this.turn = otherTeam(this.turn);;
     }
 
     /**
@@ -173,10 +173,11 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        Collection<ChessMove> teamMoves = teamValidMovesUnprotected(otherTeam(teamColor));
+        Collection<ChessMove> teamMoves = this.teamValidMovesUnprotected(otherTeam(teamColor));
         ChessPosition kingPos = getKingPosition(teamColor);
         for(ChessMove move : teamMoves){
             if(move.getEndPosition().equals(kingPos)){
+                System.out.println(move+" is equivalent to " + kingPos);
                 return true;
             }
         }

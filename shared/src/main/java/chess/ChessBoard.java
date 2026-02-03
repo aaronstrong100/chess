@@ -78,18 +78,18 @@ public class ChessBoard {
      */
     public Iterator<ChessPosition> getPositionsIterator(ChessGame.TeamColor team){
         return new Iterator<ChessPosition>() {
-            ChessGame.TeamColor teamColor = team;
+            final ChessGame.TeamColor teamColor = team;
             int row = 0;
             int col = 0;
             boolean hasNext = true;
+
             @Override
             public boolean hasNext() {
                 return hasNext;
             }
 
             @Override
-            public ChessPosition next() {
-                ChessPosition position = new ChessPosition(row+1,col+1);
+            public ChessPosition next(){
                 while(pieces[row][col]==null || pieces[row][col].getTeamColor()!=teamColor) {
                     row++;
                     if (row > 7) {
@@ -100,6 +100,17 @@ public class ChessBoard {
                         }
                     }
                 }
+                ChessPosition position = new ChessPosition(row+1,col+1);
+                 do {
+                    row++;
+                    if (row > 7) {
+                        row = 0;
+                        col++;
+                        if (col > 7) {
+                            hasNext = false;
+                        }
+                    }
+                } while(col<8 && (pieces[row][col]==null || pieces[row][col].getTeamColor()!=teamColor));
                 return position;
             }
         };
