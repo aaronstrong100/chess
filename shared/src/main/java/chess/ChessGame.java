@@ -96,6 +96,15 @@ public class ChessGame {
     /**
      *
      * @param team the team to get moves from
+     * @return all possible moves from one team, taking into account check
+     */
+    private Collection<ChessMove> teamValidMoves(ChessGame.TeamColor team){
+        throw new RuntimeException("Not implemented");
+    }
+
+    /**
+     *
+     * @param team the team to get moves from
      * @return all possible moves from one team, not taking into account team turn or being in check.
      */
     private Collection<ChessMove> teamValidMovesUnprotected(ChessGame.TeamColor team){
