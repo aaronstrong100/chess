@@ -93,6 +93,20 @@ public class ChessGame {
         return this.board.getPiece(startPosition).pieceMoves(this.board, startPosition);
     }
 
+    /**
+     *
+     * @param team the team to get moves from
+     * @return all possible moves from one team, not taking into account team turn or being in check.
+     */
+    private Collection<ChessMove> teamValidMovesUnprotected(ChessGame.TeamColor team){
+        Collection<ChessMove> teamMoves = new ArrayList<>();
+        for (Iterator<ChessPosition> it = this.board.getPositionsIterator(team); it.hasNext(); ) {
+            ChessPosition startPosition = it.next();
+            teamMoves.addAll(validMovesUnprotected(startPosition));
+        }
+        return teamMoves;
+    }
+
 
     /**
      * Makes a move in a chess game
