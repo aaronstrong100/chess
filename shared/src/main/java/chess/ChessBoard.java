@@ -1,6 +1,7 @@
 package chess;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -30,10 +31,32 @@ public class ChessBoard {
 
     @Override
     public String toString() {
-        return super.toString();
+        String output = "";
+        final Map<ChessPiece.PieceType, String> pieceStrings = Map.of(
+                ChessPiece.PieceType.KING, "K",
+                ChessPiece.PieceType.QUEEN, "Q",
+                ChessPiece.PieceType.ROOK, "R",
+                ChessPiece.PieceType.BISHOP, "B",
+                ChessPiece.PieceType.KNIGHT, "N",
+                ChessPiece.PieceType.PAWN, "P"
+        );
+        for(int i = 0; i<8; i++){
+            for(int j = 0; j<8; j++)
+            {
+                if(this.pieces[i][j]==null){
+                    output+="| ";
+                }
+                else {
+                    output+="|"+pieceStrings.get(this.pieces[i][j].getPieceType());
+                }
+            }
+            output+="|\n";
+        }
+        return output;
     }
 
     /**
+     * Returns a copy of the chessboard
      *
      * @return copy of this ChessBoard
      */
@@ -48,6 +71,16 @@ public class ChessBoard {
             }
         }
         return copyBoard;
+    }
+
+    /**
+     * returns whether or not a position is on the board
+     *
+     * @param position the position on the board
+     * @return true if position is on board, false if not
+     */
+    public boolean onBoard(ChessPosition position){
+        return position.getRow() <= 8 && position.getRow() >=1  && position.getColumn() <= 8 && position.getColumn() >= 1;
     }
 
     /**
