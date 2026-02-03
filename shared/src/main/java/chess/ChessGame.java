@@ -60,6 +60,20 @@ public class ChessGame {
     }
 
     /**
+     *
+     * @param team the team you want the opposite of
+     * @return the opposite team from the input (WHITE->BLACK, BLACK->WHITE)
+     */
+    private TeamColor otherTeam(TeamColor team){
+        if(team==TeamColor.WHITE){
+            return TeamColor.BLACK;
+        }
+        else {
+            return TeamColor.WHITE;
+        }
+    }
+
+    /**
      * Gets a valid moves for a piece at the given location
      *
      * @param startPosition the piece to get valid moves for
