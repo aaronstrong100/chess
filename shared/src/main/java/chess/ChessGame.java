@@ -84,6 +84,15 @@ public class ChessGame {
         throw new RuntimeException("Not implemented");
     }
 
+    /**
+     *
+     * @param startPosition the starting position
+     * @return all valid moves, not taking into account team turn or being in check. Useful for calculating check and checkmate
+     */
+    private Collection<ChessMove> validMovesUnprotected(ChessPosition startPosition) {
+        return this.board.getPiece(startPosition).pieceMoves(this.board, startPosition);
+    }
+
 
     /**
      * Makes a move in a chess game
