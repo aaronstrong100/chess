@@ -81,11 +81,23 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        Collection<ChessMove> validMoves = this.board.getPiece(startPosition).pieceMoves(this.board, startPosition);
-        for (ChessMove move : validMoves){
-            return this.board.getPiece(startPosition).pieceMoves(this.board, startPosition);
+        if(this.board.getPiece(startPosition).getTeamColor()!=this.turn){
+            return new ArrayList<ChessMove>();
         }
-        return validMoves;
+        else {
+            Collection<ChessMove> validMoves = this.board.getPiece(startPosition).pieceMoves(this.board, startPosition);
+            for (ChessMove move : validMoves) {
+                ChessBoard currentBoard = this.board;
+                this.board = this.board.copy();
+                this.makeMoveUnprotected(move);
+                if(this.isInCheck(this.turn))
+                {
+                    validMoves.remove(move);
+                }
+                this.board = currentBoard;
+            }
+            return validMoves;
+        }
     }
 
     /**
