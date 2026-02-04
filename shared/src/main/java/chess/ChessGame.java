@@ -19,15 +19,19 @@ public class ChessGame {
     }
 
     @Override
-    public int hashCode() {
-        return super.hashCode();
+    public final boolean equals(Object o) {
+        if (!(o instanceof ChessGame chessGame)) {
+            return false;
+        }
+
+        return turn == chessGame.turn && board.equals(chessGame.board);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if(this==obj) return true;
-        if(obj==null || this.getClass() != obj.getClass()) return false;
-        return super.equals(obj);
+    public int hashCode() {
+        int result = turn.hashCode();
+        result = 31 * result + board.hashCode();
+        return result;
     }
 
     @Override
@@ -81,7 +85,9 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        if(this.board.getPiece(startPosition)==null || this.board.getPiece(startPosition).getTeamColor()!=this.turn){
+        System.out.println(this.board);
+        if(this.board.getPiece(startPosition)==null){
+            System.out.println("No valid moves for "+startPosition);
             return new ArrayList<ChessMove>();
         }
         else {
@@ -95,6 +101,10 @@ public class ChessGame {
                     moveIterator.remove();
                 }
                 this.board = currentBoard;
+            }
+            System.out.println("Valid moves for "+startPosition);
+            for(ChessMove move: validMoves){
+                System.out.println(move);
             }
             return validMoves;
         }
@@ -182,7 +192,6 @@ public class ChessGame {
         ChessPosition kingPos = getKingPosition(teamColor);
         for(ChessMove move : teamMoves){
             if(move.getEndPosition().equals(kingPos)){
-                System.out.println(move+" is equivalent to " + kingPos);
                 return true;
             }
         }
