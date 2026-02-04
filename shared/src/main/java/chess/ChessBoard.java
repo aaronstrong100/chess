@@ -62,12 +62,19 @@ public class ChessBoard {
      */
     public ChessBoard copy(){
         ChessBoard copyBoard = new ChessBoard();
-        copyBoard.pieces = Arrays.copyOf(this.pieces, 8);
+        copyBoard.pieces = new ChessPiece[8][8];
         for(int i = 1; i<=8; i++)
         {
             for(int j = 1; j<=8; j++)
             {
-                copyBoard.addPiece(new ChessPosition(i,j), this.getPiece(new ChessPosition(i,j)));
+                if(this.getPiece(new ChessPosition(i,j))==null)
+                {
+                    copyBoard.addPiece(new ChessPosition(i,j), null);
+                }
+                else
+                {
+                    copyBoard.addPiece(new ChessPosition(i,j), this.getPiece(new ChessPosition(i,j)).copy());
+                }
             }
         }
         return copyBoard;

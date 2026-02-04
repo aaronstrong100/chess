@@ -147,7 +147,12 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         if(this.board.onBoard(move.getStartPosition()) && this.board.onBoard(move.getEndPosition()) && this.validMoves(move.getStartPosition()).contains(move))
         {
-            this.board.addPiece(move.getEndPosition(), this.board.getPiece(move.getStartPosition()));
+            if(move.getPromotionPiece()!=null){
+                this.board.addPiece(move.getEndPosition(), new ChessPiece(this.turn,move.getPromotionPiece()));
+            }
+            else{
+                this.board.addPiece(move.getEndPosition(), this.board.getPiece(move.getStartPosition()));
+            }
             this.board.addPiece(move.getStartPosition(), null);
             this.turn = otherTeam(this.turn);
         }

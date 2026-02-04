@@ -36,6 +36,15 @@ public class ChessPiece {
     }
 
     /**
+     * creates and returns an identical chess piece
+     *
+     * @return copy of this chess piece
+     */
+    public ChessPiece copy(){
+        return new ChessPiece(this.pieceCol, this.pieceType);
+    }
+
+    /**
      * The various different chess piece options
      */
     public enum PieceType {
