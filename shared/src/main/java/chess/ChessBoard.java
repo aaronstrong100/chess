@@ -40,14 +40,18 @@ public class ChessBoard {
                 ChessPiece.PieceType.KNIGHT, "N",
                 ChessPiece.PieceType.PAWN, "P"
         );
+        final Map<ChessGame.TeamColor, String> teamStrings = Map.of(
+                ChessGame.TeamColor.WHITE, "W",
+                ChessGame.TeamColor.BLACK, "B"
+        );
         for(int i = 0; i<8; i++){
             for(int j = 0; j<8; j++)
             {
                 if(this.pieces[i][j]==null){
-                    output+="| ";
+                    output+="|  ";
                 }
                 else {
-                    output+="|"+pieceStrings.get(this.pieces[i][j].getPieceType());
+                    output+="|"+teamStrings.get(this.pieces[i][j].getTeamColor()) + pieceStrings.get(this.pieces[i][j].getPieceType());
                 }
             }
             output+="|\n";

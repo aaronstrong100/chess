@@ -91,12 +91,13 @@ public class ChessGame {
             return new ArrayList<ChessMove>();
         }
         else {
+            ChessGame.TeamColor team = this.board.getPiece(startPosition).getTeamColor();
             Collection<ChessMove> validMoves = this.board.getPiece(startPosition).pieceMoves(this.board, startPosition);
             for (Iterator<ChessMove> moveIterator = validMoves.iterator(); moveIterator.hasNext();) {
                 ChessMove move = moveIterator.next();
                 ChessBoard currentBoard = this.board.copy();
                 this.makeMoveUnprotected(move);
-                if(this.isInCheck(this.turn))
+                if(this.isInCheck(team))
                 {
                     moveIterator.remove();
                 }
@@ -155,7 +156,7 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        if(this.board.onBoard(move.getStartPosition()) && this.board.onBoard(move.getEndPosition()) && this.validMoves(move.getStartPosition()).contains(move))
+        if(this.board.onBoard(move.getStartPosition()) && this.board.onBoard(move.getEndPosition()) && this.board.getPiece(move.getStartPosition())!=null && this.board.getPiece(move.getStartPosition()).getTeamColor()==this.turn && this.validMoves(move.getStartPosition()).contains(move))
         {
             if(move.getPromotionPiece()!=null){
                 this.board.addPiece(move.getEndPosition(), new ChessPiece(this.turn,move.getPromotionPiece()));
@@ -191,6 +192,7 @@ public class ChessGame {
         Collection<ChessMove> teamMoves = this.teamValidMovesUnprotected(otherTeam(teamColor));
         ChessPosition kingPos = getKingPosition(teamColor);
         for(ChessMove move : teamMoves){
+            System.out.println("Checking if the move " + move + " will put " + teamColor + " in check.");
             if(move.getEndPosition().equals(kingPos)){
                 return true;
             }
