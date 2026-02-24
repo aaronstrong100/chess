@@ -1,13 +1,16 @@
 package server;
 
+import Requests.RegisterRequest;
+import Results.RegisterResult;
+import com.google.gson.*;
 import io.javalin.*;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import org.jetbrains.annotations.NotNull;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import io.javalin.json.JsonMapper;
 import org.jetbrains.annotations.NotNull;
+import service.UserService;
+
 import java.lang.reflect.Type;
 
 import java.util.Map;
@@ -15,12 +18,13 @@ import java.util.Map;
 public class Server {
 
     private final Javalin javalin;
-
+    protected UserService userService;
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
         // Register your endpoints and exception handlers here.
-        javalin.get("/game", new RegisterHandler());
+        userService = new UserService();
+        javalin.post("/user", new RegisterHandler(userService));
     }
 
     public int run(int desiredPort) {
@@ -33,16 +37,24 @@ public class Server {
     }
 
     public static class RegisterHandler implements Handler {
-        /**
-         *
-         * @param context
-         * @throws Exception
-         */
+
+        UserService userService;
+
+        public RegisterHandler(UserService userService){
+            this.userService = userService;
+        }
+
         @Override
         public void handle(@NotNull Context context){
-            Map<String, String> output = Map.of("title","Registering...");
             Gson gson = new Gson();
-            context.json(gson.toJson(output,output.getClass()));
+            String jsonString = context.body();
+            RegisterRequest registerRequest = gson.fromJson(jsonString, RegisterRequest.class);
+            try {
+                RegisterResult registerResult = userService.register(registerRequest);
+                context.json(gson.toJson(registerResult));
+            } catch (Exception e){
+                context.json("{\"message\": \""+ e.getMessage() + "\"}");
+            }
         }
     }
 }
