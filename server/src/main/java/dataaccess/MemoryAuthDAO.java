@@ -1,30 +1,39 @@
 package dataaccess;
 
 import model.AuthData;
+import model.UserData;
+
+import java.util.ArrayList;
+import java.util.UUID;
 
 public class MemoryAuthDAO implements AuthDAO{
-    /**
-     * add AuthData object to the database
-     * @param authData
-     */
-    @Override
-    public void addAuthData(AuthData authData)  throws DataAccessException{
-
+    private ArrayList<AuthData> authData;
+    public MemoryAuthDAO(){
+        this.authData = new ArrayList<>();
     }
-    /**
-     * returns an AuthData object given an authToken. Returns null if it does not exist
-     * @param authToken
-     * @return
-     */
+
+    @Override
+    public AuthData addAuthData(AuthData authData){
+        this.authData.add(authData);
+        return authData;
+    }
+
     @Override
     public AuthData getAuthData(String authToken) throws DataAccessException {
-        return null;
+        for(AuthData authData : this.authData){
+            if(authData.getAuthToken().equals(authToken)){
+                return authData;
+            }
+        }
+        throw new DataAccessException("The authorization token is invalid.");
     }
-    /**
-     * clear all AuthData from the database
-     */
+
+    public String generateNewAuthToken(){
+        return UUID.randomUUID().toString();
+    }
+
     @Override
     public void clearDataBase()  throws DataAccessException{
-
+        this.authData = new ArrayList<>();
     }
 }

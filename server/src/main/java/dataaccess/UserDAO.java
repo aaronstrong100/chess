@@ -14,10 +14,10 @@ public interface UserDAO {
      * add a UserData to the database
      * @param userData the UserData Object to add
      */
-    public void addUserData(UserData userData) throws DataAccessException;
+    public void addUserData(UserData userData);
 
     /**
      * Clears all UserData from the database
      */
-    public void clearDataBase() throws DataAccessException;
+    public void clearDataBase();
 }
