@@ -13,8 +13,13 @@ public class UserService {
     private UserDAO userDAO;
     private AuthDAO authDAO;
     public UserService(){
-        userDAO = new MemoryUserDAO();
-        authDAO = new MemoryAuthDAO();
+        this.userDAO = new MemoryUserDAO();
+        this.authDAO = new MemoryAuthDAO();
+    }
+
+    public UserService(UserDAO userDAO, AuthDAO authDAO){
+        this.userDAO = userDAO;
+        this.authDAO = authDAO;
     }
     /**
      * register a new user
@@ -23,11 +28,11 @@ public class UserService {
      */
     public RegisterResult register(RegisterRequest registerRequest) throws Exception{
         try{
-            userDAO.getUserData(registerRequest.getUsername());
+            this.userDAO.getUserData(registerRequest.getUsername());
             throw new Exception("The username is already taken");
         } catch(DataAccessException e){
-            userDAO.addUserData(new UserData(registerRequest.getUsername(), registerRequest.getPassword(), registerRequest.getEmail()));
-            AuthData returnData = authDAO.addAuthData(new AuthData(registerRequest.getUsername(), authDAO.generateNewAuthToken()));
+            this.userDAO.addUserData(new UserData(registerRequest.getUsername(), registerRequest.getPassword(), registerRequest.getEmail()));
+            AuthData returnData = this.authDAO.addAuthData(new AuthData(registerRequest.getUsername(), authDAO.generateNewAuthToken()));
             return new RegisterResult(returnData.getUsername(), returnData.getAuthToken());
         }
     }
@@ -37,8 +42,15 @@ public class UserService {
      * @param loginRequest LoginRequest Object containing the username and password of the user
      * @return a LoginResult containing the authToken for the user
      */
-    public LoginResult login(LoginRequest loginRequest){
-        return null;
+    public LoginResult login(LoginRequest loginRequest) throws Exception{
+        UserData userData = this.userDAO.getUserData(loginRequest.getUsername());
+        if(userData.getPassword().equals(loginRequest.getPassword())){
+            AuthData newAuthData = new AuthData(userData.getUsername(), this.authDAO.generateNewAuthToken());
+            this.authDAO.addAuthData(newAuthData);
+            return new LoginResult(newAuthData.getUsername(), newAuthData.getAuthToken());
+        } else {
+            throw new Exception("Password incorrect");
+        }
     }
 
     /**
