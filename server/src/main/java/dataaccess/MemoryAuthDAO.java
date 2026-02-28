@@ -4,6 +4,7 @@ import model.AuthData;
 import model.UserData;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.UUID;
 
 public class MemoryAuthDAO implements AuthDAO{
@@ -26,6 +27,16 @@ public class MemoryAuthDAO implements AuthDAO{
             }
         }
         throw new DataAccessException("The authorization token is invalid.");
+    }
+
+    public void deleteAuthData(String authToken){
+        Iterator<AuthData> authDataIterator = this.authData.iterator();
+        while(authDataIterator.hasNext()){
+            AuthData authData = authDataIterator.next();
+            if(authData.getAuthToken().equals(authToken)){
+                authDataIterator.remove();
+            }
+        }
     }
 
     public String generateNewAuthToken(){
