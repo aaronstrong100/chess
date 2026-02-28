@@ -2,6 +2,7 @@ package server;
 
 import Requests.LoginRequest;
 import Requests.RegisterRequest;
+import Requests.LogoutRequest;
 import Results.LoginResult;
 import Results.RegisterResult;
 import com.google.gson.*;
@@ -50,6 +51,8 @@ public class Server {
         javalin.post("/user", new RegisterHandler(userService));
 
         javalin.post("/session", new LoginHandler(userService));
+
+        javalin.delete("/session", new LogoutHandler(userService));
     }
 
     public int run(int desiredPort) {
@@ -102,6 +105,37 @@ public class Server {
                 context.json(gson.toJson(loginResult));
             } catch (Exception e){
                 context.json("{\"message\": \""+ e.getMessage() + "\"}");
+            }
+        }
+    }
+
+    public static class LogoutHandler implements Handler {
+
+        UserService userService;
+
+        public LogoutHandler(UserService userService){
+            this.userService = userService;
+        }
+
+        @Override
+        public void handle(@NotNull Context context){
+            Gson gson = new Gson();
+            String jsonString = context.header("Authorization");
+            System.out.println(jsonString);
+            //LogoutRequest logoutRequest = gson.fromJson(jsonString, LogoutRequest.class);
+            LogoutRequest logoutRequest = new LogoutRequest(jsonString);
+            try {
+                userService.logout(logoutRequest);
+                System.out.println("{}");
+                context.json("{}").contentType("application/json");
+            } catch (Exception e){
+                if(logoutRequest==null){
+                    context.json("{\"message\": \"No authorization token was given.\"}");
+                }
+                else{
+                    System.out.println("{\"message\": \""+ e.getMessage() + "\"}");
+                    context.json("{\"message\": \""+ e.getMessage() + "\"}");
+                }
             }
         }
     }
