@@ -3,8 +3,15 @@ package server;
 import Requests.LoginRequest;
 import Requests.RegisterRequest;
 import Requests.LogoutRequest;
+import Requests.ListGamesRequest;
+import Requests.CreateGameRequest;
+import Requests.JoinGameRequest;
+import Requests.DeleteRequest;
 import Results.LoginResult;
 import Results.RegisterResult;
+import Results.ListGamesResult;
+import Results.CreateGameResult;
+import Results.JoinGameResult;
 import com.google.gson.*;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
@@ -47,12 +54,15 @@ public class Server {
         gameDAO = new MemoryGameDAO();
 
         userService = new UserService(userDAO, authDAO);
+        gameService = new GameService(gameDAO, authDAO);
 
         javalin.post("/user", new RegisterHandler(userService));
 
         javalin.post("/session", new LoginHandler(userService));
 
         javalin.delete("/session", new LogoutHandler(userService));
+
+        javalin.get("/game", new ListGamesHandler(gameService));
     }
 
     public int run(int desiredPort) {
@@ -120,22 +130,40 @@ public class Server {
         @Override
         public void handle(@NotNull Context context){
             Gson gson = new Gson();
-            String jsonString = context.header("Authorization");
-            System.out.println(jsonString);
-            //LogoutRequest logoutRequest = gson.fromJson(jsonString, LogoutRequest.class);
-            LogoutRequest logoutRequest = new LogoutRequest(jsonString);
+            String authToken = context.header("Authorization");
+            LogoutRequest logoutRequest = new LogoutRequest(authToken);
             try {
                 userService.logout(logoutRequest);
-                System.out.println("{}");
                 context.json("{}").contentType("application/json");
             } catch (Exception e){
                 if(logoutRequest==null){
                     context.json("{\"message\": \"No authorization token was given.\"}");
                 }
                 else{
-                    System.out.println("{\"message\": \""+ e.getMessage() + "\"}");
                     context.json("{\"message\": \""+ e.getMessage() + "\"}");
                 }
+            }
+        }
+    }
+
+    public static class ListGamesHandler implements Handler {
+
+        GameService gameService;
+
+        public ListGamesHandler(GameService gameService){
+            this.gameService = gameService;
+        }
+
+        @Override
+        public void handle(@NotNull Context context){
+            Gson gson = new Gson();
+            String authToken = context.header("Authorization");
+            ListGamesRequest listGamesRequest = new ListGamesRequest(authToken);
+            try {
+                ListGamesResult listGamesResult = gameService.listGames(listGamesRequest);
+                context.json(gson.toJson(listGamesResult));
+            } catch (Exception e){
+                context.json("{\"message\": \""+ e.getMessage() + "\"}");
             }
         }
     }
