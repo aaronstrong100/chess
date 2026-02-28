@@ -1,13 +1,14 @@
 package Results;
 
 import chess.ChessGame;
+import model.GameData;
 
 public class ListGamesResult {
-    private ChessGame[] games;
-    public ListGamesResult(ChessGame[] games){
+    private GameData[] games;
+    public ListGamesResult(GameData[] games){
         this.games = games;
     }
-    public ChessGame[] getGames(){
+    public GameData[] getGames(){
         return this.games;
     }
 }
