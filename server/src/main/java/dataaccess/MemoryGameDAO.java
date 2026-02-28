@@ -1,15 +1,18 @@
 package dataaccess;
 
+import chess.ChessGame;
+
 import model.GameData;
 
 public class MemoryGameDAO implements GameDAO{
+    private GameData[] gameData;
     /**
      *
      * @return all current games in the database as GameData objects
      */
     @Override
     public GameData[] getCurrentGames()  throws DataAccessException{
-        return new GameData[0];
+        return this.gameData;
     }
     /**
      *
