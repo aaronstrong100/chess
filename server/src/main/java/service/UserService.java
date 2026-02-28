@@ -57,7 +57,8 @@ public class UserService {
      * logs a user out
      * @param logoutRequest LogoutRequest Object containing the authToken of the user
      */
-    public void logout(LogoutRequest logoutRequest){
-
+    public void logout(LogoutRequest logoutRequest) throws Exception{
+        this.authDAO.getAuthData(logoutRequest.getAuthToken());
+        this.authDAO.deleteAuthData(logoutRequest.getAuthToken());
     }
 }
