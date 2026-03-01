@@ -2,6 +2,8 @@ package dataaccess;
 
 import model.AuthData;
 
+import dataaccess.UnauthorizedException;
+
 public interface AuthDAO {
     /**
      * add AuthData object to the database
@@ -14,7 +16,7 @@ public interface AuthDAO {
      * @param authToken
      * @return
      */
-    public AuthData getAuthData(String authToken) throws DataAccessException;
+    public AuthData getAuthData(String authToken) throws UnauthorizedException;
 
     public void deleteAuthData(String authToken);
 
