@@ -1,5 +1,7 @@
 package dataaccess;
 
+import java.util.ArrayList;
+
 import model.GameData;
 
 public interface GameDAO {
@@ -7,7 +9,7 @@ public interface GameDAO {
      *
      * @return all current games in the database as GameData objects
      */
-    public GameData[] getCurrentGames() throws DataAccessException;
+    public ArrayList<GameData> getCurrentGames() throws DataAccessException;
 
     /**
      *
@@ -20,7 +22,7 @@ public interface GameDAO {
      * creates a game with the given name
      * @param gameName name of the new game
      */
-    public void createGame(String gameName) throws DataAccessException;
+    public int createGame(String gameName);
 
     /**
      * updates a game by replacing the GameData with a new GameData Object

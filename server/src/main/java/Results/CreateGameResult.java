@@ -1,11 +1,11 @@
 package Results;
 
 public class CreateGameResult {
-    private String gameID;
-    public CreateGameResult(String gameID){
+    private int gameID;
+    public CreateGameResult(int gameID){
         this.gameID = gameID;
     }
-    public String getGameID(){
+    public int getGameID(){
         return this.gameID;
     }
 }
