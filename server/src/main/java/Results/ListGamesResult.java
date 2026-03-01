@@ -1,14 +1,16 @@
 package Results;
 
+import java.util.ArrayList;
+
 import chess.ChessGame;
 import model.GameData;
 
 public class ListGamesResult {
-    private GameData[] games;
-    public ListGamesResult(GameData[] games){
+    private ArrayList<GameData> games;
+    public ListGamesResult(ArrayList<GameData> games){
         this.games = games;
     }
-    public GameData[] getGames(){
+    public ArrayList<GameData> getGames(){
         return this.games;
     }
 }
