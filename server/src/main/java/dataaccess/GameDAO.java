@@ -34,5 +34,5 @@ public interface GameDAO {
     /**
      * Clear all GameData from the database
      */
-    public void clearDataBase() throws DataAccessException;
+    public void clearDataBase();
 }

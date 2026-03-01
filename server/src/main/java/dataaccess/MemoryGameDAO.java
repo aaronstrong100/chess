@@ -69,7 +69,7 @@ public class MemoryGameDAO implements GameDAO{
      * Clear all GameData from the database
      */
     @Override
-    public void clearDataBase()  throws DataAccessException{
-
+    public void clearDataBase(){
+        this.gameData = new ArrayList<>();
     }
 }

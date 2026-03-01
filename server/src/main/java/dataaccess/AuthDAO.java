@@ -21,7 +21,7 @@ public interface AuthDAO {
     /**
      * clear all AuthData from the database
      */
-    public void clearDataBase() throws DataAccessException;
+    public void clearDataBase();
 
     String generateNewAuthToken();
 }

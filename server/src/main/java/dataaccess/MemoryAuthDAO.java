@@ -44,7 +44,7 @@ public class MemoryAuthDAO implements AuthDAO{
     }
 
     @Override
-    public void clearDataBase()  throws DataAccessException{
+    public void clearDataBase(){
         this.authData = new ArrayList<>();
     }
 }
