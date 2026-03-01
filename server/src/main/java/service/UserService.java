@@ -26,10 +26,10 @@ public class UserService {
      * @param registerRequest RegisterRequest object containing the username and password of the new user
      * @return a RegisterResult Object containing the new authToken for the user
      */
-    public RegisterResult register(RegisterRequest registerRequest) throws Exception{
+    public RegisterResult register(RegisterRequest registerRequest) throws AlreadyTakenException{
         try{
             this.userDAO.getUserData(registerRequest.getUsername());
-            throw new Exception("The username is already taken");
+            throw new AlreadyTakenException("The username is already taken");
         } catch(DataAccessException e){
             this.userDAO.addUserData(new UserData(registerRequest.getUsername(), registerRequest.getPassword(), registerRequest.getEmail()));
             AuthData returnData = this.authDAO.addAuthData(new AuthData(registerRequest.getUsername(), authDAO.generateNewAuthToken()));

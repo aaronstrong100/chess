@@ -1,7 +1,7 @@
 package dataaccess;
 
 import model.AuthData;
-import model.UserData;
+import dataaccess.UnauthorizedException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -26,7 +26,7 @@ public class MemoryAuthDAO implements AuthDAO{
                 return authData;
             }
         }
-        throw new DataAccessException("The authorization token is invalid.");
+        throw new UnauthorizedException("The authorization token is invalid.");
     }
 
     public void deleteAuthData(String authToken){

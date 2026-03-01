@@ -45,8 +45,9 @@ public class MoveCalculator {
         Collection<ChessMove> validMoves = new ArrayList<>();
         for(int[] vector: MOVE_VECTORS.get(piece.getPieceType())) {
             ChessPosition newPosition = new ChessPosition(position.getRow()+vector[0],position.getColumn()+vector[1]);
-            if(isEmpty(newPosition, board) || canCapture(newPosition, board, piece))
+            if(isEmpty(newPosition, board) || canCapture(newPosition, board, piece)) {
                 validMoves.add(new ChessMove(position, newPosition, null));
+            }
         }
         return validMoves;
     }
@@ -95,10 +96,11 @@ public class MoveCalculator {
                 validMoves.add(new ChessMove(position, newPosition, null));
             }
         } else if (lastRank(newPosition, piece)) {
-            if (isEmpty(newPosition, board))
+            if (isEmpty(newPosition, board)) {
                 for (ChessPiece.PieceType pieceType : PROMOTION_PIECE_TYPES) {
                     validMoves.add(new ChessMove(position, newPosition, pieceType));
                 }
+            }
         }
         if(pawnCanDouble(position, piece, board)) {
             vector = Arrays.copyOf(MOVE_VECTORS.get(piece.getPieceType())[3], 2);

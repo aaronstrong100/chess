@@ -7,10 +7,9 @@ import results.CreateGameResult;
 import results.JoinGameResult;
 import results.ListGamesResult;
 import dataaccess.GameDAO;
-import dataaccess.MemoryGameDAO;
 import dataaccess.AuthDAO;
-import dataaccess.MemoryAuthDAO;
 import dataaccess.DataAccessException;
+import dataaccess.AlreadyTakenException;
 
 import model.GameData;
 
@@ -37,14 +36,14 @@ public class GameService {
                 this.gameDAO.overwriteGame(joinGameRequest.getGameID(),gameData.updateWhiteUsername(username));
                 return new JoinGameResult(joinGameRequest.getPlayerColor(), joinGameRequest.getGameID());
             }else {
-                throw new Exception("Team WHITE is already taken");
+                throw new AlreadyTakenException("Team WHITE is already taken");
             }
         } else if (joinGameRequest.getPlayerColor().equalsIgnoreCase("BLACK")){
             if(gameData.getBlackUsername()=="None"){
                 this.gameDAO.overwriteGame(joinGameRequest.getGameID(),gameData.updateBlackUsername(username));
                 return new JoinGameResult(joinGameRequest.getPlayerColor(), joinGameRequest.getGameID());
             }else {
-                throw new Exception("Team BLACK is already taken");
+                throw new AlreadyTakenException("Team BLACK is already taken");
             }
         } else {
             throw new Exception("Value of playerColor must be WHITE or BLACK");

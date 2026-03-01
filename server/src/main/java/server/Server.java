@@ -18,6 +18,9 @@ import dataaccess.UserDAO;
 import dataaccess.MemoryUserDAO;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
+import dataaccess.DataAccessException;
+import dataaccess.UnauthorizedException;
+import dataaccess.AlreadyTakenException;
 import io.javalin.*;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
@@ -72,6 +75,15 @@ public class Server {
 
     public void stop() {
         javalin.stop();
+    }
+
+    public int getErrorCode(Exception e){
+        if(e instanceof UnauthorizedException){
+            return 401;
+        } else if(e instanceof AlreadyTakenException){
+            return 403;
+        }
+        return 400;
     }
 
     public static class RegisterHandler implements Handler {
