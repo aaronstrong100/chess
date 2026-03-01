@@ -55,6 +55,7 @@ public class Server {
 
         userService = new UserService(userDAO, authDAO);
         gameService = new GameService(gameDAO, authDAO);
+        deleteService = new DeleteService(gameDAO, authDAO, userDAO);
 
         javalin.post("/user", new RegisterHandler(userService));
 
@@ -67,6 +68,8 @@ public class Server {
         javalin.post("/game", new CreateGameHandler(gameService));
 
         javalin.put("/game", new JoinGameHandler(gameService));
+
+        javalin.delete("/db", new ClearDataBaseHandler(deleteService));
     }
 
     public int run(int desiredPort) {
@@ -222,6 +225,20 @@ public class Server {
                 System.out.println(e.getMessage());
                 context.json("{\"message\": \""+ e.getMessage() + "\"}");
             }
+        }
+    }
+
+    public static class ClearDataBaseHandler implements Handler {
+
+        DeleteService deleteService;
+
+        public ClearDataBaseHandler(DeleteService deleteService){
+            this.deleteService = deleteService;
+        }
+
+        @Override
+        public void handle(@NotNull Context context) {
+            this.deleteService.delete();
         }
     }
 }
