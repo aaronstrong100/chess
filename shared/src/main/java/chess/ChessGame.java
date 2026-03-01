@@ -156,7 +156,11 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        if(this.board.onBoard(move.getStartPosition()) && this.board.onBoard(move.getEndPosition()) && this.board.getPiece(move.getStartPosition())!=null && this.board.getPiece(move.getStartPosition()).getTeamColor()==this.turn && this.validMoves(move.getStartPosition()).contains(move))
+        if(this.board.onBoard(move.getStartPosition()) &&
+                this.board.onBoard(move.getEndPosition()) &&
+                this.board.getPiece(move.getStartPosition())!=null &&
+                this.board.getPiece(move.getStartPosition()).getTeamColor()==this.turn &&
+                this.validMoves(move.getStartPosition()).contains(move))
         {
             if(move.getPromotionPiece()!=null){
                 this.board.addPiece(move.getEndPosition(), new ChessPiece(this.turn,move.getPromotionPiece()));

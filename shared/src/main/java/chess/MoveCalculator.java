@@ -28,7 +28,8 @@ public class MoveCalculator {
             ChessPiece.PieceType.KNIGHT, false,
             ChessPiece.PieceType.PAWN, false
     );
-    private static final ChessPiece.PieceType[] PROMOTION_PIECE_TYPES = {ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.ROOK, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.KNIGHT};
+    private static final ChessPiece.PieceType[] PROMOTION_PIECE_TYPES = {ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.ROOK,
+            ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.KNIGHT};
     public static Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition position, ChessPiece piece){
         if(piece.getPieceType()==ChessPiece.PieceType.PAWN)
         {
@@ -84,7 +85,10 @@ public class MoveCalculator {
         return validMoves;
     }
     private static boolean pawnCanDouble(ChessPosition position, ChessPiece pawn, ChessBoard board){
-        return (pawn.getTeamColor()==ChessGame.TeamColor.WHITE && position.getRow()==2 && board.getPiece(new ChessPosition(position.getRow()+1, position.getColumn()))==null) || (pawn.getTeamColor()==ChessGame.TeamColor.BLACK && position.getRow()==7  && board.getPiece(new ChessPosition(position.getRow()-1, position.getColumn()))==null);
+        return (pawn.getTeamColor()==ChessGame.TeamColor.WHITE && position.getRow()==2 &&
+                board.getPiece(new ChessPosition(position.getRow()+1, position.getColumn()))==null) ||
+                (pawn.getTeamColor()==ChessGame.TeamColor.BLACK && position.getRow()==7  &&
+                        board.getPiece(new ChessPosition(position.getRow()-1, position.getColumn()))==null);
     }
     private static Collection<ChessMove> getPawnForward(ChessBoard board, ChessPosition position, ChessPiece piece){
         Collection<ChessMove> validMoves = new ArrayList<>();
