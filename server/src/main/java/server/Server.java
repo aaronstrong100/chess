@@ -66,6 +66,7 @@ public class Server {
 
         javalin.post("/game", new CreateGameHandler(gameService));
 
+        javalin.put("/game", new JoinGameHandler(gameService));
     }
 
     public int run(int desiredPort) {
@@ -94,6 +95,7 @@ public class Server {
                 RegisterResult registerResult = userService.register(registerRequest);
                 context.json(gson.toJson(registerResult));
             } catch (Exception e){
+                System.out.println(e.getMessage());
                 context.json("{\"message\": \""+ e.getMessage() + "\"}");
             }
         }
@@ -117,6 +119,7 @@ public class Server {
                 LoginResult loginResult = userService.login(loginRequest);
                 context.json(gson.toJson(loginResult));
             } catch (Exception e){
+                System.out.println(e.getMessage());
                 context.json("{\"message\": \""+ e.getMessage() + "\"}");
             }
         }
@@ -139,6 +142,7 @@ public class Server {
                 userService.logout(logoutRequest);
                 context.json("{}").contentType("application/json");
             } catch (Exception e){
+                System.out.println(e.getMessage());
                 if(logoutRequest==null){
                     context.json("{\"message\": \"No authorization token was given.\"}");
                 }
@@ -166,6 +170,7 @@ public class Server {
                 ListGamesResult listGamesResult = gameService.listGames(listGamesRequest);
                 context.json(gson.toJson(listGamesResult));
             } catch (Exception e){
+                System.out.println(e.getMessage());
                 context.json("{\"message\": \""+ e.getMessage() + "\"}");
             }
         }
@@ -184,11 +189,35 @@ public class Server {
             Gson gson = new Gson();
             String authToken = context.header("Authorization");
             String gameName = JsonParser.parseString(context.body()).getAsJsonObject().get("gameName").getAsString();
-            System.out.println(gameName);
             CreateGameRequest createGameRequest = new CreateGameRequest(gameName, authToken);
             try {
                 CreateGameResult createGameResult = gameService.createGame(createGameRequest);
                 context.json(gson.toJson(createGameResult));
+            } catch (Exception e){
+                System.out.println(e.getMessage());
+                context.json("{\"message\": \""+ e.getMessage() + "\"}");
+            }
+        }
+    }
+
+    public static class JoinGameHandler implements Handler {
+
+        GameService gameService;
+
+        public JoinGameHandler(GameService gameService){
+            this.gameService = gameService;
+        }
+
+        @Override
+        public void handle(@NotNull Context context){
+            Gson gson = new Gson();
+            String authToken = context.header("Authorization");
+            int gameID = JsonParser.parseString(context.body()).getAsJsonObject().get("gameID").getAsInt();
+            String playerColor = JsonParser.parseString(context.body()).getAsJsonObject().get("playerColor").getAsString();
+            JoinGameRequest joinGameRequest = new JoinGameRequest(playerColor, gameID, authToken);
+            try {
+                JoinGameResult joinGameResult = this.gameService.joinGame(joinGameRequest);
+                context.json(gson.toJson(joinGameResult));
             } catch (Exception e){
                 System.out.println(e.getMessage());
                 context.json("{\"message\": \""+ e.getMessage() + "\"}");
