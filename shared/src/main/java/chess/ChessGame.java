@@ -97,8 +97,7 @@ public class ChessGame {
                 ChessMove move = moveIterator.next();
                 ChessBoard currentBoard = this.board.copy();
                 this.makeMoveUnprotected(move);
-                if(this.isInCheck(team))
-                {
+                if(this.isInCheck(team)) {
                     moveIterator.remove();
                 }
                 this.board = currentBoard;
@@ -212,8 +211,7 @@ public class ChessGame {
     public ChessPosition getKingPosition(TeamColor teamColor){
         for (Iterator<ChessPosition> it = this.board.getPositionsIterator(teamColor); it.hasNext(); ) {
             ChessPosition pos = it.next();
-            if(this.board.getPiece(pos).getPieceType()==ChessPiece.PieceType.KING)
-            {
+            if(this.board.getPiece(pos).getPieceType()==ChessPiece.PieceType.KING) {
                 return pos;
             }
         }

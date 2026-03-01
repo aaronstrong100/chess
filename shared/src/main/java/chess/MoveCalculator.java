@@ -31,23 +31,19 @@ public class MoveCalculator {
     private static final ChessPiece.PieceType[] PROMOTION_PIECE_TYPES = {ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.ROOK,
             ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.KNIGHT};
     public static Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition position, ChessPiece piece){
-        if(piece.getPieceType()==ChessPiece.PieceType.PAWN)
-        {
+        if(piece.getPieceType()==ChessPiece.PieceType.PAWN) {
             return getPawnMoves(position, piece, board);
         }
-        if(!SCALES.get(piece.getPieceType()))
-        {
+        if(!SCALES.get(piece.getPieceType())) {
             return getNonScalarMoves(board, position, piece);
         }
-        else
-        {
+        else {
             return getScalarMoves(board, position, piece);
         }
     }
     private static Collection<ChessMove> getNonScalarMoves(ChessBoard board, ChessPosition position, ChessPiece  piece){
         Collection<ChessMove> validMoves = new ArrayList<>();
-        for(int[] vector: MOVE_VECTORS.get(piece.getPieceType()))
-        {
+        for(int[] vector: MOVE_VECTORS.get(piece.getPieceType())) {
             ChessPosition newPosition = new ChessPosition(position.getRow()+vector[0],position.getColumn()+vector[1]);
             if(isEmpty(newPosition, board) || canCapture(newPosition, board, piece))
                 validMoves.add(new ChessMove(position, newPosition, null));
@@ -56,17 +52,14 @@ public class MoveCalculator {
     }
     private static Collection<ChessMove> getScalarMoves(ChessBoard board, ChessPosition position, ChessPiece piece){
         Collection<ChessMove> validMoves = new ArrayList<>();
-        for(int[] vector: MOVE_VECTORS.get(piece.getPieceType()))
-        {
+        for(int[] vector: MOVE_VECTORS.get(piece.getPieceType())) {
             ChessPosition newPosition = new ChessPosition(position.getRow()+vector[0],position.getColumn()+vector[1]);
             for(int i = 1; onBoard(newPosition);) {
                 if (isEmpty(newPosition, board)) {
                     validMoves.add(new ChessMove(position, newPosition, null));
                 }
-                else
-                {
-                    if(canCapture(newPosition, board, piece))
-                    {
+                else {
+                    if(canCapture(newPosition, board, piece)) {
                         validMoves.add(new ChessMove(position, newPosition, null));
                     }
                     break;
@@ -93,14 +86,14 @@ public class MoveCalculator {
     private static Collection<ChessMove> getPawnForward(ChessBoard board, ChessPosition position, ChessPiece piece){
         Collection<ChessMove> validMoves = new ArrayList<>();
         int[] vector = Arrays.copyOf(MOVE_VECTORS.get(piece.getPieceType())[0], 2);
-        if(piece.getTeamColor()==ChessGame.TeamColor.BLACK)
-        {
+        if(piece.getTeamColor()==ChessGame.TeamColor.BLACK) {
             vector[0] = -vector[0];
         }
         ChessPosition newPosition = new ChessPosition(position.getRow()+vector[0],position.getColumn()+vector[1]);
         if (onBoard(newPosition) && !lastRank(newPosition, piece)) {
-            if (isEmpty(newPosition, board))
+            if (isEmpty(newPosition, board)) {
                 validMoves.add(new ChessMove(position, newPosition, null));
+            }
         } else if (lastRank(newPosition, piece)) {
             if (isEmpty(newPosition, board))
                 for (ChessPiece.PieceType pieceType : PROMOTION_PIECE_TYPES) {
@@ -109,13 +102,13 @@ public class MoveCalculator {
         }
         if(pawnCanDouble(position, piece, board)) {
             vector = Arrays.copyOf(MOVE_VECTORS.get(piece.getPieceType())[3], 2);
-            if(piece.getTeamColor()==ChessGame.TeamColor.BLACK)
-            {
+            if(piece.getTeamColor()==ChessGame.TeamColor.BLACK) {
                 vector[0] = -vector[0];
             }
             newPosition = new ChessPosition(position.getRow()+vector[0],position.getColumn()+vector[1]);
-            if (isEmpty(newPosition, board))
+            if (isEmpty(newPosition, board)) {
                 validMoves.add(new ChessMove(position, newPosition, null));
+            }
         }
         return validMoves;
     }
