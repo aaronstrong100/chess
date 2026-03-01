@@ -21,8 +21,14 @@ public class GameData {
     public String getWhiteUsername(){
         return this.whiteUsername;
     }
+    public GameData updateWhiteUsername(String newWhiteUsername){
+        return new GameData(this.gameID, newWhiteUsername, this.blackUsername, this.gameName, this.game);
+    }
     public String getBlackUsername(){
         return this.blackUsername;
+    }
+    public GameData updateBlackUsername(String newBlackUsername){
+        return new GameData(this.gameID, this.whiteUsername, newBlackUsername, this.gameName, this.game);
     }
     public String getGameName(){
         return this.gameName;
