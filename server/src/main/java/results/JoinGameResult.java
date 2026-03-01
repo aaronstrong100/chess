@@ -1,21 +1,16 @@
-package Requests;
+package results;
 
-public class JoinGameRequest {
+public class JoinGameResult {
     private String playerColor;
     private int gameID;
-    private String authToken;
-    public JoinGameRequest(String playerColor, int gameID, String authToken){
+    public JoinGameResult(String playerColor, int gameID){
         this.playerColor = playerColor;
         this.gameID = gameID;
-        this.authToken = authToken;
     }
     public String getPlayerColor(){
         return this.playerColor;
     }
     public int getGameID(){
         return this.gameID;
-    }
-    public String getAuthToken(){
-        return this.authToken;
     }
 }

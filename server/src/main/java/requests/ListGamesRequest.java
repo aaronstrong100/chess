@@ -1,4 +1,4 @@
-package Requests;
+package requests;
 
 public class ListGamesRequest {
     private String authToken;

@@ -1,8 +1,8 @@
-package Requests;
+package requests;
 
-public class LogoutRequest {
+public class DeleteRequest {
     private String authToken;
-    public LogoutRequest(String authToken){
+    public DeleteRequest(String authToken){
         this.authToken = authToken;
     }
     public String getAuthToken(){

@@ -1,6 +1,6 @@
 package service;
 
-import Requests.DeleteRequest;
+import requests.DeleteRequest;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;

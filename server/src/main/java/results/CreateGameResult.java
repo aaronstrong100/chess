@@ -1,4 +1,4 @@
-package Results;
+package results;
 
 public class CreateGameResult {
     private int gameID;

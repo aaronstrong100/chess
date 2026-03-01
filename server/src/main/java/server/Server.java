@@ -1,16 +1,16 @@
 package server;
 
-import Requests.LoginRequest;
-import Requests.RegisterRequest;
-import Requests.LogoutRequest;
-import Requests.ListGamesRequest;
-import Requests.CreateGameRequest;
-import Requests.JoinGameRequest;
-import Results.LoginResult;
-import Results.RegisterResult;
-import Results.ListGamesResult;
-import Results.CreateGameResult;
-import Results.JoinGameResult;
+import requests.LoginRequest;
+import requests.RegisterRequest;
+import requests.LogoutRequest;
+import requests.ListGamesRequest;
+import requests.CreateGameRequest;
+import requests.JoinGameRequest;
+import results.LoginResult;
+import results.RegisterResult;
+import results.ListGamesResult;
+import results.CreateGameResult;
+import results.JoinGameResult;
 import com.google.gson.*;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
@@ -22,15 +22,9 @@ import io.javalin.*;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import org.jetbrains.annotations.NotNull;
-import io.javalin.json.JsonMapper;
-import org.jetbrains.annotations.NotNull;
 import service.UserService;
 import service.GameService;
 import service.DeleteService;
-
-import java.lang.reflect.Type;
-
-import java.util.Map;
 
 public class Server {
 

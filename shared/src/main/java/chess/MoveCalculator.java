@@ -12,7 +12,7 @@ public class MoveCalculator {
     /**
      * Class that
      */
-    private static final Map<ChessPiece.PieceType, int[][]> moveVectors = Map.of(
+    private static final Map<ChessPiece.PieceType, int[][]> MOVE_VECTORS = Map.of(
             ChessPiece.PieceType.KING, new int[][]{{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1}},
             ChessPiece.PieceType.QUEEN, new int[][]{{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1}},
             ChessPiece.PieceType.ROOK, new int[][]{{1,0},{0,1},{-1,0},{0,-1}},
@@ -20,7 +20,7 @@ public class MoveCalculator {
             ChessPiece.PieceType.KNIGHT, new int[][]{{1,2},{2,1},{2,-1},{1,-2},{-1,2},{-2,1},{-1,-2},{-2,-1}},
             ChessPiece.PieceType.PAWN, new int[][]{{1,0},{1,1},{1,-1},{2,0}}
     );
-    private static final Map<ChessPiece.PieceType, Boolean> scales = Map.of(
+    private static final Map<ChessPiece.PieceType, Boolean> SCALES = Map.of(
             ChessPiece.PieceType.KING, false,
             ChessPiece.PieceType.QUEEN, true,
             ChessPiece.PieceType.ROOK, true,
@@ -28,13 +28,13 @@ public class MoveCalculator {
             ChessPiece.PieceType.KNIGHT, false,
             ChessPiece.PieceType.PAWN, false
     );
-    private static final ChessPiece.PieceType[] promotionPieceTypes = {ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.ROOK, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.KNIGHT};
+    private static final ChessPiece.PieceType[] PROMOTION_PIECE_TYPES = {ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.ROOK, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.KNIGHT};
     public static Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition position, ChessPiece piece){
         if(piece.getPieceType()==ChessPiece.PieceType.PAWN)
         {
             return getPawnMoves(position, piece, board);
         }
-        if(!scales.get(piece.getPieceType()))
+        if(!SCALES.get(piece.getPieceType()))
         {
             return getNonScalarMoves(board, position, piece);
         }
@@ -45,7 +45,7 @@ public class MoveCalculator {
     }
     private static Collection<ChessMove> getNonScalarMoves(ChessBoard board, ChessPosition position, ChessPiece  piece){
         Collection<ChessMove> validMoves = new ArrayList<>();
-        for(int[] vector: moveVectors.get(piece.getPieceType()))
+        for(int[] vector: MOVE_VECTORS.get(piece.getPieceType()))
         {
             ChessPosition newPosition = new ChessPosition(position.getRow()+vector[0],position.getColumn()+vector[1]);
             if(isEmpty(newPosition, board) || canCapture(newPosition, board, piece))
@@ -55,7 +55,7 @@ public class MoveCalculator {
     }
     private static Collection<ChessMove> getScalarMoves(ChessBoard board, ChessPosition position, ChessPiece piece){
         Collection<ChessMove> validMoves = new ArrayList<>();
-        for(int[] vector: moveVectors.get(piece.getPieceType()))
+        for(int[] vector: MOVE_VECTORS.get(piece.getPieceType()))
         {
             ChessPosition newPosition = new ChessPosition(position.getRow()+vector[0],position.getColumn()+vector[1]);
             for(int i = 1; onBoard(newPosition);) {
@@ -88,7 +88,7 @@ public class MoveCalculator {
     }
     private static Collection<ChessMove> getPawnForward(ChessBoard board, ChessPosition position, ChessPiece piece){
         Collection<ChessMove> validMoves = new ArrayList<>();
-        int[] vector = Arrays.copyOf(moveVectors.get(piece.getPieceType())[0], 2);
+        int[] vector = Arrays.copyOf(MOVE_VECTORS.get(piece.getPieceType())[0], 2);
         if(piece.getTeamColor()==ChessGame.TeamColor.BLACK)
         {
             vector[0] = -vector[0];
@@ -99,12 +99,12 @@ public class MoveCalculator {
                 validMoves.add(new ChessMove(position, newPosition, null));
         } else if (lastRank(newPosition, piece)) {
             if (isEmpty(newPosition, board))
-                for (ChessPiece.PieceType pieceType : promotionPieceTypes) {
+                for (ChessPiece.PieceType pieceType : PROMOTION_PIECE_TYPES) {
                     validMoves.add(new ChessMove(position, newPosition, pieceType));
                 }
         }
         if(pawnCanDouble(position, piece, board)) {
-            vector = Arrays.copyOf(moveVectors.get(piece.getPieceType())[3], 2);
+            vector = Arrays.copyOf(MOVE_VECTORS.get(piece.getPieceType())[3], 2);
             if(piece.getTeamColor()==ChessGame.TeamColor.BLACK)
             {
                 vector[0] = -vector[0];
@@ -120,7 +120,7 @@ public class MoveCalculator {
         int[] vector;
         ChessPosition newPosition;
         for(int i = 1; i<=2; i++) {
-            vector = Arrays.copyOf(moveVectors.get(piece.getPieceType())[i], 2);
+            vector = Arrays.copyOf(MOVE_VECTORS.get(piece.getPieceType())[i], 2);
             if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
                 vector[0] = -vector[0];
             }
@@ -129,7 +129,7 @@ public class MoveCalculator {
                 if (!lastRank(newPosition, piece)) {
                     validMoves.add(new ChessMove(position, newPosition, null));
                 } else if (lastRank(newPosition, piece)) {
-                    for (ChessPiece.PieceType pieceType : promotionPieceTypes) {
+                    for (ChessPiece.PieceType pieceType : PROMOTION_PIECE_TYPES) {
                         validMoves.add(new ChessMove(position, newPosition, pieceType));
                     }
                 }
