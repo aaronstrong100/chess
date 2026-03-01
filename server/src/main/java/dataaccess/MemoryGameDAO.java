@@ -1,17 +1,25 @@
 package dataaccess;
 
+import java.util.ArrayList;
+
 import chess.ChessGame;
 
 import model.GameData;
 
 public class MemoryGameDAO implements GameDAO{
-    private GameData[] gameData;
+    private ArrayList<GameData> gameData;
+    private int nextID;
+
+    public MemoryGameDAO(){
+        this.gameData = new ArrayList<GameData>();
+        this.nextID = 0;
+    }
     /**
      *
      * @return all current games in the database as GameData objects
      */
     @Override
-    public GameData[] getCurrentGames()  throws DataAccessException{
+    public ArrayList<GameData> getCurrentGames()  throws DataAccessException{
         return this.gameData;
     }
     /**
@@ -21,15 +29,23 @@ public class MemoryGameDAO implements GameDAO{
      */
     @Override
     public GameData getGame(int gameID) throws DataAccessException {
-        return null;
+        for(GameData game: this.gameData){
+            if(game.getGameID() == gameID){
+                return game;
+            }
+        }
+        throw new DataAccessException("Game with ID: " + gameID + " does not exist");
     }
     /**
      * creates a game with the given name
      * @param gameName name of the new game
      */
     @Override
-    public void createGame(String gameName)  throws DataAccessException{
-
+    public int createGame(String gameName){
+        GameData newGame = new GameData(nextID, "None", "None", gameName, new ChessGame());
+        this.gameData.add(newGame);
+        nextID++;
+        return newGame.getGameID();
     }
     /**
      * updates a game by replacing the GameData with a new GameData Object
