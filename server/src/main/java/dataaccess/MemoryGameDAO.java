@@ -1,6 +1,7 @@
 package dataaccess;
 
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 import chess.ChessGame;
 
@@ -54,7 +55,15 @@ public class MemoryGameDAO implements GameDAO{
      */
     @Override
     public void overwriteGame(int gameID, GameData updatedGame)  throws DataAccessException{
-
+        ListIterator<GameData> gameDataIterator = this.gameData.listIterator();
+        while(gameDataIterator.hasNext()){
+            GameData game = gameDataIterator.next();
+            if(gameID == game.getGameID()){
+                gameDataIterator.set(updatedGame);
+                return;
+            }
+        }
+        throw new DataAccessException("The game does not exist");
     }
     /**
      * Clear all GameData from the database
