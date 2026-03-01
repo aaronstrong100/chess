@@ -2,15 +2,15 @@ package Results;
 
 public class JoinGameResult {
     private String playerColor;
-    private String gameID;
-    public JoinGameResult(String playerColor, String gameID){
+    private int gameID;
+    public JoinGameResult(String playerColor, int gameID){
         this.playerColor = playerColor;
         this.gameID = gameID;
     }
     public String getPlayerColor(){
         return this.playerColor;
     }
-    public String getGameID(){
+    public int getGameID(){
         return this.gameID;
     }
 }
