@@ -63,6 +63,9 @@ public class Server {
         javalin.delete("/session", new LogoutHandler(userService));
 
         javalin.get("/game", new ListGamesHandler(gameService));
+
+        javalin.post("/game", new CreateGameHandler(gameService));
+
     }
 
     public int run(int desiredPort) {
@@ -163,6 +166,31 @@ public class Server {
                 ListGamesResult listGamesResult = gameService.listGames(listGamesRequest);
                 context.json(gson.toJson(listGamesResult));
             } catch (Exception e){
+                context.json("{\"message\": \""+ e.getMessage() + "\"}");
+            }
+        }
+    }
+
+    public static class CreateGameHandler implements Handler {
+
+        GameService gameService;
+
+        public CreateGameHandler(GameService gameService){
+            this.gameService = gameService;
+        }
+
+        @Override
+        public void handle(@NotNull Context context){
+            Gson gson = new Gson();
+            String authToken = context.header("Authorization");
+            String gameName = JsonParser.parseString(context.body()).getAsJsonObject().get("gameName").getAsString();
+            System.out.println(gameName);
+            CreateGameRequest createGameRequest = new CreateGameRequest(gameName, authToken);
+            try {
+                CreateGameResult createGameResult = gameService.createGame(createGameRequest);
+                context.json(gson.toJson(createGameResult));
+            } catch (Exception e){
+                System.out.println(e.getMessage());
                 context.json("{\"message\": \""+ e.getMessage() + "\"}");
             }
         }
