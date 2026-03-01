@@ -77,7 +77,7 @@ public class Server {
         javalin.stop();
     }
 
-    public int getErrorCode(Exception e){
+    public static int getErrorCode(Exception e){
         if(e instanceof UnauthorizedException){
             return 401;
         } else if(e instanceof AlreadyTakenException){
@@ -104,6 +104,7 @@ public class Server {
                 context.json(gson.toJson(registerResult));
             } catch (Exception e){
                 System.out.println(e.getMessage());
+                context.status(Server.getErrorCode(e));
                 context.json("{\"message\": \""+ e.getMessage() + "\"}");
             }
         }
@@ -128,6 +129,7 @@ public class Server {
                 context.json(gson.toJson(loginResult));
             } catch (Exception e){
                 System.out.println(e.getMessage());
+                context.status(Server.getErrorCode(e));
                 context.json("{\"message\": \""+ e.getMessage() + "\"}");
             }
         }
@@ -151,6 +153,7 @@ public class Server {
                 context.json("{}").contentType("application/json");
             } catch (Exception e){
                 System.out.println(e.getMessage());
+                context.status(Server.getErrorCode(e));
                 if(logoutRequest==null){
                     context.json("{\"message\": \"No authorization token was given.\"}");
                 }
@@ -179,6 +182,7 @@ public class Server {
                 context.json(gson.toJson(listGamesResult));
             } catch (Exception e){
                 System.out.println(e.getMessage());
+                context.status(Server.getErrorCode(e));
                 context.json("{\"message\": \""+ e.getMessage() + "\"}");
             }
         }
@@ -203,6 +207,7 @@ public class Server {
                 context.json(gson.toJson(createGameResult));
             } catch (Exception e){
                 System.out.println(e.getMessage());
+                context.status(Server.getErrorCode(e));
                 context.json("{\"message\": \""+ e.getMessage() + "\"}");
             }
         }
@@ -228,6 +233,7 @@ public class Server {
                 context.json(gson.toJson(joinGameResult));
             } catch (Exception e){
                 System.out.println(e.getMessage());
+                context.status(Server.getErrorCode(e));
                 context.json("{\"message\": \""+ e.getMessage() + "\"}");
             }
         }
