@@ -23,8 +23,9 @@ public class GameService {
         this.authDAO.getAuthData(gameListRequest.getAuthToken());
         return new ListGamesResult(this.gameDAO.getCurrentGames());
     }
-    public CreateGameResult createGame(CreateGameRequest createGameRequest){
-        return null;
+    public CreateGameResult createGame(CreateGameRequest createGameRequest) throws DataAccessException{
+        this.authDAO.getAuthData(createGameRequest.getAuthToken());
+        return new CreateGameResult(this.gameDAO.createGame(createGameRequest.getGameName()));
     }
     public JoinGameResult joinGame(JoinGameRequest joinGameRequest) {
         return null;
