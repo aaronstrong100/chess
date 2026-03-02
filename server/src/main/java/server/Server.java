@@ -98,9 +98,9 @@ public class Server {
         @Override
         public void handle(@NotNull Context context){
             Gson gson = new Gson();
-            String jsonString = context.body();
-            RegisterRequest registerRequest = gson.fromJson(jsonString, RegisterRequest.class);
             try {
+                String jsonString = context.body();
+                RegisterRequest registerRequest = gson.fromJson(jsonString, RegisterRequest.class);
                 if(registerRequest.getUsername()==null || registerRequest.getPassword()==null || registerRequest.getEmail()==null){
                     throw new Exception("Bad Request");
                 }
@@ -126,9 +126,9 @@ public class Server {
         @Override
         public void handle(@NotNull Context context){
             Gson gson = new Gson();
-            String jsonString = context.body();
-            LoginRequest loginRequest = gson.fromJson(jsonString, LoginRequest.class);
             try {
+                String jsonString = context.body();
+                LoginRequest loginRequest = gson.fromJson(jsonString, LoginRequest.class);
                 if(loginRequest.getUsername()==null || loginRequest.getPassword()==null){
                     throw new Exception("Bad Request");
                 }
@@ -153,9 +153,9 @@ public class Server {
         @Override
         public void handle(@NotNull Context context){
             Gson gson = new Gson();
-            String authToken = context.header("Authorization");
-            LogoutRequest logoutRequest = new LogoutRequest(authToken);
             try {
+                String authToken = context.header("Authorization");
+                LogoutRequest logoutRequest = new LogoutRequest(authToken);
                 if(logoutRequest.getAuthToken()==null){
                     throw new Exception("Bad Request");
                 }
@@ -164,12 +164,7 @@ public class Server {
             } catch (Exception e){
                 System.out.println(e.getMessage());
                 context.status(Server.getErrorCode(e));
-                if(logoutRequest==null){
-                    context.json("{\"message\": \"Error: No authorization token was given.\"}");
-                }
-                else{
-                    context.json("{\"message\": \"Error: "+ e.getMessage() + "\"}");
-                }
+                context.json("{\"message\": \"Error: "+ e.getMessage() + "\"}");
             }
         }
     }
@@ -185,9 +180,9 @@ public class Server {
         @Override
         public void handle(@NotNull Context context){
             Gson gson = new Gson();
-            String authToken = context.header("Authorization");
-            ListGamesRequest listGamesRequest = new ListGamesRequest(authToken);
             try {
+                String authToken = context.header("Authorization");
+                ListGamesRequest listGamesRequest = new ListGamesRequest(authToken);
                 if(listGamesRequest.getAuthToken()==null){
                     throw new Exception("Bad Request");
                 }
@@ -212,10 +207,10 @@ public class Server {
         @Override
         public void handle(@NotNull Context context){
             Gson gson = new Gson();
-            String authToken = context.header("Authorization");
-            String gameName = JsonParser.parseString(context.body()).getAsJsonObject().get("gameName").getAsString();
-            CreateGameRequest createGameRequest = new CreateGameRequest(gameName, authToken);
             try {
+                String authToken = context.header("Authorization");
+                String gameName = JsonParser.parseString(context.body()).getAsJsonObject().get("gameName").getAsString();
+                CreateGameRequest createGameRequest = new CreateGameRequest(gameName, authToken);
                 if(createGameRequest.getGameName()==null || createGameRequest.getAuthToken()==null){
                     throw new Exception("Bad Request");
                 }
@@ -240,11 +235,11 @@ public class Server {
         @Override
         public void handle(@NotNull Context context){
             Gson gson = new Gson();
-            String authToken = context.header("Authorization");
-            int gameID = JsonParser.parseString(context.body()).getAsJsonObject().get("gameID").getAsInt();
-            String playerColor = JsonParser.parseString(context.body()).getAsJsonObject().get("playerColor").getAsString();
-            JoinGameRequest joinGameRequest = new JoinGameRequest(playerColor, gameID, authToken);
             try {
+                String authToken = context.header("Authorization");
+                int gameID = JsonParser.parseString(context.body()).getAsJsonObject().get("gameID").getAsInt();
+                String playerColor = JsonParser.parseString(context.body()).getAsJsonObject().get("playerColor").getAsString();
+                JoinGameRequest joinGameRequest = new JoinGameRequest(playerColor, gameID, authToken);
                 if(joinGameRequest.getPlayerColor()==null || joinGameRequest.getAuthToken()==null){
                     throw new Exception("Bad Request");
                 }
@@ -268,9 +263,9 @@ public class Server {
 
         @Override
         public void handle(@NotNull Context context) {
-            String authToken = context.header("Authorization");
-            DeleteRequest deleteRequest = new DeleteRequest(authToken);
             try {
+                String authToken = context.header("Authorization");
+                DeleteRequest deleteRequest = new DeleteRequest(authToken);
                 if(deleteRequest.getAuthToken()==null){
                     throw new Exception("Bad Request");
                 }
