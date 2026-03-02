@@ -29,12 +29,12 @@ public class UserService {
     public RegisterResult register(RegisterRequest registerRequest) throws AlreadyTakenException{
         try{
             this.userDAO.getUserData(registerRequest.getUsername());
-            throw new AlreadyTakenException("The username is already taken");
-        } catch(DataAccessException e){
+        } catch(Exception e){
             this.userDAO.addUserData(new UserData(registerRequest.getUsername(), registerRequest.getPassword(), registerRequest.getEmail()));
             AuthData returnData = this.authDAO.addAuthData(new AuthData(registerRequest.getUsername(), authDAO.generateNewAuthToken()));
             return new RegisterResult(returnData.getUsername(), returnData.getAuthToken());
         }
+        throw new AlreadyTakenException("The username is already taken");
     }
 
     /**
