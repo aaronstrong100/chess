@@ -13,7 +13,7 @@ public class MemoryGameDAO implements GameDAO{
 
     public MemoryGameDAO(){
         this.gameData = new ArrayList<GameData>();
-        this.nextID = 0;
+        this.nextID = 1;
     }
     /**
      *
