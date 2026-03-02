@@ -258,12 +258,7 @@ public class Server {
         @Override
         public void handle(@NotNull Context context) {
             try {
-                String authToken = context.header("Authorization");
-                DeleteRequest deleteRequest = new DeleteRequest(authToken);
-                if(deleteRequest.getAuthToken()==null){
-                    throw new Exception("Bad Request");
-                }
-                this.deleteService.delete(deleteRequest);
+                this.deleteService.delete();
             } catch (Exception e){
                 Server.handleException(e, context);
             }

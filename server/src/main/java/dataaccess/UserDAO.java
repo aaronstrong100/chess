@@ -1,4 +1,5 @@
 package dataaccess;
+import dataaccess.UnauthorizedException;
 
 import model.UserData;
 
@@ -8,7 +9,7 @@ public interface UserDAO {
      * @param username the username to get user data from
      * @return a UserData Object for the given username
      */
-    public UserData getUserData(String username) throws DataAccessException;
+    public UserData getUserData(String username) throws UnauthorizedException;
 
     /**
      * add a UserData to the database

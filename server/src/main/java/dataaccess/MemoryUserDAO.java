@@ -1,4 +1,5 @@
 package dataaccess;
+import dataaccess.UnauthorizedException;
 
 import model.UserData;
 
@@ -15,13 +16,13 @@ public class MemoryUserDAO implements UserDAO{
      * @return a UserData Object for the given username
      */
     @Override
-    public UserData getUserData(String username)  throws DataAccessException{
+    public UserData getUserData(String username)  throws UnauthorizedException{
         for(UserData user : this.userData){
             if(username.equals(user.getUsername())){
                 return user;
             }
         }
-        throw new DataAccessException("The user does not exist");
+        throw new UnauthorizedException("The user does not exist");
     }
     /**
      * add a UserData to the database
