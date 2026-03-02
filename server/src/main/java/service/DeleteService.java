@@ -1,6 +1,5 @@
 package service;
 
-import requests.DeleteRequest;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
@@ -15,7 +14,7 @@ public class DeleteService {
         this.authDAO = authDAO;
         this.userDAO = userDAO;
     }
-    public void delete() throws UnauthorizedException{
+    public void delete(){
         this.gameDAO.clearDataBase();
         this.authDAO.clearDataBase();
         this.userDAO.clearDataBase();
