@@ -16,7 +16,7 @@ public class DeleteService {
         this.userDAO = userDAO;
     }
     public void delete(DeleteRequest deleteRequest) throws UnauthorizedException{
-        this.authDAO.getAuthData(deleteRequest.getAuthToken());
+        //this.authDAO.getAuthData(deleteRequest.getAuthToken());
         this.gameDAO.clearDataBase();
         this.authDAO.clearDataBase();
         this.userDAO.clearDataBase();
