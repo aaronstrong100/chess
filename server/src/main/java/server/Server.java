@@ -101,6 +101,9 @@ public class Server {
             String jsonString = context.body();
             RegisterRequest registerRequest = gson.fromJson(jsonString, RegisterRequest.class);
             try {
+                if(registerRequest.getUsername()==null || registerRequest.getPassword()==null || registerRequest.getEmail()==null){
+                    throw new Exception("Bad Request");
+                }
                 RegisterResult registerResult = userService.register(registerRequest);
                 context.json(gson.toJson(registerResult));
             } catch (Exception e){
@@ -126,6 +129,9 @@ public class Server {
             String jsonString = context.body();
             LoginRequest loginRequest = gson.fromJson(jsonString, LoginRequest.class);
             try {
+                if(loginRequest.getUsername()==null || loginRequest.getPassword()==null){
+                    throw new Exception("Bad Request");
+                }
                 LoginResult loginResult = userService.login(loginRequest);
                 context.json(gson.toJson(loginResult));
             } catch (Exception e){
@@ -150,6 +156,9 @@ public class Server {
             String authToken = context.header("Authorization");
             LogoutRequest logoutRequest = new LogoutRequest(authToken);
             try {
+                if(logoutRequest.getAuthToken()==null){
+                    throw new Exception("Bad Request");
+                }
                 userService.logout(logoutRequest);
                 context.json("{}").contentType("application/json");
             } catch (Exception e){
@@ -179,6 +188,9 @@ public class Server {
             String authToken = context.header("Authorization");
             ListGamesRequest listGamesRequest = new ListGamesRequest(authToken);
             try {
+                if(listGamesRequest.getAuthToken()==null){
+                    throw new Exception("Bad Request");
+                }
                 ListGamesResult listGamesResult = gameService.listGames(listGamesRequest);
                 context.json(gson.toJson(listGamesResult));
             } catch (Exception e){
@@ -204,6 +216,9 @@ public class Server {
             String gameName = JsonParser.parseString(context.body()).getAsJsonObject().get("gameName").getAsString();
             CreateGameRequest createGameRequest = new CreateGameRequest(gameName, authToken);
             try {
+                if(createGameRequest.getGameName()==null || createGameRequest.getAuthToken()==null){
+                    throw new Exception("Bad Request");
+                }
                 CreateGameResult createGameResult = gameService.createGame(createGameRequest);
                 context.json(gson.toJson(createGameResult));
             } catch (Exception e){
@@ -230,6 +245,9 @@ public class Server {
             String playerColor = JsonParser.parseString(context.body()).getAsJsonObject().get("playerColor").getAsString();
             JoinGameRequest joinGameRequest = new JoinGameRequest(playerColor, gameID, authToken);
             try {
+                if(joinGameRequest.getPlayerColor()==null || joinGameRequest.getAuthToken()==null){
+                    throw new Exception("Bad Request");
+                }
                 JoinGameResult joinGameResult = this.gameService.joinGame(joinGameRequest);
                 context.json(gson.toJson(joinGameResult));
             } catch (Exception e){
@@ -253,6 +271,9 @@ public class Server {
             String authToken = context.header("Authorization");
             DeleteRequest deleteRequest = new DeleteRequest(authToken);
             try {
+                if(deleteRequest.getAuthToken()==null){
+                    throw new Exception("Bad Request");
+                }
                 this.deleteService.delete(deleteRequest);
             } catch (Exception e){
                 System.out.println(e.getMessage());
