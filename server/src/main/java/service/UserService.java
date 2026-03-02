@@ -49,7 +49,7 @@ public class UserService {
             this.authDAO.addAuthData(newAuthData);
             return new LoginResult(newAuthData.getUsername(), newAuthData.getAuthToken());
         } else {
-            throw new Exception("Password incorrect");
+            throw new UnauthorizedException("Password incorrect");
         }
     }
 
