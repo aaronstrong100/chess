@@ -20,7 +20,7 @@ public class MemoryGameDAO implements GameDAO{
      * @return all current games in the database as GameData objects
      */
     @Override
-    public ArrayList<GameData> getCurrentGames()  throws DataAccessException{
+    public ArrayList<GameData> getCurrentGames(){
         return this.gameData;
     }
     /**
@@ -43,7 +43,7 @@ public class MemoryGameDAO implements GameDAO{
      */
     @Override
     public int createGame(String gameName){
-        GameData newGame = new GameData(nextID, "None", "None", gameName, new ChessGame());
+        GameData newGame = new GameData(nextID, "null", "null", gameName, new ChessGame());
         this.gameData.add(newGame);
         nextID++;
         return newGame.getGameID();

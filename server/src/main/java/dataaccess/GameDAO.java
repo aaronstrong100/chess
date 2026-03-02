@@ -9,7 +9,7 @@ public interface GameDAO {
      *
      * @return all current games in the database as GameData objects
      */
-    public ArrayList<GameData> getCurrentGames() throws DataAccessException;
+    public ArrayList<GameData> getCurrentGames();
 
     /**
      *
