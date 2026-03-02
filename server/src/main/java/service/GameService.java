@@ -32,14 +32,14 @@ public class GameService {
         String username = this.authDAO.getAuthData(joinGameRequest.getAuthToken()).getUsername();
         GameData gameData = this.gameDAO.getGame(joinGameRequest.getGameID());
         if(joinGameRequest.getPlayerColor().equalsIgnoreCase("WHITE")){
-            if(gameData.getWhiteUsername()=="None"){
+            if(gameData.getWhiteUsername()=="null"){
                 this.gameDAO.overwriteGame(joinGameRequest.getGameID(),gameData.updateWhiteUsername(username));
                 return new JoinGameResult(joinGameRequest.getPlayerColor(), joinGameRequest.getGameID());
             }else {
                 throw new AlreadyTakenException("Team WHITE is already taken");
             }
         } else if (joinGameRequest.getPlayerColor().equalsIgnoreCase("BLACK")){
-            if(gameData.getBlackUsername()=="None"){
+            if(gameData.getBlackUsername()=="null"){
                 this.gameDAO.overwriteGame(joinGameRequest.getGameID(),gameData.updateBlackUsername(username));
                 return new JoinGameResult(joinGameRequest.getPlayerColor(), joinGameRequest.getGameID());
             }else {
