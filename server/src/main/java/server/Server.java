@@ -87,6 +87,12 @@ public class Server {
         return 400;
     }
 
+    public static void handleException(Exception e, Context context){
+        System.out.println(e.getMessage());
+        context.status(Server.getErrorCode(e));
+        context.json("{\"message\": \"Error: "+ e.getMessage().replace("\"","\\\"") + "\"}");
+    }
+
     public static class RegisterHandler implements Handler {
 
         UserService userService;
@@ -107,9 +113,7 @@ public class Server {
                 RegisterResult registerResult = userService.register(registerRequest);
                 context.json(gson.toJson(registerResult));
             } catch (Exception e){
-                System.out.println(e.getMessage());
-                context.status(Server.getErrorCode(e));
-                context.json("{\"message\": \"Error: "+ e.getMessage().replace("\"","\\\"") + "\"}");
+                Server.handleException(e, context);
             }
         }
     }
@@ -135,9 +139,7 @@ public class Server {
                 LoginResult loginResult = userService.login(loginRequest);
                 context.json(gson.toJson(loginResult));
             } catch (Exception e){
-                System.out.println(e.getMessage());
-                context.status(Server.getErrorCode(e));
-                context.json("{\"message\": \"Error: "+ e.getMessage().replace("\"","\\\"") + "\"}");
+                Server.handleException(e, context);
             }
         }
     }
@@ -162,9 +164,7 @@ public class Server {
                 userService.logout(logoutRequest);
                 context.json("{}").contentType("application/json");
             } catch (Exception e){
-                System.out.println(e.getMessage());
-                context.status(Server.getErrorCode(e));
-                context.json("{\"message\": \"Error: " + e.getMessage().replace("\"","\\\"") + "\"}");
+                Server.handleException(e, context);
             }
         }
     }
@@ -189,9 +189,7 @@ public class Server {
                 ListGamesResult listGamesResult = gameService.listGames(listGamesRequest);
                 context.json(gson.toJson(listGamesResult));
             } catch (Exception e){
-                System.out.println(e.getMessage());
-                context.status(Server.getErrorCode(e));
-                context.json("{\"message\": \"Error: "+ e.getMessage().replace("\"","\\\"") + "\"}");
+                Server.handleException(e, context);
             }
         }
     }
@@ -217,9 +215,7 @@ public class Server {
                 CreateGameResult createGameResult = gameService.createGame(createGameRequest);
                 context.json(gson.toJson(createGameResult));
             } catch (Exception e){
-                System.out.println(e.getMessage());
-                context.status(Server.getErrorCode(e));
-                context.json("{\"message\": \"Error: "+ e.getMessage().replace("\"","\\\"") + "\"}");
+                Server.handleException(e, context);
             }
         }
     }
@@ -246,9 +242,7 @@ public class Server {
                 JoinGameResult joinGameResult = this.gameService.joinGame(joinGameRequest);
                 context.json(gson.toJson(joinGameResult));
             } catch (Exception e){
-                System.out.println(e.getMessage());
-                context.status(Server.getErrorCode(e));
-                context.json("{\"message\": \"Error: "+ e.getMessage().replace("\"","\\\"") + "\"}");
+                Server.handleException(e, context);
             }
         }
     }
@@ -271,9 +265,7 @@ public class Server {
                 }
                 this.deleteService.delete(deleteRequest);
             } catch (Exception e){
-                System.out.println(e.getMessage());
-                context.status(Server.getErrorCode(e));
-                context.json("{\"message\": \"Error: "+ e.getMessage().replace("\"","\\\"") + "\"}");
+                Server.handleException(e, context);
             }
         }
     }
