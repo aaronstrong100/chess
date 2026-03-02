@@ -6,7 +6,6 @@ import requests.LogoutRequest;
 import requests.ListGamesRequest;
 import requests.CreateGameRequest;
 import requests.JoinGameRequest;
-import requests.DeleteRequest;
 import results.LoginResult;
 import results.RegisterResult;
 import results.ListGamesResult;
