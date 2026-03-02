@@ -109,7 +109,7 @@ public class Server {
             } catch (Exception e){
                 System.out.println(e.getMessage());
                 context.status(Server.getErrorCode(e));
-                context.json("{\"message\": \""+ e.getMessage() + "\"}");
+                context.json("{\"message\": \"Error: "+ e.getMessage() + "\"}");
             }
         }
     }
@@ -137,7 +137,7 @@ public class Server {
             } catch (Exception e){
                 System.out.println(e.getMessage());
                 context.status(Server.getErrorCode(e));
-                context.json("{\"message\": \""+ e.getMessage() + "\"}");
+                context.json("{\"message\": \"Error: "+ e.getMessage() + "\"}");
             }
         }
     }
@@ -165,10 +165,10 @@ public class Server {
                 System.out.println(e.getMessage());
                 context.status(Server.getErrorCode(e));
                 if(logoutRequest==null){
-                    context.json("{\"message\": \"No authorization token was given.\"}");
+                    context.json("{\"message\": \"Error: No authorization token was given.\"}");
                 }
                 else{
-                    context.json("{\"message\": \""+ e.getMessage() + "\"}");
+                    context.json("{\"message\": \"Error: "+ e.getMessage() + "\"}");
                 }
             }
         }
@@ -196,7 +196,7 @@ public class Server {
             } catch (Exception e){
                 System.out.println(e.getMessage());
                 context.status(Server.getErrorCode(e));
-                context.json("{\"message\": \""+ e.getMessage() + "\"}");
+                context.json("{\"message\": \"Error: "+ e.getMessage() + "\"}");
             }
         }
     }
@@ -224,7 +224,7 @@ public class Server {
             } catch (Exception e){
                 System.out.println(e.getMessage());
                 context.status(Server.getErrorCode(e));
-                context.json("{\"message\": \""+ e.getMessage() + "\"}");
+                context.json("{\"message\": \"Error: "+ e.getMessage() + "\"}");
             }
         }
     }
@@ -253,7 +253,7 @@ public class Server {
             } catch (Exception e){
                 System.out.println(e.getMessage());
                 context.status(Server.getErrorCode(e));
-                context.json("{\"message\": \""+ e.getMessage() + "\"}");
+                context.json("{\"message\": \"Error: "+ e.getMessage() + "\"}");
             }
         }
     }
@@ -278,7 +278,7 @@ public class Server {
             } catch (Exception e){
                 System.out.println(e.getMessage());
                 context.status(Server.getErrorCode(e));
-                context.json("{\"message\": \""+ e.getMessage() + "\"}");
+                context.json("{\"message\": \"Error: "+ e.getMessage() + "\"}");
             }
         }
     }
