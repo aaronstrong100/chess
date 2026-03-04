@@ -1,4 +1,5 @@
 package dataaccess;
+import model.*;
 
 import java.util.ArrayList;
 
