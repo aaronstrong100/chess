@@ -25,5 +25,5 @@ public interface AuthDAO {
      */
     public void clearDataBase();
 
-    String generateNewAuthToken();
+    public String generateNewAuthToken();
 }
