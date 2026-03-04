@@ -2,9 +2,9 @@ package dataaccess;
 import dataaccess.UnauthorizedException;
 import model.*;
 
-public class DatabaseAuthDAO implements AuthDAO{
+public class MySqlAuthDAO implements AuthDAO{
 
-    public DatabaseAuthDAO(){
+    public MySqlAuthDAO(){
 
     }
     /**

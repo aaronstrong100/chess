@@ -2,7 +2,7 @@ package dataaccess;
 
 import java.util.ArrayList;
 
-public class DatabaseGameDAO implements GameDAO{
+public class MySqlGameDAO implements GameDAO{
     @Override
     public ArrayList<GameData> getCurrentGames() {
         return null;

@@ -2,7 +2,7 @@ package dataaccess;
 import model.*;
 import dataaccess.UnauthorizedException;
 
-public class DatabaseUserDAO implements UserDAO{
+public class MySqlUserDAO implements UserDAO{
 
     @Override
     public UserData getUserData(String username) throws UnauthorizedException{
