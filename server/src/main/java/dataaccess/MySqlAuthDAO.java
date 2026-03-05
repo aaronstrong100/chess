@@ -25,6 +25,10 @@ public class MySqlAuthDAO implements AuthDAO{
                 preparedAddAuthStatement.setString(1, authData.getUsername());
                 preparedAddAuthStatement.setString(2, authData.getAuthToken());
                 preparedAddAuthStatement.executeUpdate();
+            } catch (SQLException e) {
+                if(!e.getMessage().contains("Duplicate")){
+                    throw new RuntimeException(e.getMessage());
+                }
             }
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
@@ -48,22 +52,34 @@ public class MySqlAuthDAO implements AuthDAO{
                         String usernameData = rs.getString("username");
                         String authData = rs.getString("auth_token");
                         return new AuthData(usernameData, authData);
+                    } else {
+                        throw new UnauthorizedException("The user does not exist");
                     }
-                } catch (Exception e){
-                    throw new UnauthorizedException("The user does not exist");
                 }
             } catch (SQLException e) {
-                throw new RuntimeException("Error accessing database: " + e.getMessage());
+                throw new UnauthorizedException("Error accessing database: " + e.getMessage());
             }
         } catch (Exception e) {
-            throw new RuntimeException("Error connecting to database: " + e.getMessage());
+            if(e instanceof UnauthorizedException){
+                throw new UnauthorizedException(e.getMessage());
+            }
+            else{
+                throw new RuntimeException("Error connecting to database: " + e.getMessage());
+            }
         }
-        throw new RuntimeException("Unknown error occurred");
     }
 
     @Override
     public void deleteAuthData(String authToken){
-
+        try(var conn = DatabaseManager.getConnection()) {
+            var deleteAuthStatement = "DELETE FROM auth_data WHERE auth_token=?";
+            try (var preparedDeleteAuthStatement = conn.prepareStatement(deleteAuthStatement)) {
+                preparedDeleteAuthStatement.setString(1, authToken);
+                preparedDeleteAuthStatement.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error connecting to database: " + e.getMessage());
+        }
     }
 
     /**

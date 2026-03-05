@@ -18,7 +18,7 @@ public interface AuthDAO {
      */
     public AuthData getAuthData(String authToken) throws UnauthorizedException;
 
-    public void deleteAuthData(String authToken);
+    public void deleteAuthData(String authToken) throws UnauthorizedException;
 
     /**
      * clear all AuthData from the database

@@ -28,7 +28,7 @@ public class MySqlUserDAO implements UserDAO{
         } catch (Exception e) {
             throw new RuntimeException("Error connecting to database: " + e.getMessage());
         }
-        throw new RuntimeException("Unknown error occurred");
+        throw new UnauthorizedException("The user does not exist");
     }
 
     @Override
@@ -40,6 +40,10 @@ public class MySqlUserDAO implements UserDAO{
                 preparedAddUserStatement.setString(2, userData.getPassword());
                 preparedAddUserStatement.setString(3, userData.getEmail());
                 preparedAddUserStatement.executeUpdate();
+            } catch (SQLException e) {
+                if(!e.getMessage().contains("Duplicate")){
+                    throw new RuntimeException(e.getMessage());
+                }
             }
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
