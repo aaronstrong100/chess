@@ -2,6 +2,8 @@ package dataaccess;
 import dataaccess.UnauthorizedException;
 import model.*;
 
+import java.util.UUID;
+
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 public class MySqlAuthDAO implements AuthDAO{
@@ -50,6 +52,6 @@ public class MySqlAuthDAO implements AuthDAO{
 
     @Override
     public String generateNewAuthToken(){
-        return null;
+        return UUID.randomUUID().toString();
     }
 }
