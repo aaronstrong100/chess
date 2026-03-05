@@ -26,7 +26,9 @@ public class MySqlAuthDAO implements AuthDAO{
                 preparedAddAuthStatement.setString(2, authData.getAuthToken());
                 preparedAddAuthStatement.executeUpdate();
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
         return authData;
     }
 
@@ -51,10 +53,10 @@ public class MySqlAuthDAO implements AuthDAO{
                     throw new UnauthorizedException("The user does not exist");
                 }
             } catch (SQLException e) {
-                throw new RuntimeException("Error accessing database");
+                throw new RuntimeException("Error accessing database: " + e.getMessage());
             }
         } catch (Exception e) {
-            throw new RuntimeException("Error connecting to database");
+            throw new RuntimeException("Error connecting to database: " + e.getMessage());
         }
         throw new RuntimeException("Unknown error occurred");
     }
@@ -69,15 +71,21 @@ public class MySqlAuthDAO implements AuthDAO{
      */
     @Override
     public void clearDataBase(){
+        String[] deleteStatements = {
+                "SET FOREIGN_KEY_CHECKS = 0",
+                "TRUNCATE auth_data",
+                "SET FOREIGN_KEY_CHECKS = 1"
+        };
         try(var conn = DatabaseManager.getConnection()) {
-            var deleteStatement = "TRUNCATE auth_data";
-            try (var preparedDeleteStatement = conn.prepareStatement(deleteStatement)) {
-                preparedDeleteStatement.executeUpdate();
-            } catch (SQLException e) {
-                throw new RuntimeException("Error accessing database");
+            for(String deleteStatement : deleteStatements) {
+                try (var preparedDeleteStatement = conn.prepareStatement(deleteStatement)) {
+                    preparedDeleteStatement.executeUpdate();
+                } catch (SQLException e) {
+                    throw new RuntimeException("Error accessing database: " + e.getMessage());
+                }
             }
         } catch (Exception e) {
-            throw new RuntimeException("Error connecting to database");
+            throw new RuntimeException("Error connecting to database: " + e.getMessage());
         }
     }
 

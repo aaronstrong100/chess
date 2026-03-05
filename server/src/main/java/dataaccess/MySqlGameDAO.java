@@ -27,15 +27,21 @@ public class MySqlGameDAO implements GameDAO{
 
     @Override
     public void clearDataBase() {
+        String[] deleteStatements = {
+                "SET FOREIGN_KEY_CHECKS = 0",
+                "TRUNCATE game_data",
+                "SET FOREIGN_KEY_CHECKS = 1"
+        };
         try(var conn = DatabaseManager.getConnection()) {
-            var deleteStatement = "TRUNCATE game_data";
-            try (var preparedDeleteStatement = conn.prepareStatement(deleteStatement)) {
-                preparedDeleteStatement.executeUpdate();
-            } catch (SQLException e) {
-                throw new RuntimeException("Error accessing database");
+            for(String deleteStatement : deleteStatements) {
+                try (var preparedDeleteStatement = conn.prepareStatement(deleteStatement)) {
+                    preparedDeleteStatement.executeUpdate();
+                } catch (SQLException e) {
+                    throw new RuntimeException("Error accessing database: " + e.getMessage());
+                }
             }
         } catch (Exception e) {
-            throw new RuntimeException("Error connecting to database");
+            throw new RuntimeException("Error connecting to database: " + e.getMessage());
         }
     }
 }

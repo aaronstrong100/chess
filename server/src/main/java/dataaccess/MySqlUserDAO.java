@@ -23,10 +23,10 @@ public class MySqlUserDAO implements UserDAO{
                     throw new UnauthorizedException("The user does not exist");
                 }
             } catch (SQLException e) {
-                throw new RuntimeException("Error accessing database");
+                throw new RuntimeException("Error accessing database: " + e.getMessage());
             }
         } catch (Exception e) {
-            throw new RuntimeException("Error connecting to database");
+            throw new RuntimeException("Error connecting to database: " + e.getMessage());
         }
         throw new RuntimeException("Unknown error occurred");
     }
@@ -48,15 +48,21 @@ public class MySqlUserDAO implements UserDAO{
 
     @Override
     public void clearDataBase(){
+        String[] deleteStatements = {
+                "SET FOREIGN_KEY_CHECKS = 0",
+                "TRUNCATE user_data",
+                "SET FOREIGN_KEY_CHECKS = 1"
+        };
         try(var conn = DatabaseManager.getConnection()) {
-            var deleteStatement = "TRUNCATE user_data";
-            try (var preparedDeleteStatement = conn.prepareStatement(deleteStatement)) {
-                preparedDeleteStatement.executeUpdate();
-            } catch (SQLException e) {
-                throw new RuntimeException("Error accessing database");
+            for(String deleteStatement : deleteStatements) {
+                try (var preparedDeleteStatement = conn.prepareStatement(deleteStatement)) {
+                    preparedDeleteStatement.executeUpdate();
+                } catch (SQLException e) {
+                    throw new RuntimeException("Error accessing database: " + e.getMessage());
+                }
             }
         } catch (Exception e) {
-            throw new RuntimeException("Error connecting to database");
+            throw new RuntimeException("Error connecting to database: " + e.getMessage());
         }
     }
 }
