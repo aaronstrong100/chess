@@ -9,7 +9,7 @@ public class MySqlUserDAO implements UserDAO{
         var conn = DatabaseManager.getConnection();
         var getUserStatement = "SELECT username, password, email FROM user_data WHERE username=?";
         try(var preparedGetUserStatement = conn.prepareStatement(getUserStatement)){
-             getUserStatement.setString(1,username);
+             preparedGetUserStatement.setString(1,username);
              try(var rs = preparedGetUserStatement.executeQuery()){
                  if(rs.next()){
                      String usernameData = rs.getString("username");
@@ -19,10 +19,19 @@ public class MySqlUserDAO implements UserDAO{
                  }
              }
         }
+        throw new UnauthorizedException("The user does not exist");
     }
 
     @Override
     public void addUserData(UserData userData){
+        var conn = DatabaseManager.getConnection();
+        var addUserStatement = "INSERT INTO user_data (username, password, email) VALUES(?,?,?)";
+        try(var preparedAddUserStatement = conn.prepareStatement(addUserStatement)){
+            preparedAddUserStatement.setString(1,userData.getUsername());
+            preparedAddUserStatement.setString(2,userData.getPassword());
+            preparedAddUserStatement.setString(3,userData.getEmail());
+            preparedAddUserStatement.executeUpdate();
+        }
     }
 
     @Override
