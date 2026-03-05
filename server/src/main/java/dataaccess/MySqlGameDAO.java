@@ -3,19 +3,41 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import model.*;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class MySqlGameDAO implements GameDAO{
-    private int nextID;
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
-    public MySqlGameDAO(){
-        nextID = 0;
-    }
+public class MySqlGameDAO implements GameDAO{
 
     @Override
     public ArrayList<GameData> getCurrentGames() {
-        return null;
+        Gson gson = new Gson();
+        ArrayList<GameData> currentGames = new ArrayList<>();
+        try(var conn = DatabaseManager.getConnection()) {
+            var getUserStatement = "SELECT gameID, white_username, black_username, game_name, chess_game FROM game_data";
+            try (var preparedGetUserStatement = conn.prepareStatement(getUserStatement)) {
+                try (var rs = preparedGetUserStatement.executeQuery()) {
+                    if (rs.next()) {
+                        int gameID = rs.getInt("gameID");
+                        String whiteUsername = rs.getString("white_username");
+                        String blackUsername = rs.getString("black_username");
+                        String gameName = rs.getString("game_name");
+                        String chessGameJson = rs.getString("chess_game");
+                        ChessGame chessGame = gson.fromJson(chessGameJson, ChessGame.class);
+                        currentGames.add(new GameData(gameID, whiteUsername, blackUsername, gameName, chessGame));
+                    }
+                } catch (Exception e){
+                    throw new UnauthorizedException("The user does not exist");
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException("Error accessing database: " + e.getMessage());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error connecting to database: " + e.getMessage());
+        }
+        return currentGames;
     }
 
     @Override
@@ -23,25 +45,24 @@ public class MySqlGameDAO implements GameDAO{
         return null;
     }
 
-    private int getNextID(){
-        nextID++;
-        return nextID;
-    }
-
     @Override
     public int createGame(String gameName) {
-        GameData gameData = new GameData(getNextID(), null, null, gameName, new ChessGame());
         Gson gson = new Gson();
         try (var conn = DatabaseManager.getConnection()) {
-            var addUserStatement = "INSERT INTO game_data (gameID, white_username, black_username, game_name, chess_game) VALUES(?,?,?,?,?)";
-            try (var preparedAddUserStatement = conn.prepareStatement(addUserStatement)) {
-                preparedAddUserStatement.setInt(1, gameData.getGameID());
-                preparedAddUserStatement.setString(2, gameData.getWhiteUsername());
-                preparedAddUserStatement.setString(3, gameData.getBlackUsername());
-                preparedAddUserStatement.setString(4, gameData.getGameName());
-                preparedAddUserStatement.setString(5, gson.toJson(gameData.getGame()));
-                preparedAddUserStatement.executeUpdate();
-                return gameData.getGameID();
+            var addGameStatement = "INSERT INTO game_data (white_username, black_username, game_name, chess_game) VALUES (?,?,?,?)";
+            try (var preparedAddGameStatement = conn.prepareStatement(addGameStatement, RETURN_GENERATED_KEYS)) {
+                preparedAddGameStatement.setString(1, null);
+                preparedAddGameStatement.setString(2, null);
+                preparedAddGameStatement.setString(3, gameName);
+                preparedAddGameStatement.setString(4, gson.toJson(new ChessGame()));
+                preparedAddGameStatement.executeUpdate();
+
+                ResultSet rs = preparedAddGameStatement.getGeneratedKeys();
+                if(rs.next()){
+                    return rs.getInt(1);
+                }
+
+                return 0;
             }
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
