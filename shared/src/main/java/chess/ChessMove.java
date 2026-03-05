@@ -17,6 +17,12 @@ public class ChessMove {
         this.promotion = promotionPiece;
     }
 
+    public ChessMove(ChessPosition startPosition, ChessPosition endPosition) {
+        this.startPos = startPosition;
+        this.endPos = endPosition;
+        this.promotion = null;
+    }
+
     @Override
     public final boolean equals(Object o) {
         if (!(o instanceof ChessMove chessMove)) {
