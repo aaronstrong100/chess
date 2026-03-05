@@ -16,9 +16,9 @@ public class MySqlGameDAO implements GameDAO{
         Gson gson = new Gson();
         ArrayList<GameData> currentGames = new ArrayList<>();
         try(var conn = DatabaseManager.getConnection()) {
-            var getUserStatement = "SELECT gameID, white_username, black_username, game_name, chess_game FROM game_data";
-            try (var preparedGetUserStatement = conn.prepareStatement(getUserStatement)) {
-                try (var rs = preparedGetUserStatement.executeQuery()) {
+            var getGameStatement = "SELECT gameID, white_username, black_username, game_name, chess_game FROM game_data";
+            try (var preparedGetGameStatement = conn.prepareStatement(getGameStatement)) {
+                try (var rs = preparedGetGameStatement.executeQuery()) {
                     if (rs.next()) {
                         int gameID = rs.getInt("gameID");
                         String whiteUsername = rs.getString("white_username");
@@ -42,7 +42,32 @@ public class MySqlGameDAO implements GameDAO{
 
     @Override
     public GameData getGame(int gameID) throws DataAccessException {
-        return null;
+        Gson gson = new Gson();
+        try(var conn = DatabaseManager.getConnection()) {
+            var getGameStatement = "SELECT gameID, white_username, black_username, game_name, chess_game FROM game_data WHERE gameID=?";
+            try (var preparedGetGameStatement = conn.prepareStatement(getGameStatement)) {
+                preparedGetGameStatement.setInt(1, gameID);
+                try (var rs = preparedGetGameStatement.executeQuery()) {
+                    if (rs.next()) {
+                        String whiteUsername = rs.getString("white_username");
+                        String blackUsername = rs.getString("black_username");
+                        String gameName = rs.getString("game_name");
+                        String chessGameJson = rs.getString("chess_game");
+                        ChessGame chessGame = gson.fromJson(chessGameJson, ChessGame.class);
+                        return new GameData(gameID, whiteUsername, blackUsername, gameName, chessGame);
+                    }
+                    else{
+                        throw new UnauthorizedException("Game with ID: "+gameID+" does not exist");
+                    }
+                } catch (Exception e){
+                    throw new UnauthorizedException("Game with ID: "+gameID+" does not exist");
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException("Error accessing database: " + e.getMessage());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error connecting to database: " + e.getMessage());
+        }
     }
 
     @Override
@@ -59,6 +84,7 @@ public class MySqlGameDAO implements GameDAO{
 
                 ResultSet rs = preparedAddGameStatement.getGeneratedKeys();
                 if(rs.next()){
+                    System.out.println(rs.getInt(1));
                     return rs.getInt(1);
                 }
 
