@@ -3,6 +3,7 @@ import dataaccess.UnauthorizedException;
 import model.*;
 import dataaccess.DatabaseManager;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -36,7 +37,26 @@ public class MySqlAuthDAO implements AuthDAO{
      */
     @Override
     public AuthData getAuthData(String authToken) throws UnauthorizedException{
-        return null;
+        try(var conn = DatabaseManager.getConnection()) {
+            var getAuthStatement = "SELECT username, auth_token FROM auth_data WHERE auth_token=?";
+            try (var preparedGetAuthStatement = conn.prepareStatement(getAuthStatement)) {
+                preparedGetAuthStatement.setString(1, authToken);
+                try (var rs = preparedGetAuthStatement.executeQuery()) {
+                    if (rs.next()) {
+                        String usernameData = rs.getString("username");
+                        String authData = rs.getString("auth_token");
+                        return new AuthData(usernameData, authData);
+                    }
+                } catch (Exception e){
+                    throw new UnauthorizedException("The user does not exist");
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException("Error accessing database");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error connecting to database");
+        }
+        throw new RuntimeException("Unknown error occurred");
     }
 
     @Override
@@ -49,7 +69,7 @@ public class MySqlAuthDAO implements AuthDAO{
      */
     @Override
     public void clearDataBase(){
-
+        
     }
 
     @Override
