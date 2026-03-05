@@ -48,6 +48,15 @@ public class MySqlUserDAO implements UserDAO{
 
     @Override
     public void clearDataBase(){
-
+        try(var conn = DatabaseManager.getConnection()) {
+            var deleteStatement = "TRUNCATE user_data";
+            try (var preparedDeleteStatement = conn.prepareStatement(deleteStatement)) {
+                preparedDeleteStatement.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException("Error accessing database");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error connecting to database");
+        }
     }
 }

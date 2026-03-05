@@ -1,6 +1,7 @@
 package dataaccess;
 import model.*;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class MySqlGameDAO implements GameDAO{
@@ -26,6 +27,15 @@ public class MySqlGameDAO implements GameDAO{
 
     @Override
     public void clearDataBase() {
-
+        try(var conn = DatabaseManager.getConnection()) {
+            var deleteStatement = "TRUNCATE game_data";
+            try (var preparedDeleteStatement = conn.prepareStatement(deleteStatement)) {
+                preparedDeleteStatement.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException("Error accessing database");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error connecting to database");
+        }
     }
 }
