@@ -84,7 +84,6 @@ public class MySqlGameDAO implements GameDAO{
 
                 ResultSet rs = preparedAddGameStatement.getGeneratedKeys();
                 if(rs.next()){
-                    System.out.println(rs.getInt(1));
                     return rs.getInt(1);
                 }
 
@@ -97,7 +96,25 @@ public class MySqlGameDAO implements GameDAO{
 
     @Override
     public void overwriteGame(int gameID, GameData updatedGame) throws DataAccessException {
-
+        Gson gson = new Gson();
+        try (var conn = DatabaseManager.getConnection()) {
+            var overwriteGameStatement = "UPDATE game_data SET white_username=?, black_username=?, game_name=?, chess_game=? WHERE gameID=?";
+            try (var preparedOverwriteGameStatement = conn.prepareStatement(overwriteGameStatement)) {
+                preparedOverwriteGameStatement.setString(1, updatedGame.getWhiteUsername());
+                preparedOverwriteGameStatement.setString(2, updatedGame.getBlackUsername());
+                preparedOverwriteGameStatement.setString(3, updatedGame.getGameName());
+                preparedOverwriteGameStatement.setString(4, gson.toJson(updatedGame.getGame()));
+                preparedOverwriteGameStatement.setInt(5, gameID);
+                int rowsUpdated = preparedOverwriteGameStatement.executeUpdate();
+                if(rowsUpdated==0){
+                    throw new DataAccessException("Game with ID: "+gameID+" does not exist");
+                }
+            } catch (SQLException e){
+                throw new DataAccessException("Game with ID: "+gameID+" does not exist");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     @Override
