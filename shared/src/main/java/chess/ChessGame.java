@@ -85,9 +85,7 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        System.out.println(this.board);
         if(this.board.getPiece(startPosition)==null){
-            System.out.println("No valid moves for "+startPosition);
             return new ArrayList<ChessMove>();
         }
         else {
@@ -101,10 +99,6 @@ public class ChessGame {
                     moveIterator.remove();
                 }
                 this.board = currentBoard;
-            }
-            System.out.println("Valid moves for "+startPosition);
-            for(ChessMove move: validMoves){
-                System.out.println(move);
             }
             return validMoves;
         }
@@ -195,7 +189,6 @@ public class ChessGame {
         Collection<ChessMove> teamMoves = this.teamValidMovesUnprotected(otherTeam(teamColor));
         ChessPosition kingPos = getKingPosition(teamColor);
         for(ChessMove move : teamMoves){
-            System.out.println("Checking if the move " + move + " will put " + teamColor + " in check.");
             if(move.getEndPosition().equals(kingPos)){
                 return true;
             }
