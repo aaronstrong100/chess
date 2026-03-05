@@ -12,15 +12,7 @@ import results.ListGamesResult;
 import results.CreateGameResult;
 import results.JoinGameResult;
 import com.google.gson.*;
-import dataaccess.AuthDAO;
-import dataaccess.GameDAO;
-import dataaccess.UserDAO;
-import dataaccess.MemoryUserDAO;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
-import dataaccess.DataAccessException;
-import dataaccess.UnauthorizedException;
-import dataaccess.AlreadyTakenException;
+import dataaccess.*;
 import io.javalin.*;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
@@ -45,9 +37,9 @@ public class Server {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
         // Register your endpoints and exception handlers here.
-        userDAO = new MemoryUserDAO();
-        authDAO = new MemoryAuthDAO();
-        gameDAO = new MemoryGameDAO();
+        userDAO = new MySqlUserDAO();
+        authDAO = new MySqlAuthDAO();
+        gameDAO = new MySqlGameDAO();
 
         userService = new UserService(userDAO, authDAO);
         gameService = new GameService(gameDAO, authDAO);
