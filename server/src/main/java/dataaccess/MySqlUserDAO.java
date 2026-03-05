@@ -41,7 +41,9 @@ public class MySqlUserDAO implements UserDAO{
                 preparedAddUserStatement.setString(3, userData.getEmail());
                 preparedAddUserStatement.executeUpdate();
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     @Override
