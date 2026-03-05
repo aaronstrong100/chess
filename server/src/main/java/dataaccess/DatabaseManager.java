@@ -10,6 +10,37 @@ public class DatabaseManager {
     private static String dbPassword;
     private static String connectionUrl;
 
+    private static final String[] createStatements = {
+            """
+            CREATE TABLE IF NOT EXISTS  user_data (
+              `username` varchar(256) NOT NULL,
+              `password` varchar(256) NOT NULL,
+              `email` varchar(256),
+              PRIMARY KEY (`username`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS  auth_data (
+              `username` varchar(256) NOT NULL,
+              `auth_token` varchar(256) NOT NULL,
+              PRIMARY KEY (`username`),
+              FOREIGN KEY (`username`) REFERENCES user_data(`username`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS  game_data (
+              `gameID` varchar(256) NOT NULL,
+              `white_username` varchar(256) DEFAULT NULL,
+              `black_username` varchar(256) DEFAULT NULL,
+              `game_name` varchar(256) NOT NULL,
+              `chess_game` TEXT NOT NULL,
+              PRIMARY KEY (`gameID`),
+              FOREIGN KEY (`white_username`) REFERENCES user_data(`username`),
+              FOREIGN KEY (`black_username`) REFERENCES user_data(`username`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """
+    };
+
     /*
      * Load the database information for the db.properties file.
      */
@@ -53,37 +84,6 @@ public class DatabaseManager {
     }
 
 
-    private static final String[] createStatements = {
-            """
-            CREATE TABLE IF NOT EXISTS  user_data (
-              `username` varchar(256) NOT NULL,
-              `password` varchar(256) NOT NULL,
-              `email` varchar(256),
-              PRIMARY KEY (`username`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-            """,
-            """
-            CREATE TABLE IF NOT EXISTS  auth_data (
-              `username` varchar(256) NOT NULL,
-              `auth_token` varchar(256) NOT NULL,
-              PRIMARY KEY (`username`),
-              FOREIGN KEY (`username`) REFERENCES user_data(`username`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-            """,
-            """
-            CREATE TABLE IF NOT EXISTS  game_data (
-              `gameID` varchar(256) NOT NULL,
-              `white_username` varchar(256) DEFAULT NULL,
-              `black_username` varchar(256) DEFAULT NULL,
-              `game_name` varchar(256) NOT NULL,
-              `chess_game` TEXT NOT NULL,
-              PRIMARY KEY (`gameID`),
-              FOREIGN KEY (`white_username`) REFERENCES user_data(`username`),
-              FOREIGN KEY (`black_username`) REFERENCES user_data(`username`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-            """
-    };
-
     public static void configureDatabaseTables() throws DataAccessException{
         try(Connection conn = getConnection()){
             for(String statement : createStatements) {
@@ -92,6 +92,7 @@ public class DatabaseManager {
                 }
             }
         } catch (SQLException e) {
+            System.out.println("Failed to initialize database tables");
             throw new DataAccessException("Failed to initialize database tables");
         }
     }
@@ -115,6 +116,7 @@ public class DatabaseManager {
             conn.setCatalog(databaseName);
             return conn;
         } catch (SQLException ex) {
+            System.out.println("failed to get connection");
             throw new DataAccessException("failed to get connection", ex);
         }
     }
