@@ -7,7 +7,7 @@ public class MySqlUserDAO implements UserDAO{
     @Override
     public UserData getUserData(String username) throws UnauthorizedException{
         var conn = DatabaseManager.getConnection();
-        var getUserStatement = "SELECT username, password, email FROM user_data WHERE username="+username+";";
+        var getUserStatement = "SELECT username, password, email FROM user_data WHERE username=?";
         try(var preparedGetUserStatement = conn.prepareStatement(getUserStatement)){
              getUserStatement.setString(1,username);
              try(var rs = preparedGetUserStatement.executeQuery()){
@@ -23,7 +23,6 @@ public class MySqlUserDAO implements UserDAO{
 
     @Override
     public void addUserData(UserData userData){
-
     }
 
     @Override
