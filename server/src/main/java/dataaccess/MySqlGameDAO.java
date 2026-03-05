@@ -19,7 +19,7 @@ public class MySqlGameDAO implements GameDAO{
             var getGameStatement = "SELECT gameID, white_username, black_username, game_name, chess_game FROM game_data";
             try (var preparedGetGameStatement = conn.prepareStatement(getGameStatement)) {
                 try (var rs = preparedGetGameStatement.executeQuery()) {
-                    if (rs.next()) {
+                    while (rs.next()) {
                         int gameID = rs.getInt("gameID");
                         String whiteUsername = rs.getString("white_username");
                         String blackUsername = rs.getString("black_username");
@@ -87,7 +87,7 @@ public class MySqlGameDAO implements GameDAO{
                     return rs.getInt(1);
                 }
 
-                return 0;
+                throw new RuntimeException("was unable to create game");
             }
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());

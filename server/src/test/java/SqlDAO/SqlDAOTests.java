@@ -194,11 +194,25 @@ public class SqlDAOTests {
 
     @Test
     @Order(12)
+    @DisplayName("GameDAO: listGames multiple")
+    public void listMultipleGamesSuccess() throws UnauthorizedException{
+        for(int i = 0; i<5; i++){
+            gameDAO.createGame(demoGameName);
+        }
+        ArrayList<GameData> gameDatas = gameDAO.getCurrentGames();
+        Assertions.assertEquals(6,gameDatas.size());
+        Assertions.assertEquals(gameDatas.get(0).getGameName(), demoGameName);
+    }
+
+    @Test
+    @Order(13)
     @DisplayName("GameDAO: list games persistent")
     public void listGamesPersistent(){
+        gameDAO.clearDataBase();
+        gameDAO.createGame(demoGameName);
         gameDAO = new MySqlGameDAO();
         ArrayList<GameData> gameDatas = gameDAO.getCurrentGames();
-        Assertions.assertEquals(gameDatas.size(),1);
+        Assertions.assertEquals(1, gameDatas.size());
         Assertions.assertEquals(gameDatas.get(0).getGameName(), demoGameName);
     }
 
