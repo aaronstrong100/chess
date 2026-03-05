@@ -32,6 +32,7 @@ public class DatabaseManager {
         }
         try {
             createDatabase();
+            configureDatabaseTables();
         } catch(Exception e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -48,6 +49,50 @@ public class DatabaseManager {
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             throw new DataAccessException("failed to create database", ex);
+        }
+    }
+
+
+    private static final String[] createStatements = {
+            """
+            CREATE TABLE IF NOT EXISTS  user_data (
+              `username` varchar(256) NOT NULL,
+              `password` varchar(256) NOT NULL,
+              `email` varchar(256),
+              PRIMARY KEY (`username`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS  auth_data (
+              `username` varchar(256) NOT NULL,
+              `auth_token` varchar(256) NOT NULL,
+              PRIMARY KEY (`username`),
+              FOREIGN KEY (`username`) REFERENCES user_data(`username`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS  game_data (
+              `gameID` varchar(256) NOT NULL,
+              `white_username` varchar(256) DEFAULT NULL,
+              `black_username` varchar(256) DEFAULT NULL,
+              `game_name` varchar(256) NOT NULL,
+              `chess_game` TEXT NOT NULL,
+              PRIMARY KEY (`gameID`),
+              FOREIGN KEY (`white_username`) REFERENCES user_data(`username`),
+              FOREIGN KEY (`black_username`) REFERENCES user_data(`username`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+            """
+    };
+
+    public static void configureDatabaseTables() throws DataAccessException{
+        try(Connection conn = getConnection()){
+            for(String statement : createStatements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Failed to initialize database tables");
         }
     }
 
