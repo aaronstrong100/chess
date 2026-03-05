@@ -2,6 +2,8 @@ package dataaccess;
 import dataaccess.UnauthorizedException;
 import model.*;
 
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+
 public class MySqlAuthDAO implements AuthDAO{
 
     public MySqlAuthDAO(){
@@ -13,7 +15,14 @@ public class MySqlAuthDAO implements AuthDAO{
      */
     @Override
     public AuthData addAuthData(AuthData authData){
-        return null;
+        var conn = DatabaseManager.getConnection();
+        var addAuthStatement = "INSERT INTO auth_data (username,auth_token) VALUES(?,?)";
+        try(var preparedAddAuthStatement = conn.prepareStatement(addAuthStatement)){
+            preparedAddAuthStatement.setString(1,authData.getUsername());
+            preparedAddAuthStatement.setString(2,authData.getAuthToken());
+            preparedAddAuthStatement.executeUpdate();
+        }
+        return AuthData;
     }
 
     /**
