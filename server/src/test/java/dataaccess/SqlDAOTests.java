@@ -1,17 +1,12 @@
-package SqlDAO;
+package dataaccess;
 
 import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 import org.junit.jupiter.api.*;
 import model.*;
-import dataaccess.*;
-import passoff.server.DatabaseTests;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Properties;
-import java.util.UUID;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SqlDAOTests {
