@@ -26,9 +26,7 @@ public class MySqlAuthDAO implements AuthDAO{
                 preparedAddAuthStatement.setString(2, authData.getAuthToken());
                 preparedAddAuthStatement.executeUpdate();
             } catch (SQLException e) {
-                if(!e.getMessage().contains("Duplicate")){
-                    throw new RuntimeException(e.getMessage());
-                }
+                throw new RuntimeException(e.getMessage());
             }
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
@@ -43,6 +41,7 @@ public class MySqlAuthDAO implements AuthDAO{
      */
     @Override
     public AuthData getAuthData(String authToken) throws UnauthorizedException{
+        System.out.println(authToken);
         try(var conn = DatabaseManager.getConnection()) {
             var getAuthStatement = "SELECT username, auth_token FROM auth_data WHERE auth_token=?";
             try (var preparedGetAuthStatement = conn.prepareStatement(getAuthStatement)) {
@@ -53,11 +52,11 @@ public class MySqlAuthDAO implements AuthDAO{
                         String authData = rs.getString("auth_token");
                         return new AuthData(usernameData, authData);
                     } else {
-                        throw new UnauthorizedException("The user does not exist");
+                        throw new UnauthorizedException("The authToken does not exist");
                     }
                 }
             } catch (SQLException e) {
-                throw new UnauthorizedException("Error accessing database: " + e.getMessage());
+                throw new RuntimeException("Error accessing database: " + e.getMessage());
             }
         } catch (Exception e) {
             if(e instanceof UnauthorizedException){
