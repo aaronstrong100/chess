@@ -235,7 +235,8 @@ public class SqlDAOTests {
     @DisplayName("GameDAO: overwriteGame normal")
     public void overwriteGameSuccess() throws DataAccessException{
         GameData gameData = gameDAO.getGame(demoGameID);
-        GameData updatedGameData = new GameData(gameData.getGameID(), gameData.getWhiteUsername(), gameData.getBlackUsername(), gameData.getGameName(), demoChessGameUpdate);
+        GameData updatedGameData = new GameData(gameData.getGameID(), gameData.getWhiteUsername(), gameData.getBlackUsername(),
+                                                gameData.getGameName(), demoChessGameUpdate);
         gameDAO.overwriteGame(demoGameID, updatedGameData);
         gameData = gameDAO.getGame(demoGameID);
         Assertions.assertEquals(demoChessGameUpdate, gameData.getGame());
@@ -249,7 +250,8 @@ public class SqlDAOTests {
         try {
             gameData = gameDAO.getGame(demoGameID);
         } catch(Exception e) {}
-        GameData updatedGameData = new GameData(wrongGameID, gameData.getWhiteUsername(), gameData.getBlackUsername(), gameData.getGameName(), demoChessGameUpdate);
+        GameData updatedGameData = new GameData(wrongGameID, gameData.getWhiteUsername(), gameData.getBlackUsername(),
+                                                gameData.getGameName(), demoChessGameUpdate);
         Assertions.assertThrows(
                 Exception.class,
                 () -> {gameDAO.overwriteGame(wrongGameID, updatedGameData);}

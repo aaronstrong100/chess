@@ -28,7 +28,9 @@ public class UserService {
      * @return a RegisterResult Object containing the new authToken for the user
      */
     public RegisterResult register(RegisterRequest registerRequest) throws AlreadyTakenException{
-        registerRequest = new RegisterRequest(registerRequest.getUsername(), BCrypt.hashpw(registerRequest.getPassword(), BCrypt.gensalt()), registerRequest.getEmail());
+        registerRequest = new RegisterRequest(registerRequest.getUsername(),
+                                                BCrypt.hashpw(registerRequest.getPassword(), BCrypt.gensalt()),
+                                                registerRequest.getEmail());
         try{
             this.userDAO.getUserData(registerRequest.getUsername());
         } catch(Exception e){

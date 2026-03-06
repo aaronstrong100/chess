@@ -226,7 +226,9 @@ public class Server {
         public void handle(@NotNull Context context){
             Gson gson = new Gson();
             try {
-                if(JsonParser.parseString(context.body()).getAsJsonObject().get("playerColor")==null || context.header("Authorization")==null || JsonParser.parseString(context.body()).getAsJsonObject().get("gameID")==null){
+                if(JsonParser.parseString(context.body()).getAsJsonObject().get("playerColor")==null ||
+                        context.header("Authorization")==null ||
+                        JsonParser.parseString(context.body()).getAsJsonObject().get("gameID")==null){
                     throw new Exception("Bad Request");
                 }
                 String authToken = context.header("Authorization");
