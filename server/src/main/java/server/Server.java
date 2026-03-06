@@ -70,10 +70,13 @@ public class Server {
     }
 
     public static int getErrorCode(Exception e){
+        System.out.println(e.getClass().getName() + ", " + e.getMessage());
         if(e instanceof UnauthorizedException){
             return 401;
         } else if(e instanceof AlreadyTakenException){
             return 403;
+        } else if(e instanceof RuntimeException){
+            return 500;
         }
         return 400;
     }
@@ -197,12 +200,12 @@ public class Server {
         public void handle(@NotNull Context context){
             Gson gson = new Gson();
             try {
+                if(JsonParser.parseString(context.body()).getAsJsonObject().get("gameName")==null || context.header("Authorization")==null){
+                    throw new Exception("Bad Request");
+                }
                 String authToken = context.header("Authorization");
                 String gameName = JsonParser.parseString(context.body()).getAsJsonObject().get("gameName").getAsString();
                 CreateGameRequest createGameRequest = new CreateGameRequest(gameName, authToken);
-                if(createGameRequest.getGameName()==null || createGameRequest.getAuthToken()==null){
-                    throw new Exception("Bad Request");
-                }
                 CreateGameResult createGameResult = gameService.createGame(createGameRequest);
                 context.json(gson.toJson(createGameResult));
             } catch (Exception e){
@@ -223,13 +226,13 @@ public class Server {
         public void handle(@NotNull Context context){
             Gson gson = new Gson();
             try {
+                if(JsonParser.parseString(context.body()).getAsJsonObject().get("playerColor")==null || context.header("Authorization")==null || JsonParser.parseString(context.body()).getAsJsonObject().get("gameID")==null){
+                    throw new Exception("Bad Request");
+                }
                 String authToken = context.header("Authorization");
                 int gameID = JsonParser.parseString(context.body()).getAsJsonObject().get("gameID").getAsInt();
                 String playerColor = JsonParser.parseString(context.body()).getAsJsonObject().get("playerColor").getAsString();
                 JoinGameRequest joinGameRequest = new JoinGameRequest(playerColor, gameID, authToken);
-                if(joinGameRequest.getPlayerColor()==null || joinGameRequest.getAuthToken()==null){
-                    throw new Exception("Bad Request");
-                }
                 JoinGameResult joinGameResult = this.gameService.joinGame(joinGameRequest);
                 context.json(gson.toJson(joinGameResult));
             } catch (Exception e){
