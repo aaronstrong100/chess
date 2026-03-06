@@ -144,5 +144,22 @@ public class DatabaseManager {
         connectionUrl = String.format("jdbc:mysql://%s:%d", host, port);
     }
 
-    public static
+    public static void clearTable(String table){
+        String[] deleteStatements = {
+                "SET FOREIGN_KEY_CHECKS = 0",
+                "TRUNCATE " + table,
+                "SET FOREIGN_KEY_CHECKS = 1"
+        };
+        try(var conn = DatabaseManager.getConnection()) {
+            for(String deleteStatement : deleteStatements) {
+                try (var preparedDeleteStatement = conn.prepareStatement(deleteStatement)) {
+                    preparedDeleteStatement.executeUpdate();
+                } catch (SQLException e) {
+                    throw new RuntimeException("Error accessing database: " + e.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error connecting to database: " + e.getMessage());
+        }
+    }
 }
