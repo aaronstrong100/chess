@@ -23,7 +23,7 @@ public class DatabaseManager {
             CREATE TABLE IF NOT EXISTS  auth_data (
               `username` varchar(256) NOT NULL,
               `auth_token` varchar(256) NOT NULL,
-              PRIMARY KEY (`username`),
+              PRIMARY KEY (`auth_token`),
               FOREIGN KEY (`username`) REFERENCES user_data(`username`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """,
