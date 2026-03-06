@@ -1,5 +1,6 @@
 package service;
 
+import org.mindrot.jbcrypt.BCrypt;
 import requests.LoginRequest;
 import requests.LogoutRequest;
 import requests.RegisterRequest;
@@ -27,6 +28,7 @@ public class UserService {
      * @return a RegisterResult Object containing the new authToken for the user
      */
     public RegisterResult register(RegisterRequest registerRequest) throws AlreadyTakenException{
+        registerRequest = new RegisterRequest(registerRequest.getUsername(), BCrypt.hashpw(registerRequest.getPassword(), BCrypt.gensalt()), registerRequest.getEmail());
         try{
             this.userDAO.getUserData(registerRequest.getUsername());
         } catch(Exception e){
@@ -44,7 +46,7 @@ public class UserService {
      */
     public LoginResult login(LoginRequest loginRequest) throws Exception{
         UserData userData = this.userDAO.getUserData(loginRequest.getUsername());
-        if(userData.getPassword().equals(loginRequest.getPassword())){
+        if(BCrypt.checkpw(loginRequest.getPassword(),userData.getPassword())){
             AuthData newAuthData = new AuthData(userData.getUsername(), this.authDAO.generateNewAuthToken());
             this.authDAO.addAuthData(newAuthData);
             return new LoginResult(newAuthData.getUsername(), newAuthData.getAuthToken());
