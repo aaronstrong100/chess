@@ -10,7 +10,7 @@ public class DatabaseManager {
     private static String dbPassword;
     private static String connectionUrl;
 
-    private static final String[] createStatements = {
+    private static final String[] CREATE_STATEMENTS = {
             """
             CREATE TABLE IF NOT EXISTS  user_data (
               `username` varchar(256) NOT NULL,
@@ -86,7 +86,7 @@ public class DatabaseManager {
 
     public static void configureDatabaseTables() throws DataAccessException{
         try(Connection conn = getConnection()){
-            for(String statement : createStatements) {
+            for(String statement : CREATE_STATEMENTS) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
                     preparedStatement.executeUpdate();
                 }
@@ -143,4 +143,6 @@ public class DatabaseManager {
         var port = Integer.parseInt(props.getProperty("db.port"));
         connectionUrl = String.format("jdbc:mysql://%s:%d", host, port);
     }
+
+    public static
 }
