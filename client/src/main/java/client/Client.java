@@ -2,15 +2,21 @@ package client;
 
 import java.util.Scanner;
 
+import chess.ChessBoard;
+import chess.ChessGame;
 import requests.*;
+import results.*;
 import server.Server;
 import serverAccess.ServerFacade;
+import ui.ChessGamePrinter;
 
 public class Client {
     private ServerFacade serverFacade;
     private Scanner userInput;
     private int menuLevel;
     private String user;
+    private String playerType;
+    private ChessGame chessGame;
 
     private static final String ALPHA_NUMERIC = "^[a-zA-Z0-9]+$";
 
@@ -20,6 +26,7 @@ public class Client {
     }
 
     public void run(){
+        System.out.print(ChessGamePrinter.SET_BOARD_BACKGROUND);
         this.menuLevel = 0;
         while(this.menuLevel>=0){
             if(this.menuLevel==0){
@@ -31,6 +38,10 @@ public class Client {
             else if(this.menuLevel==1){
                 printPostLogin();
                 userInputPostLogin();
+            }
+            else if(this.menuLevel==2){
+                printGame();
+                userInputGame();
             }
         }
     }
@@ -65,7 +76,6 @@ public class Client {
                 registerPrompt();
                 break;
         }
-
     }
 
     public void printPostLogin(){
@@ -84,13 +94,27 @@ public class Client {
                 break;
             case "list games":
                 listGames();
+                break;
             case "play game":
                 playGamePrompt();
+                break;
             case "observe game":
                 observeGamePrompt();
+                break;
         }
     }
 
+    public void printGame(){
+        ChessGamePrinter.printChessBoard(this.chessGame.getBoard(), this.playerType);
+        printHelp();
+    }
+
+    public void userInputGame(){
+        String input = getInput().toLowerCase();
+        if(input.equals("exit")){
+            this.menuLevel = 1;
+        }
+    }
     public void printHelp(){
         switch (menuLevel){
             case 0:
@@ -107,6 +131,9 @@ public class Client {
                 System.out.println("Play game - join an active game as black or white");
                 System.out.println("Observe game - join an active game as observer");
                 break;
+            case 2:
+                System.out.println("The actual game is not yet implemented! Come back later to play!");
+                System.out.println("Type exit to exit the game");
         }
     }
 
@@ -116,6 +143,7 @@ public class Client {
         String password = passwordPrompt();
         String email = emailPrompt();
         RegisterRequest registerRequest = new RegisterRequest(username, password, email);
+        //Add logic to send the request
         this.menuLevel = 1;
     }
 
@@ -124,6 +152,7 @@ public class Client {
         this.user = username;
         String password = passwordPrompt();
         LoginRequest loginRequest = new LoginRequest(username, password);
+        //Add logic to send the request
         this.menuLevel = 1;
     }
 
@@ -165,12 +194,36 @@ public class Client {
     }
 
     public void playGamePrompt(){
-        System.out.println("Please enter the ID of the game you wish to join: ");
-        int gameID = Integer.parseInt(this.getInput());
+        int gameID = gameIdPrompt();
+        String color = colorPrompt();
+        this.playerType = color;
+        //Add logic to get the chessgame
+        chessGame = new ChessGame();
+        this.menuLevel = 2;
     }
 
     public void observeGamePrompt(){
+        int gameID = gameIdPrompt();
+        this.playerType = "observer";
+        chessGame = new ChessGame();
+        this.menuLevel = 2;
+    }
+
+    public int gameIdPrompt(){
         System.out.println("Please enter the ID of the game you wish to observe: ");
-        int gameID = Integer.parseInt(this.getInput());
+        //Add logic to check gameID valid
+        return Integer.parseInt(this.getInput());
+    }
+
+    public String colorPrompt(){
+        System.out.println("Please enter the color you wish to play as: ");
+        String color = this.getInput().toLowerCase();
+        //Add logic to check that the color is not taken
+        if(color.equals("white") || color.equals("black")){
+            return color;
+        } else {
+            System.out.println("Valid colors are black and white.");
+            return colorPrompt();
+        }
     }
 }

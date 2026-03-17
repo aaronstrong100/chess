@@ -39,7 +39,7 @@ public class ChessGamePrinter {
 
     private static final String SET_BOARD_LIGHT = SET_BG_COLOR_LIGHT_GREY;
     private static final String SET_BOARD_DARK = SET_BG_COLOR_DARK_GREY;
-    private static final String SET_BOARD_BACKGROUND = SET_BG_COLOR_BLACK;
+    public static final String SET_BOARD_BACKGROUND = SET_BG_COLOR_BLACK;
 
     private static final String SET_TEXT_COLOR_WHITE_TEAM = SET_TEXT_COLOR_WHITE;
     private static final String SET_TEXT_COLOR_BLACK_TEAM = SET_TEXT_COLOR_BLACK;
