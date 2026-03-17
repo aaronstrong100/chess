@@ -17,6 +17,7 @@ public class Client {
     private String user;
     private String playerType;
     private ChessGame chessGame;
+    private String authToken;
 
     private static final String ALPHA_NUMERIC = "^[a-zA-Z0-9]+$";
 

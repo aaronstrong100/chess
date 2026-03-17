@@ -1,8 +1,12 @@
 package serverAccess;
 
+import chess.ChessGame;
+import model.GameData;
 import requests.*;
 import results.*;
 import server.Server;
+
+import java.util.ArrayList;
 
 public class ServerFacade {
     private ServerCommunicator serverCommunicator;
@@ -17,31 +21,32 @@ public class ServerFacade {
 
     //javalin.post("/user", new RegisterHandler(userService));
     public RegisterResult register(RegisterRequest registerRequest){
-        return null;
+        return new RegisterResult(registerRequest.getUsername(), "auth");
     }
 
     //javalin.post("/session", new LoginHandler(userService));
     public LoginResult login(LoginRequest loginRequest){
-        return null;
+        return new LoginResult(loginRequest.getUsername(), "auth");
     }
 
     //javalin.delete("/session", new LogoutHandler(userService));
     public void logout(LogoutRequest logoutRequest){
-
     }
 
     //javalin.get("/game", new ListGamesHandler(gameService));
     public ListGamesResult listGames(ListGamesRequest listGamesRequest){
-        return null;
+        ArrayList<GameData> games = new ArrayList<>();
+        games.add(new GameData(1, null, null, "Cool game", new ChessGame()));
+        return new ListGamesResult(games);
     }
 
     //javalin.post("/game", new CreateGameHandler(gameService));
     public CreateGameResult createGame(CreateGameRequest createGameRequest){
-        return null;
+        return new CreateGameResult(1);
     }
 
     //javalin.put("/game", new JoinGameHandler(gameService));
     public JoinGameResult joinGame(JoinGameRequest joinGameRequest){
-        return null;
+        return new JoinGameResult(joinGameRequest.getPlayerColor(), joinGameRequest.getGameID());
     }
 }
