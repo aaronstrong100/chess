@@ -1,9 +1,11 @@
 package client;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import model.GameData;
 import requests.*;
 import results.*;
 import server.Server;
@@ -16,8 +18,11 @@ public class Client {
     private int menuLevel;
     private String user;
     private String playerType;
-    private ChessGame chessGame;
+    private GameData gameData;
     private String authToken;
+    private int[] consoleGameIndices = new int[0];
+    private int gameID;
+    private ArrayList<GameData> currentGames = new ArrayList<GameData>();
 
     private static final String ALPHA_NUMERIC = "^[a-zA-Z0-9]+$";
 
@@ -38,11 +43,15 @@ public class Client {
             }
             else if(this.menuLevel==1){
                 printPostLogin();
-                userInputPostLogin();
+                while(this.menuLevel==1) {
+                    userInputPostLogin();
+                }
             }
             else if(this.menuLevel==2){
                 printGame();
-                userInputGame();
+                while(this.menuLevel==2) {
+                    userInputGame();
+                }
             }
         }
     }
@@ -52,77 +61,106 @@ public class Client {
         this.menuLevel = -1;
     }
 
-    public String getInput(){
-        return userInput.nextLine().trim();
+    private String getInput() throws ExitException{
+        String input = userInput.nextLine().trim();
+        if(input.equals("exit")){
+            throw new ExitException();
+        } else {
+            return input;
+        }
     }
 
-    public void printPrelogin(){
+    private void printIncorrectInputMessage(){
+        System.out.println("Your input is invalid. Please type \"help\" to view valid options");
+    }
+
+    private void printPrelogin(){
         System.out.println("Welcome to Aaron Strong's Chess Server. Type an option to proceed:");
         printHelp();
     }
 
-    public void userInputPrelogin(){
-        String input = getInput().toLowerCase();
-        switch (input){
-            case "help":
-                printHelp();
-                break;
-            case "quit":
-                stop();
-                break;
-            case "login":
-                loginPrompt();
-                break;
-            case "register":
-                registerPrompt();
-                break;
+    private void userInputPrelogin(){
+        try{
+            String input = getInput().toLowerCase();
+            switch (input) {
+                case "help":
+                    printHelp();
+                    break;
+                case "quit":
+                    stop();
+                    break;
+                case "login":
+                    loginPrompt();
+                    break;
+                case "register":
+                    registerPrompt();
+                    break;
+                default:
+                    printIncorrectInputMessage();
+            }
+        }  catch (ExitException e){
+            System.out.println("Successfully exited loop. ");
         }
     }
 
-    public void printPostLogin(){
+    private void printPostLogin(){
         System.out.println("Welcome, " + user + ". Type an option to proceed:");
         printHelp();
     }
 
-    public void userInputPostLogin(){
-        String input = getInput().toLowerCase();
-        switch (input){
-            case "help":
-                printHelp();
-                break;
-            case "logout":
-                logout();
-                break;
-            case "list games":
-                listGames();
-                break;
-            case "play game":
-                playGamePrompt();
-                break;
-            case "observe game":
-                observeGamePrompt();
-                break;
+    private void userInputPostLogin(){
+        try {
+            String input = getInput().toLowerCase();
+            switch (input) {
+                case "help":
+                    printHelp();
+                    break;
+                case "logout":
+                    logout();
+                    break;
+                case "list games":
+                    listGames();
+                    break;
+                case "play game":
+                    playGamePrompt();
+                    break;
+                case "observe game":
+                    observeGamePrompt();
+                    break;
+                default:
+                    printIncorrectInputMessage();
+            }
+        } catch (ExitException e) {
+            System.out.println("Successfully exited loop");
         }
     }
 
-    public void printGame(){
-        ChessGamePrinter.printChessBoard(this.chessGame.getBoard(), this.playerType);
+    private void printGame(){
+        if(this.playerType.equals("white") || this.playerType.equals("black")) {
+            ChessGamePrinter.printChessBoard(this.gameData.getGame().getBoard(), this.playerType);
+        } else{
+            ChessGamePrinter.printChessBoard(this.gameData.getGame().getBoard(), "white");
+        }
         printHelp();
     }
 
-    public void userInputGame(){
-        String input = getInput().toLowerCase();
-        if(input.equals("exit")){
+    private void userInputGame(){
+        try {
+            String input = getInput().toLowerCase();
+            printIncorrectInputMessage();
+        }
+        catch (ExitException e){
             this.menuLevel = 1;
         }
     }
-    public void printHelp(){
+    private void printHelp(){
         switch (menuLevel){
             case 0:
                 System.out.println("help - display your current options");
                 System.out.println("quit - exit the program");
                 System.out.println("login - login as an already registered user");
-                System.out.println("register - register as a new user\n");
+                System.out.println("register - register as a new user");
+                System.out.println("Exit - exit the current loop");
                 break;
             case 1:
                 System.out.println("Help - display your current options");
@@ -131,6 +169,7 @@ public class Client {
                 System.out.println("List Games - list all active games");
                 System.out.println("Play game - join an active game as black or white");
                 System.out.println("Observe game - join an active game as observer");
+                System.out.println("Exit - exit any loop which is not a menu");
                 break;
             case 2:
                 System.out.println("The actual game is not yet implemented! Come back later to play!");
@@ -138,26 +177,29 @@ public class Client {
         }
     }
 
-    public void registerPrompt(){
+    private void registerPrompt() throws ExitException{
         String username = usernamePrompt();
         this.user = username;
         String password = passwordPrompt();
         String email = emailPrompt();
+        //Check for failures in request
         RegisterRequest registerRequest = new RegisterRequest(username, password, email);
-        //Add logic to send the request
+        RegisterResult registerResult = serverFacade.register(registerRequest);
+        this.authToken = registerResult.getAuthToken();
         this.menuLevel = 1;
     }
 
-    public void loginPrompt(){
+    private void loginPrompt() throws ExitException{
         String username = usernamePrompt();
         this.user = username;
         String password = passwordPrompt();
         LoginRequest loginRequest = new LoginRequest(username, password);
-        //Add logic to send the request
+        LoginResult loginResult = serverFacade.login(loginRequest);
+        this.authToken = loginResult.getAuthToken();
         this.menuLevel = 1;
     }
 
-    public String usernamePrompt(){
+    private String usernamePrompt() throws ExitException{
         System.out.println("Please enter your username: ");
         String username = getInput();
         if(username.matches(ALPHA_NUMERIC)){
@@ -169,13 +211,16 @@ public class Client {
         }
     }
 
-    public String passwordPrompt(){
+    private String passwordPrompt() throws ExitException{
         System.out.println("Please enter your password: ");
         String password = getInput();
+        if(password.equals("exit")){
+            throw new ExitException();
+        }
         return password;
     }
 
-    public String emailPrompt(){
+    private String emailPrompt() throws ExitException{
         System.out.println("Please enter your email: ");
         String email = getInput();
         if(email.contains("@") && email.substring(email.indexOf("@")).contains(".")){
@@ -186,37 +231,67 @@ public class Client {
         }
     }
 
-    public void logout(){
+    private void logout(){
         this.menuLevel = 0;
     }
 
-    public void listGames(){
-        System.out.println("Games: ");
+    private void listGames(){
+        ListGamesRequest listGamesRequest = new ListGamesRequest(this.authToken);
+        ListGamesResult listGamesResult = serverFacade.listGames(listGamesRequest);
+        this.currentGames = listGamesResult.getGames();
+        consoleGameIndices = new int[this.currentGames.size()];
+        System.out.println("Current games:");
+        for(int i = 0; i<this.currentGames.size(); i++){
+            consoleGameIndices[i] = this.currentGames.get(i).getGameID();
+            printGameData(this.currentGames.get(i), i);
+        }
     }
 
-    public void playGamePrompt(){
-        int gameID = gameIdPrompt();
+    private void printGameData(GameData gameData, int consoleGameIndex){
+        System.out.print(consoleGameIndex + ". ");
+        System.out.println(gameData.getGameName() + ": White user: " + gameData.getWhiteUsername() + ", Black user: " + gameData.getBlackUsername());
+    }
+
+    private void playGamePrompt() throws ExitException {
+        int gameIDInput = gameIdPrompt();
         String color = colorPrompt();
         this.playerType = color;
-        //Add logic to get the chessgame
-        chessGame = new ChessGame();
+        JoinGameRequest joinGameRequest = new JoinGameRequest(this.playerType, this.consoleGameIndices[gameIDInput], this.authToken);
+        JoinGameResult joinGameResult = serverFacade.joinGame(joinGameRequest);
+        this.gameID = joinGameResult.getGameID();
+        this.gameData = this.currentGames.get(gameIDInput);
         this.menuLevel = 2;
     }
 
-    public void observeGamePrompt(){
-        int gameID = gameIdPrompt();
+    private void observeGamePrompt() throws ExitException {
+        int gameIDInput = gameIdPrompt();
         this.playerType = "observer";
-        chessGame = new ChessGame();
+        JoinGameRequest joinGameRequest = new JoinGameRequest(this.playerType, this.consoleGameIndices[gameIDInput], this.authToken);
+        JoinGameResult joinGameResult = serverFacade.joinGame(joinGameRequest);
+        this.gameID = joinGameResult.getGameID();
+        this.gameData = this.currentGames.get(gameIDInput);
         this.menuLevel = 2;
     }
 
-    public int gameIdPrompt(){
+    private int gameIdPrompt() throws ExitException {
         System.out.println("Please enter the ID of the game you wish to observe: ");
-        //Add logic to check gameID valid
-        return Integer.parseInt(this.getInput());
+        int inputID;
+        try {
+            inputID = Integer.parseInt(this.getInput());
+        } catch (NumberFormatException e){
+            System.out.println("The GameID must be an integer.");
+            return gameIdPrompt();
+        }
+        if(inputID<consoleGameIndices.length){
+            return inputID;
+        } else {
+            System.out.println("The game ID is invalid. Here is a list of the current games: ");
+            this.listGames();
+            return gameIdPrompt();
+        }
     }
 
-    public String colorPrompt(){
+    private String colorPrompt() throws ExitException {
         System.out.println("Please enter the color you wish to play as: ");
         String color = this.getInput().toLowerCase();
         //Add logic to check that the color is not taken
@@ -225,6 +300,12 @@ public class Client {
         } else {
             System.out.println("Valid colors are black and white.");
             return colorPrompt();
+        }
+    }
+
+    private static class ExitException extends Exception{
+        public ExitException(){
+            super();
         }
     }
 }
