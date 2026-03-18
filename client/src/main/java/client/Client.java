@@ -20,11 +20,10 @@ public class Client {
     private int menuLevel;
     private String user;
     private String playerType;
-    private GameData gameData;
+    private ChessGame chessGame;
     private String authToken;
     private int[] consoleGameIndices = new int[0];
     private int gameID;
-    private ArrayList<GameData> currentGames = new ArrayList<GameData>();
 
     private static final String ALPHA_NUMERIC = "^[a-zA-Z0-9]+$";
 
@@ -151,10 +150,11 @@ public class Client {
     }
 
     private void printGame(){
+        this.chessGame = new ChessGame();
         if(this.playerType.equals("white") || this.playerType.equals("black")) {
-            ChessGamePrinter.printChessBoard(this.gameData.getGame().getBoard(), this.playerType);
+            ChessGamePrinter.printChessBoard(this.chessGame.getBoard(), this.playerType);
         } else{
-            ChessGamePrinter.printChessBoard(this.gameData.getGame().getBoard(), "white");
+            ChessGamePrinter.printChessBoard(this.chessGame.getBoard(), "white");
         }
         printHelp();
     }
@@ -279,12 +279,11 @@ public class Client {
         ListGamesRequest listGamesRequest = new ListGamesRequest(this.authToken);
         try {
             ListGamesResult listGamesResult = serverFacade.listGames(listGamesRequest);
-            this.currentGames = listGamesResult.getGames();
-            consoleGameIndices = new int[this.currentGames.size()];
+            consoleGameIndices = new int[listGamesResult.getGames().size()];
             System.out.println("Current games:");
-            for (int i = 0; i < this.currentGames.size(); i++) {
-                consoleGameIndices[i] = this.currentGames.get(i).getGameID();
-                printGameData(this.currentGames.get(i), i);
+            for (int i = 0; i < listGamesResult.getGames().size(); i++) {
+                consoleGameIndices[i] = listGamesResult.getGames().get(i).getGameID();
+                printGameData(listGamesResult.getGames().get(i), i);
             }
         } catch (Exception e){
             handleException(e);
@@ -314,24 +313,30 @@ public class Client {
         String color = colorPrompt();
         this.playerType = color;
         JoinGameRequest joinGameRequest = new JoinGameRequest(this.playerType, this.consoleGameIndices[gameIDInput], this.authToken);
-        JoinGameResult joinGameResult = serverFacade.joinGame(joinGameRequest);
-        this.gameID = joinGameResult.getGameID();
-        this.gameData = this.currentGames.get(gameIDInput);
-        this.menuLevel = 2;
+        try {
+            JoinGameResult joinGameResult = serverFacade.joinGame(joinGameRequest);
+            this.gameID = joinGameResult.getGameID();
+            this.menuLevel = 2;
+        } catch (Exception e) {
+            handleException(e);
+        }
     }
 
     private void observeGamePrompt() throws ExitException {
         int gameIDInput = gameIdPrompt();
         this.playerType = "observer";
         JoinGameRequest joinGameRequest = new JoinGameRequest(this.playerType, this.consoleGameIndices[gameIDInput], this.authToken);
-        JoinGameResult joinGameResult = serverFacade.joinGame(joinGameRequest);
-        this.gameID = joinGameResult.getGameID();
-        this.gameData = this.currentGames.get(gameIDInput);
-        this.menuLevel = 2;
+        try {
+            JoinGameResult joinGameResult = serverFacade.joinGame(joinGameRequest);
+            this.gameID = joinGameResult.getGameID();
+            this.menuLevel = 2;
+        } catch (Exception e){
+            handleException(e);
+        }
     }
 
     private int gameIdPrompt() throws ExitException {
-        System.out.println("Please enter the ID of the game you wish to observe: ");
+        System.out.println("Please enter the game ID: ");
         int inputID;
         try {
             inputID = Integer.parseInt(this.getInput());

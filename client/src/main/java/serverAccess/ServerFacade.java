@@ -89,8 +89,14 @@ public class ServerFacade {
     }
 
     //javalin.put("/game", new JoinGameHandler(gameService));
-    public JoinGameResult joinGame(JoinGameRequest joinGameRequest){
-        return new JoinGameResult(joinGameRequest.getPlayerColor(), joinGameRequest.getGameID());
+    public JoinGameResult joinGame(JoinGameRequest joinGameRequest) throws UnauthorizedException, AlreadyTakenException, RuntimeException {
+        String httpResult = "";
+        try{
+            httpResult = serverCommunicator.put(joinGameRequest.getAuthToken(), "/game", this.gson.toJson(joinGameRequest)).body();
+        } catch (Exception e){
+            handleException(e);
+        }
+        return gson.fromJson(httpResult, JoinGameResult.class);
     }
 
     //javalin.delete("/db", new ClearDataBaseHandler(deleteService));
