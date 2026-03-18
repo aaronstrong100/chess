@@ -1,17 +1,15 @@
 package serverAccess;
 import com.google.gson.JsonParser;
-import dataaccess.AlreadyTakenException;
-import dataaccess.UnauthorizedException;
+import shared_exceptions.AlreadyTakenException;
+import shared_exceptions.UnauthorizedException;
 import server.Server;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
-import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Locale;
 
 public class ServerCommunicator {
     private Server server;

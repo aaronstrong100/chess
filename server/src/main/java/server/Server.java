@@ -20,6 +20,8 @@ import org.jetbrains.annotations.NotNull;
 import service.UserService;
 import service.GameService;
 import service.DeleteService;
+import shared_exceptions.AlreadyTakenException;
+import shared_exceptions.UnauthorizedException;
 
 public class Server {
 

@@ -1,8 +1,8 @@
 package serverAccess;
 
 import com.google.gson.Gson;
-import dataaccess.AlreadyTakenException;
-import dataaccess.UnauthorizedException;
+import shared_exceptions.AlreadyTakenException;
+import shared_exceptions.UnauthorizedException;
 import requests.*;
 import results.*;
 import server.Server;

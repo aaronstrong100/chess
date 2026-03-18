@@ -1,12 +1,9 @@
 package dataaccess;
-import dataaccess.UnauthorizedException;
+import shared_exceptions.UnauthorizedException;
 import model.*;
-import dataaccess.DatabaseManager;
 
 import java.sql.SQLException;
 import java.util.UUID;
-
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 public class MySqlAuthDAO implements AuthDAO{
 

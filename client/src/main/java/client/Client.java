@@ -3,8 +3,8 @@ package client;
 import java.util.Scanner;
 
 import chess.ChessGame;
-import dataaccess.AlreadyTakenException;
-import dataaccess.UnauthorizedException;
+import shared_exceptions.AlreadyTakenException;
+import shared_exceptions.UnauthorizedException;
 import model.GameData;
 import requests.*;
 import results.*;

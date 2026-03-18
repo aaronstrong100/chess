@@ -1,7 +1,7 @@
 package dataaccess;
 
 import model.AuthData;
-import dataaccess.UnauthorizedException;
+import shared_exceptions.UnauthorizedException;
 
 import java.util.ArrayList;
 import java.util.Iterator;

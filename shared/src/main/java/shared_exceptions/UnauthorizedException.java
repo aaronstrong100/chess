@@ -1,6 +1,4 @@
-package dataaccess;
-
-import dataaccess.DataAccessException;
+package shared_exceptions;
 
 public class UnauthorizedException extends DataAccessException{
     public UnauthorizedException(){

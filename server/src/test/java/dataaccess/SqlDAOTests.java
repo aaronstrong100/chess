@@ -5,6 +5,8 @@ import chess.ChessMove;
 import chess.ChessPosition;
 import org.junit.jupiter.api.*;
 import model.*;
+import shared_exceptions.DataAccessException;
+import shared_exceptions.UnauthorizedException;
 
 import java.util.ArrayList;
 
@@ -84,7 +86,7 @@ public class SqlDAOTests {
     @Test
     @Order(3)
     @DisplayName("UserDAO: getUser normal")
-    public void getUserSuccess() throws UnauthorizedException{
+    public void getUserSuccess() throws UnauthorizedException {
         userDAO.getUserData(demoUsername);
     }
 
@@ -214,7 +216,7 @@ public class SqlDAOTests {
     @Test
     @Order(13)
     @DisplayName("GameDAO: getGame normal")
-    public void getGameSuccess() throws DataAccessException{
+    public void getGameSuccess() throws DataAccessException {
         GameData gameData = gameDAO.getGame(demoGameID);
         Assertions.assertEquals(gameData.getGameName(), demoGameName);
         Assertions.assertEquals(gameData.getGame(), demoChessGame);

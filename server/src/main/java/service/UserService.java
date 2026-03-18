@@ -9,6 +9,8 @@ import results.RegisterResult;
 import dataaccess.*;
 import model.AuthData;
 import model.UserData;
+import shared_exceptions.AlreadyTakenException;
+import shared_exceptions.UnauthorizedException;
 
 public class UserService {
     private UserDAO userDAO;
@@ -27,7 +29,7 @@ public class UserService {
      * @param registerRequest RegisterRequest object containing the username and password of the new user
      * @return a RegisterResult Object containing the new authToken for the user
      */
-    public RegisterResult register(RegisterRequest registerRequest) throws AlreadyTakenException{
+    public RegisterResult register(RegisterRequest registerRequest) throws AlreadyTakenException {
         registerRequest = new RegisterRequest(registerRequest.getUsername(),
                                                 BCrypt.hashpw(registerRequest.getPassword(), BCrypt.gensalt()),
                                                 registerRequest.getEmail());
