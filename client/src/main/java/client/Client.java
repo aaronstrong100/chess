@@ -268,18 +268,26 @@ public class Client {
     }
 
     private void listGames(){
+        ListGamesResult listGamesResult = refreshGames();
+        System.out.println("Current games:");
+        for (int i = 0; i < listGamesResult.getGames().size(); i++) {
+            printGameData(listGamesResult.getGames().get(i), i);
+        }
+    }
+
+    private ListGamesResult refreshGames(){
         ListGamesRequest listGamesRequest = new ListGamesRequest(this.authToken);
+        ListGamesResult listGamesResult = null;
         try {
-            ListGamesResult listGamesResult = serverFacade.listGames(listGamesRequest);
-            consoleGameIndices = new int[listGamesResult.getGames().size()];
-            System.out.println("Current games:");
+            listGamesResult = serverFacade.listGames(listGamesRequest);
+            this.consoleGameIndices = new int[listGamesResult.getGames().size()];
             for (int i = 0; i < listGamesResult.getGames().size(); i++) {
                 consoleGameIndices[i] = listGamesResult.getGames().get(i).getGameID();
-                printGameData(listGamesResult.getGames().get(i), i);
             }
         } catch (Exception e){
             handleException(e);
         }
+        return listGamesResult;
     }
 
     private void printGameData(GameData gameData, int consoleGameIndex){
@@ -301,13 +309,7 @@ public class Client {
     }
 
     private void playGamePrompt() throws ExitException {
-        ListGamesRequest listGamesRequest = new ListGamesRequest(this.authToken);
-        try {
-            ListGamesResult listGamesResult = serverFacade.listGames(listGamesRequest);
-            this.consoleGameIndices = new int[listGamesResult.getGames().size()];
-        } catch (Exception e){
-            handleException(e);
-        }
+        refreshGames();
         int gameIDInput = gameIdPrompt();
         String color = colorPrompt();
         this.playerType = color;
@@ -322,6 +324,7 @@ public class Client {
     }
 
     private void observeGamePrompt() throws ExitException {
+        refreshGames();
         int gameIDInput = gameIdPrompt();
         this.playerType = "observer";
         JoinGameRequest joinGameRequest = new JoinGameRequest(this.playerType, this.consoleGameIndices[gameIDInput], this.authToken);

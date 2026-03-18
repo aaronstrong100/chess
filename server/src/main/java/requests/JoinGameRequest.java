@@ -6,7 +6,7 @@ public class JoinGameRequest {
     private String playerColor;
     private int gameID;
     @Expose(serialize = false)
-    private String authToken;
+    private transient String authToken;
     public JoinGameRequest(String playerColor, int gameID, String authToken){
         this.playerColor = playerColor;
         this.gameID = gameID;
