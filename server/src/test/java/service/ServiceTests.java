@@ -1,11 +1,9 @@
 package service;
 
 import org.junit.jupiter.api.*;
-import passoff.model.*;
-import service.*;
+import dataaccess.*;
 import requests.*;
 import results.*;
-import dataaccess.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ServiceTests {

@@ -1,15 +1,11 @@
 package serverAccess;
 
-import chess.ChessGame;
 import com.google.gson.Gson;
 import dataaccess.AlreadyTakenException;
 import dataaccess.UnauthorizedException;
-import model.GameData;
 import requests.*;
 import results.*;
 import server.Server;
-
-import java.util.ArrayList;
 
 public class ServerFacade {
     private ServerCommunicator serverCommunicator;

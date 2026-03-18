@@ -1,9 +1,7 @@
 package client;
 
-import java.util.ArrayList;
 import java.util.Scanner;
 
-import chess.ChessBoard;
 import chess.ChessGame;
 import dataaccess.AlreadyTakenException;
 import dataaccess.UnauthorizedException;
