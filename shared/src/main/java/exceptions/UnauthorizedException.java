@@ -1,4 +1,4 @@
-package shared_exceptions;
+package exceptions;
 
 public class UnauthorizedException extends DataAccessException{
     public UnauthorizedException(){

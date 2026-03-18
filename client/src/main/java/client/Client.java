@@ -8,7 +8,7 @@ import exceptions.UnauthorizedException;
 import model.GameData;
 import requests.*;
 import results.*;
-import serverAccess.ServerFacade;
+import serveraccess.ServerFacade;
 import ui.ChessGamePrinter;
 
 public class Client {

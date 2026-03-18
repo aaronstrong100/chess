@@ -1,4 +1,4 @@
-package serverAccess;
+package serveraccess;
 
 import com.google.gson.Gson;
 import exceptions.AlreadyTakenException;

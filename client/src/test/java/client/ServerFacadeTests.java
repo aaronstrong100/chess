@@ -1,10 +1,9 @@
 package client;
 
-import dataaccess.*;
 import org.junit.jupiter.api.*;
 import results.*;
 import server.Server;
-import serverAccess.ServerFacade;
+import serveraccess.ServerFacade;
 import requests.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)

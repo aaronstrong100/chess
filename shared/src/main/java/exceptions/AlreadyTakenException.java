@@ -1,4 +1,4 @@
-package shared_exceptions;
+package exceptions;
 
 public class AlreadyTakenException extends DataAccessException{
     public AlreadyTakenException(){

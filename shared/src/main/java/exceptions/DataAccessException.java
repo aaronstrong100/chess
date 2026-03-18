@@ -1,4 +1,4 @@
-package shared_exceptions;
+package exceptions;
 
 /**
  * Indicates there was an error connecting to the database

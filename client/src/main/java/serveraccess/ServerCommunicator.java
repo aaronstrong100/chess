@@ -1,4 +1,4 @@
-package serverAccess;
+package serveraccess;
 import com.google.gson.JsonParser;
 import exceptions.AlreadyTakenException;
 import exceptions.UnauthorizedException;
