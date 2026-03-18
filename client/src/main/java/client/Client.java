@@ -130,6 +130,9 @@ public class Client {
                 case "logout":
                     logout();
                     break;
+                case "create game":
+                    createGame();
+                    break;
                 case "list games":
                     listGames();
                     break;
@@ -255,6 +258,17 @@ public class Client {
         this.menuLevel = 0;
     }
 
+    public void createGame() throws ExitException {
+        String gameName = gameNamePrompt();
+        CreateGameRequest createGameRequest = new CreateGameRequest(gameName, this.authToken);
+        try{
+            CreateGameResult createGameResult = serverFacade.createGame(createGameRequest);
+            System.out.println("Successfully created game.");
+        } catch (Exception e){
+            handleException(e);
+        }
+    }
+
     private void listGames(){
         ListGamesRequest listGamesRequest = new ListGamesRequest(this.authToken);
         try {
@@ -274,6 +288,11 @@ public class Client {
     private void printGameData(GameData gameData, int consoleGameIndex){
         System.out.print(consoleGameIndex + ". ");
         System.out.println(gameData.getGameName() + ": White user: " + gameData.getWhiteUsername() + ", Black user: " + gameData.getBlackUsername());
+    }
+
+    private String gameNamePrompt() throws ExitException {
+        System.out.println("Please enter name of new game:");
+        return getInput();
     }
 
     private void playGamePrompt() throws ExitException {

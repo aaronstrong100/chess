@@ -43,8 +43,6 @@ public class ServerFacade {
             handleException(e);
         }
         return gson.fromJson(httpResult, RegisterResult.class);
-        //URISyntaxException, IOException, InterruptedException, UnauthorizedException, AlreadyTakenException
-        //return new RegisterResult(registerRequest.getUsername(), "auth");
     }
 
     //javalin.post("/session", new LoginHandler(userService));
@@ -76,8 +74,14 @@ public class ServerFacade {
     }
 
     //javalin.post("/game", new CreateGameHandler(gameService));
-    public CreateGameResult createGame(CreateGameRequest createGameRequest){
-        return new CreateGameResult(1);
+    public CreateGameResult createGame(CreateGameRequest createGameRequest) throws UnauthorizedException, AlreadyTakenException, RuntimeException {
+        String httpResult = "";
+        try{
+            httpResult = serverCommunicator.post(createGameRequest.getAuthToken(), "/game", this.gson.toJson(createGameRequest)).body();
+        } catch (Exception e){
+            handleException(e);
+        }
+        return gson.fromJson(httpResult, CreateGameResult.class);
     }
 
     //javalin.put("/game", new JoinGameHandler(gameService));
