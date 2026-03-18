@@ -1,4 +1,5 @@
 package serverAccess;
+import com.google.gson.JsonParser;
 import dataaccess.AlreadyTakenException;
 import dataaccess.UnauthorizedException;
 import server.Server;
@@ -28,6 +29,23 @@ public class ServerCommunicator {
         this.server.stop();
     }
 
+    public String getErrorMessage(HttpResponse<String> httpResponse){
+        return JsonParser.parseString(httpResponse.body()).getAsJsonObject().get("message").getAsString();
+    }
+
+    public HttpResponse<String> handleResponse(HttpResponse<String> httpResponse) throws UnauthorizedException, AlreadyTakenException, RuntimeException {
+        switch (httpResponse.statusCode()){
+            case 200:
+                return httpResponse;
+            case 401:
+                throw new UnauthorizedException(getErrorMessage(httpResponse));
+            case 403:
+                throw new AlreadyTakenException(getErrorMessage(httpResponse));
+            default:
+                throw new RuntimeException();
+        }
+    }
+
     public HttpResponse<String> get(String header, String urlPath)  throws URISyntaxException, IOException, InterruptedException, UnauthorizedException, AlreadyTakenException {
         String urlString = String.format("http://%s:%d%s", HOST, this.server.getPort(), urlPath);
         HttpRequest request = HttpRequest.newBuilder()
@@ -38,17 +56,7 @@ public class ServerCommunicator {
                 .build();
 
         HttpResponse<String> httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-        switch (httpResponse.statusCode()){
-            case 200:
-                return httpResponse;
-            case 401:
-                throw new UnauthorizedException();
-            case 403:
-                throw new AlreadyTakenException();
-            default:
-                throw new RuntimeException();
-        }
+        return handleResponse(httpResponse);
     }
 
     public HttpResponse<String> post(String header, String urlPath, String message) throws URISyntaxException, IOException, InterruptedException, UnauthorizedException, AlreadyTakenException {
@@ -61,17 +69,7 @@ public class ServerCommunicator {
                 .build();
 
         HttpResponse<String> httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-        switch (httpResponse.statusCode()){
-            case 200:
-                return httpResponse;
-            case 401:
-                throw new UnauthorizedException();
-            case 403:
-                throw new AlreadyTakenException();
-            default:
-                throw new RuntimeException();
-        }
+        return handleResponse(httpResponse);
     }
 
     public String put(String header, String urlPath, String message){
