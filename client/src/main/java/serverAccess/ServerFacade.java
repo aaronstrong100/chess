@@ -96,7 +96,11 @@ public class ServerFacade {
     }
 
     //javalin.delete("/db", new ClearDataBaseHandler(deleteService));
-    public void clearDataBase(){
-
+    public void clearDataBase() throws UnauthorizedException, AlreadyTakenException, RuntimeException {
+        try{
+            serverCommunicator.delete("", "/db").body();
+        } catch (Exception e){
+            handleException(e);
+        }
     }
 }
