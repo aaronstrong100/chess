@@ -1,6 +1,9 @@
 package serverAccess;
 
 import chess.ChessGame;
+import com.google.gson.Gson;
+import dataaccess.AlreadyTakenException;
+import dataaccess.UnauthorizedException;
 import model.GameData;
 import requests.*;
 import results.*;
@@ -10,9 +13,11 @@ import java.util.ArrayList;
 
 public class ServerFacade {
     private ServerCommunicator serverCommunicator;
+    private Gson gson;
 
     public ServerFacade(Server server){
         this.serverCommunicator = new ServerCommunicator(server);
+        gson = new Gson();
     }
 
     public void stop(){
@@ -20,8 +25,17 @@ public class ServerFacade {
     }
 
     //javalin.post("/user", new RegisterHandler(userService));
-    public RegisterResult register(RegisterRequest registerRequest){
-        return new RegisterResult(registerRequest.getUsername(), "auth");
+    public RegisterResult register(RegisterRequest registerRequest) throws UnauthorizedException, AlreadyTakenException, RuntimeException {
+        try{
+            String httpResult = serverCommunicator.post("", "/user", this.gson.toJson(registerRequest));
+            return gson.fromJson(httpResult, RegisterResult.class);
+        } catch (UnauthorizedException | AlreadyTakenException e){
+            throw e;
+        } catch (Exception e){
+            throw new RuntimeException();
+        }
+        //URISyntaxException, IOException, InterruptedException, UnauthorizedException, AlreadyTakenException
+        //return new RegisterResult(registerRequest.getUsername(), "auth");
     }
 
     //javalin.post("/session", new LoginHandler(userService));
@@ -48,5 +62,9 @@ public class ServerFacade {
     //javalin.put("/game", new JoinGameHandler(gameService));
     public JoinGameResult joinGame(JoinGameRequest joinGameRequest){
         return new JoinGameResult(joinGameRequest.getPlayerColor(), joinGameRequest.getGameID());
+    }
+    //javalin.delete("/db", new ClearDataBaseHandler(deleteService));
+    public void clearDataBase(){
+
     }
 }
