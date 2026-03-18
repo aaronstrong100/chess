@@ -45,7 +45,9 @@ public class GameService {
             }else {
                 throw new AlreadyTakenException("Team BLACK is already taken");
             }
-        } else {
+        } else if (joinGameRequest.getPlayerColor().equalsIgnoreCase("OBSERVER")){
+            return new JoinGameResult(joinGameRequest.getPlayerColor(), joinGameRequest.getGameID());
+        }else {
             throw new Exception("Value of playerColor must be WHITE or BLACK");
         }
     }
