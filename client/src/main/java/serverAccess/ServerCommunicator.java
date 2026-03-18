@@ -28,11 +28,30 @@ public class ServerCommunicator {
         this.server.stop();
     }
 
-    public String get(String header, String urlPath){
-        return "";
+    public HttpResponse<String> get(String header, String urlPath)  throws URISyntaxException, IOException, InterruptedException, UnauthorizedException, AlreadyTakenException {
+        String urlString = String.format("http://%s:%d%s", HOST, this.server.getPort(), urlPath);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(new URI(urlString))
+                .timeout(java.time.Duration.ofMillis(TIMEOUT_MILLIS))
+                .header("authorization", header)
+                .GET()
+                .build();
+
+        HttpResponse<String> httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        switch (httpResponse.statusCode()){
+            case 200:
+                return httpResponse;
+            case 401:
+                throw new UnauthorizedException();
+            case 403:
+                throw new AlreadyTakenException();
+            default:
+                throw new RuntimeException();
+        }
     }
 
-    public String post(String header, String urlPath, String message) throws URISyntaxException, IOException, InterruptedException, UnauthorizedException, AlreadyTakenException{
+    public HttpResponse<String> post(String header, String urlPath, String message) throws URISyntaxException, IOException, InterruptedException, UnauthorizedException, AlreadyTakenException {
         String urlString = String.format("http://%s:%d%s", HOST, this.server.getPort(), urlPath);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI(urlString))
@@ -45,7 +64,7 @@ public class ServerCommunicator {
 
         switch (httpResponse.statusCode()){
             case 200:
-                return httpResponse.body();
+                return httpResponse;
             case 401:
                 throw new UnauthorizedException();
             case 403:
@@ -53,16 +72,6 @@ public class ServerCommunicator {
             default:
                 throw new RuntimeException();
         }
-
-        /**
-         * if(e instanceof UnauthorizedException){
-         *             return 401;
-         *         } else if(e instanceof AlreadyTakenException){
-         *             return 403;
-         *         } else if(e instanceof RuntimeException){
-         *             return 500;
-         *         }
-         */
     }
 
     public String put(String header, String urlPath, String message){
