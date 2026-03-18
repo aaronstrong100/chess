@@ -92,7 +92,6 @@ public class DatabaseManager {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("Failed to initialize database tables");
             throw new DataAccessException("Failed to initialize database tables");
         }
     }
@@ -116,7 +115,6 @@ public class DatabaseManager {
             conn.setCatalog(databaseName);
             return conn;
         } catch (SQLException ex) {
-            System.out.println("failed to get connection");
             throw new DataAccessException("failed to get connection", ex);
         }
     }

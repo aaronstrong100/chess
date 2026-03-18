@@ -41,7 +41,6 @@ public class MySqlAuthDAO implements AuthDAO{
      */
     @Override
     public AuthData getAuthData(String authToken) throws UnauthorizedException{
-        System.out.println(authToken);
         try(var conn = DatabaseManager.getConnection()) {
             var getAuthStatement = "SELECT username, auth_token FROM auth_data WHERE auth_token=?";
             try (var preparedGetAuthStatement = conn.prepareStatement(getAuthStatement)) {
