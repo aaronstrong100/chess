@@ -5,6 +5,8 @@ import java.util.Scanner;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import dataaccess.AlreadyTakenException;
+import dataaccess.UnauthorizedException;
 import model.GameData;
 import requests.*;
 import results.*;
@@ -67,6 +69,16 @@ public class Client {
             throw new ExitException();
         } else {
             return input;
+        }
+    }
+
+    private void handleException(Exception e){
+        if(e instanceof UnauthorizedException){
+            System.out.println("The password is incorrect.");
+        } else if(e instanceof AlreadyTakenException){
+            System.out.println("Already taken.");
+        } else{
+            System.out.println("Invalid input.");
         }
     }
 
@@ -184,9 +196,13 @@ public class Client {
         String email = emailPrompt();
         //Check for failures in request
         RegisterRequest registerRequest = new RegisterRequest(username, password, email);
-        RegisterResult registerResult = serverFacade.register(registerRequest);
-        this.authToken = registerResult.getAuthToken();
-        this.menuLevel = 1;
+        try {
+            RegisterResult registerResult = serverFacade.register(registerRequest);
+            this.authToken = registerResult.getAuthToken();
+            this.menuLevel = 1;
+        } catch (Exception e){
+            handleException(e);
+        }
     }
 
     private void loginPrompt() throws ExitException{

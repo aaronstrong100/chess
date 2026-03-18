@@ -33,6 +33,8 @@ public class Server {
     private GameService gameService;
     private DeleteService deleteService;
 
+    private int port;
+
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
@@ -62,7 +64,12 @@ public class Server {
 
     public int run(int desiredPort) {
         javalin.start(desiredPort);
+        this.port = desiredPort;
         return javalin.port();
+    }
+
+    public int getPort(){
+        return this.port;
     }
 
     public void stop() {
@@ -70,7 +77,6 @@ public class Server {
     }
 
     public static int getErrorCode(Exception e){
-        System.out.println(e.getClass().getName() + ", " + e.getMessage());
         if(e instanceof UnauthorizedException){
             return 401;
         } else if(e instanceof AlreadyTakenException){
@@ -82,7 +88,6 @@ public class Server {
     }
 
     public static void handleException(Exception e, Context context){
-        System.out.println(e.getMessage());
         context.status(Server.getErrorCode(e));
         context.json("{\"message\": \"Error: "+ e.getMessage().replace("\"","\\\"") + "\"}");
     }
