@@ -257,13 +257,17 @@ public class Client {
 
     private void listGames(){
         ListGamesRequest listGamesRequest = new ListGamesRequest(this.authToken);
-        ListGamesResult listGamesResult = serverFacade.listGames(listGamesRequest);
-        this.currentGames = listGamesResult.getGames();
-        consoleGameIndices = new int[this.currentGames.size()];
-        System.out.println("Current games:");
-        for(int i = 0; i<this.currentGames.size(); i++){
-            consoleGameIndices[i] = this.currentGames.get(i).getGameID();
-            printGameData(this.currentGames.get(i), i);
+        try {
+            ListGamesResult listGamesResult = serverFacade.listGames(listGamesRequest);
+            this.currentGames = listGamesResult.getGames();
+            consoleGameIndices = new int[this.currentGames.size()];
+            System.out.println("Current games:");
+            for (int i = 0; i < this.currentGames.size(); i++) {
+                consoleGameIndices[i] = this.currentGames.get(i).getGameID();
+                printGameData(this.currentGames.get(i), i);
+            }
+        } catch (Exception e){
+            handleException(e);
         }
     }
 

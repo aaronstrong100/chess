@@ -64,10 +64,15 @@ public class ServerFacade {
     }
 
     //javalin.get("/game", new ListGamesHandler(gameService));
-    public ListGamesResult listGames(ListGamesRequest listGamesRequest){
-        ArrayList<GameData> games = new ArrayList<>();
-        games.add(new GameData(1, null, null, "Cool game", new ChessGame()));
-        return new ListGamesResult(games);
+    public ListGamesResult listGames(ListGamesRequest listGamesRequest) throws UnauthorizedException, AlreadyTakenException, RuntimeException {
+        try{
+            String httpResult = serverCommunicator.get(listGamesRequest.getAuthToken(), "/game").body();
+            return gson.fromJson(httpResult, ListGamesResult.class);
+        } catch (UnauthorizedException | AlreadyTakenException e){
+            throw e;
+        } catch (Exception e){
+            throw new RuntimeException();
+        }
     }
 
     //javalin.post("/game", new CreateGameHandler(gameService));
@@ -79,6 +84,7 @@ public class ServerFacade {
     public JoinGameResult joinGame(JoinGameRequest joinGameRequest){
         return new JoinGameResult(joinGameRequest.getPlayerColor(), joinGameRequest.getGameID());
     }
+
     //javalin.delete("/db", new ClearDataBaseHandler(deleteService));
     public void clearDataBase(){
 
