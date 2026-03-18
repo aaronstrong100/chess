@@ -38,21 +38,15 @@ public class Client {
         while(this.menuLevel>=0){
             if(this.menuLevel==0){
                 printPrelogin();
-                while(this.menuLevel==0){
-                    userInputPrelogin();
-                }
+                userInputPrelogin();
             }
             else if(this.menuLevel==1){
                 printPostLogin();
-                while(this.menuLevel==1) {
-                    userInputPostLogin();
-                }
+                userInputPostLogin();
             }
             else if(this.menuLevel==2){
                 printGame();
-                while(this.menuLevel==2) {
-                    userInputGame();
-                }
+                userInputGame();
             }
         }
     }
@@ -86,8 +80,7 @@ public class Client {
     }
 
     private void printPrelogin(){
-        System.out.println("Welcome to Aaron Strong's Chess Server. Type an option to proceed:");
-        printHelp();
+        System.out.println("Login menu: Type a command or type \"help\" to proceed:");
     }
 
     private void userInputPrelogin(){
@@ -115,8 +108,7 @@ public class Client {
     }
 
     private void printPostLogin(){
-        System.out.println("Welcome, " + user + ". Type an option to proceed:");
-        printHelp();
+        System.out.println("User menu:  Type a command or \"help\" to proceed:");
     }
 
     private void userInputPostLogin(){
@@ -291,7 +283,7 @@ public class Client {
     }
 
     private void printGameData(GameData gameData, int consoleGameIndex){
-        System.out.print(consoleGameIndex + ". ");
+        System.out.print((consoleGameIndex+1) + ". ");
         String whiteUsername = gameData.getWhiteUsername();
         if(whiteUsername == null){
             whiteUsername = "<available>";
@@ -309,6 +301,13 @@ public class Client {
     }
 
     private void playGamePrompt() throws ExitException {
+        ListGamesRequest listGamesRequest = new ListGamesRequest(this.authToken);
+        try {
+            ListGamesResult listGamesResult = serverFacade.listGames(listGamesRequest);
+            this.consoleGameIndices = new int[listGamesResult.getGames().size()];
+        } catch (Exception e){
+            handleException(e);
+        }
         int gameIDInput = gameIdPrompt();
         String color = colorPrompt();
         this.playerType = color;
@@ -339,7 +338,7 @@ public class Client {
         System.out.println("Please enter the game ID: ");
         int inputID;
         try {
-            inputID = Integer.parseInt(this.getInput());
+            inputID = Integer.parseInt(this.getInput())-1;
         } catch (NumberFormatException e){
             System.out.println("The GameID must be an integer.");
             return gameIdPrompt();
