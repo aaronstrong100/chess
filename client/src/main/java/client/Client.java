@@ -287,7 +287,15 @@ public class Client {
 
     private void printGameData(GameData gameData, int consoleGameIndex){
         System.out.print(consoleGameIndex + ". ");
-        System.out.println(gameData.getGameName() + ": White user: " + gameData.getWhiteUsername() + ", Black user: " + gameData.getBlackUsername());
+        String whiteUsername = gameData.getWhiteUsername();
+        if(whiteUsername == null){
+            whiteUsername = "<available>";
+        }
+        String blackUsername = gameData.getWhiteUsername();
+        if(blackUsername==null){
+            blackUsername = "<available>";
+        }
+        System.out.println(gameData.getGameName() + ": White user: " + whiteUsername + ", Black user: " + blackUsername);
     }
 
     private String gameNamePrompt() throws ExitException {
