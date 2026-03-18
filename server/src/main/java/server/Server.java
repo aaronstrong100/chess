@@ -67,7 +67,7 @@ public class Server implements JServer {
 
     public int run(int desiredPort) {
         javalin.start(desiredPort);
-        this.port = desiredPort;
+        this.port = javalin.port();
         return javalin.port();
     }
 
