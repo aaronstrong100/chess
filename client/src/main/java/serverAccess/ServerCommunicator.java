@@ -2,7 +2,7 @@ package serverAccess;
 import com.google.gson.JsonParser;
 import shared_exceptions.AlreadyTakenException;
 import shared_exceptions.UnauthorizedException;
-import server.Server;
+import shared_server.JServer;
 
 import java.io.IOException;
 import java.net.URI;
@@ -12,14 +12,14 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class ServerCommunicator {
-    private Server server;
+    private JServer server;
 
     private static final int TIMEOUT_MILLIS = 5000;
     private static final String HOST = "localhost";
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
-    public ServerCommunicator(Server server){
+    public ServerCommunicator(JServer server){
         this.server = server;
     }
 

@@ -22,8 +22,9 @@ import service.GameService;
 import service.DeleteService;
 import shared_exceptions.AlreadyTakenException;
 import shared_exceptions.UnauthorizedException;
+import shared_server.JServer;
 
-public class Server {
+public class Server implements JServer {
 
     private final Javalin javalin;
 

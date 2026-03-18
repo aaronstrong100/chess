@@ -23,7 +23,7 @@ public class ServerFacadeTests {
             demoUsername = "demoUsername";
             demoGameName = "demoGame";
             server = new Server();
-            server.run(8080);
+            server.run(0);
             serverFacade = new ServerFacade(server);
             serverFacade.clearDataBase();
             RegisterRequest registerRequest = new RegisterRequest(demoUsername,"password","email");

@@ -8,7 +8,7 @@ import shared_exceptions.UnauthorizedException;
 import model.GameData;
 import requests.*;
 import results.*;
-import server.Server;
+import shared_server.JServer;
 import serverAccess.ServerFacade;
 import ui.ChessGamePrinter;
 
@@ -25,7 +25,7 @@ public class Client {
 
     private static final String ALPHA_NUMERIC = "^[a-zA-Z0-9]+$";
 
-    public Client(Server server){
+    public Client(JServer server){
         this.serverFacade = new ServerFacade(server);
         this.userInput = new Scanner(System.in);
     }

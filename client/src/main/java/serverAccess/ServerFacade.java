@@ -5,13 +5,13 @@ import shared_exceptions.AlreadyTakenException;
 import shared_exceptions.UnauthorizedException;
 import requests.*;
 import results.*;
-import server.Server;
+import shared_server.JServer;
 
 public class ServerFacade {
     private ServerCommunicator serverCommunicator;
     private Gson gson;
 
-    public ServerFacade(Server server){
+    public ServerFacade(JServer server){
         this.serverCommunicator = new ServerCommunicator(server);
         gson = new Gson();
     }
