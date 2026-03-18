@@ -72,8 +72,17 @@ public class ServerCommunicator {
         return handleResponse(httpResponse);
     }
 
-    public String put(String header, String urlPath, String message){
-        return "";
+    public HttpResponse<String> put(String header, String urlPath, String message) throws URISyntaxException, IOException, InterruptedException, UnauthorizedException, AlreadyTakenException {
+        String urlString = String.format("http://%s:%d%s", HOST, this.server.getPort(), urlPath);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(new URI(urlString))
+                .timeout(java.time.Duration.ofMillis(TIMEOUT_MILLIS))
+                .header("authorization", header)
+                .PUT(HttpRequest.BodyPublishers.ofString(message))
+                .build();
+
+        HttpResponse<String> httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        return handleResponse(httpResponse);
     }
 
     public String delete(String header, String urlPath){
