@@ -30,7 +30,8 @@ public class ServerCommunicator {
         return JsonParser.parseString(httpResponse.body()).getAsJsonObject().get("message").getAsString();
     }
 
-    public HttpResponse<String> handleResponse(HttpResponse<String> httpResponse) throws UnauthorizedException, AlreadyTakenException, RuntimeException {
+    public HttpResponse<String> handleResponse(HttpResponse<String> httpResponse)
+            throws UnauthorizedException, AlreadyTakenException, RuntimeException {
         switch (httpResponse.statusCode()){
             case 200:
                 return httpResponse;
@@ -43,7 +44,8 @@ public class ServerCommunicator {
         }
     }
 
-    public HttpResponse<String> get(String header, String urlPath)  throws URISyntaxException, IOException, InterruptedException, UnauthorizedException, AlreadyTakenException {
+    public HttpResponse<String> get(String header, String urlPath)
+            throws URISyntaxException, IOException, InterruptedException, UnauthorizedException, AlreadyTakenException {
         String urlString = String.format("http://%s:%d%s", HOST, port, urlPath);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI(urlString))
@@ -56,7 +58,8 @@ public class ServerCommunicator {
         return handleResponse(httpResponse);
     }
 
-    public HttpResponse<String> post(String header, String urlPath, String message) throws URISyntaxException, IOException, InterruptedException, UnauthorizedException, AlreadyTakenException {
+    public HttpResponse<String> post(String header, String urlPath, String message)
+            throws URISyntaxException, IOException, InterruptedException, UnauthorizedException, AlreadyTakenException {
         String urlString = String.format("http://%s:%d%s", HOST, port, urlPath);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI(urlString))
@@ -69,7 +72,8 @@ public class ServerCommunicator {
         return handleResponse(httpResponse);
     }
 
-    public HttpResponse<String> put(String header, String urlPath, String message) throws URISyntaxException, IOException, InterruptedException, UnauthorizedException, AlreadyTakenException {
+    public HttpResponse<String> put(String header, String urlPath, String message)
+            throws URISyntaxException, IOException, InterruptedException, UnauthorizedException, AlreadyTakenException {
         String urlString = String.format("http://%s:%d%s", HOST, port, urlPath);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI(urlString))
@@ -82,7 +86,8 @@ public class ServerCommunicator {
         return handleResponse(httpResponse);
     }
 
-    public HttpResponse<String> delete(String header, String urlPath) throws URISyntaxException, IOException, InterruptedException, UnauthorizedException, AlreadyTakenException {
+    public HttpResponse<String> delete(String header, String urlPath)
+            throws URISyntaxException, IOException, InterruptedException, UnauthorizedException, AlreadyTakenException {
         String urlString = String.format("http://%s:%d%s", HOST, port, urlPath);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI(urlString))

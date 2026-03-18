@@ -19,13 +19,6 @@ public class ChessGamePrinter {
     private static final String BISHOP = " B ";
     private static final String PAWN = " P ";
 
-//    private static final String KING = BLACK_KING;
-//    private static final String QUEEN = BLACK_QUEEN;
-//    private static final String ROOK = BLACK_ROOK;
-//    private static final String KNIGHT = BLACK_KNIGHT;
-//    private static final String BISHOP = BLACK_BISHOP;
-//    private static final String PAWN = BLACK_PAWN;
-
 
 
     private static final Map<ChessPiece.PieceType, String> PIECE_STRINGS = Map.of(
