@@ -24,23 +24,39 @@ public class ServerFacade {
         this.serverCommunicator.stop();
     }
 
-    //javalin.post("/user", new RegisterHandler(userService));
-    public RegisterResult register(RegisterRequest registerRequest) throws UnauthorizedException, AlreadyTakenException, RuntimeException {
-        try{
-            String httpResult = serverCommunicator.post("", "/user", this.gson.toJson(registerRequest));
-            return gson.fromJson(httpResult, RegisterResult.class);
-        } catch (UnauthorizedException | AlreadyTakenException e){
-            throw e;
-        } catch (Exception e){
+    public void handleException(Exception e) throws UnauthorizedException, AlreadyTakenException, RuntimeException {
+        if(e instanceof UnauthorizedException){
+            throw new UnauthorizedException(e.getMessage());
+        } else if (e instanceof AlreadyTakenException) {
+            throw new AlreadyTakenException(e.getMessage());
+        } else {
             throw new RuntimeException();
         }
+    }
+
+    //javalin.post("/user", new RegisterHandler(userService));
+    public RegisterResult register(RegisterRequest registerRequest) throws UnauthorizedException, AlreadyTakenException, RuntimeException {
+        String httpResult = "";
+        try{
+            httpResult = serverCommunicator.post("", "/user", this.gson.toJson(registerRequest)).body();
+        } catch (Exception e){
+            handleException(e);
+        }
+        return gson.fromJson(httpResult, RegisterResult.class);
         //URISyntaxException, IOException, InterruptedException, UnauthorizedException, AlreadyTakenException
         //return new RegisterResult(registerRequest.getUsername(), "auth");
     }
 
     //javalin.post("/session", new LoginHandler(userService));
-    public LoginResult login(LoginRequest loginRequest){
-        return new LoginResult(loginRequest.getUsername(), "auth");
+    public LoginResult login(LoginRequest loginRequest) throws UnauthorizedException, AlreadyTakenException, RuntimeException {
+        try{
+            String httpResult = serverCommunicator.post("", "/session", this.gson.toJson(loginRequest)).body();
+            return gson.fromJson(httpResult, LoginResult.class);
+        } catch (UnauthorizedException | AlreadyTakenException e){
+            throw e;
+        } catch (Exception e){
+            throw new RuntimeException();
+        }
     }
 
     //javalin.delete("/session", new LogoutHandler(userService));

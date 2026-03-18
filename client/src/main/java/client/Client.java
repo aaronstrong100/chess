@@ -74,9 +74,9 @@ public class Client {
 
     private void handleException(Exception e){
         if(e instanceof UnauthorizedException){
-            System.out.println("The password is incorrect.");
+            System.out.println(e.getMessage());
         } else if(e instanceof AlreadyTakenException){
-            System.out.println("Already taken.");
+            System.out.println(e.getMessage());
         } else{
             System.out.println("Invalid input.");
         }
@@ -210,9 +210,13 @@ public class Client {
         this.user = username;
         String password = passwordPrompt();
         LoginRequest loginRequest = new LoginRequest(username, password);
-        LoginResult loginResult = serverFacade.login(loginRequest);
-        this.authToken = loginResult.getAuthToken();
-        this.menuLevel = 1;
+        try {
+            LoginResult loginResult = serverFacade.login(loginRequest);
+            this.authToken = loginResult.getAuthToken();
+            this.menuLevel = 1;
+        } catch (Exception e){
+            handleException(e);
+        }
     }
 
     private String usernamePrompt() throws ExitException{
