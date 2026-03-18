@@ -3,7 +3,7 @@ package dataaccess;
 import java.util.ArrayList;
 
 import model.GameData;
-import shared_exceptions.DataAccessException;
+import exceptions.DataAccessException;
 
 public interface GameDAO {
     /**

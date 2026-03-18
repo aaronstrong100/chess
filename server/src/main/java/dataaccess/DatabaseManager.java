@@ -1,6 +1,6 @@
 package dataaccess;
 
-import shared_exceptions.DataAccessException;
+import exceptions.DataAccessException;
 
 import java.io.InputStream;
 import java.sql.*;

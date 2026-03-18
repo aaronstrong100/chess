@@ -3,12 +3,11 @@ package client;
 import java.util.Scanner;
 
 import chess.ChessGame;
-import shared_exceptions.AlreadyTakenException;
-import shared_exceptions.UnauthorizedException;
+import exceptions.AlreadyTakenException;
+import exceptions.UnauthorizedException;
 import model.GameData;
 import requests.*;
 import results.*;
-import shared_server.JServer;
 import serverAccess.ServerFacade;
 import ui.ChessGamePrinter;
 
@@ -25,8 +24,8 @@ public class Client {
 
     private static final String ALPHA_NUMERIC = "^[a-zA-Z0-9]+$";
 
-    public Client(JServer server){
-        this.serverFacade = new ServerFacade(server);
+    public Client(int port){
+        this.serverFacade = new ServerFacade(port);
         this.userInput = new Scanner(System.in);
     }
 

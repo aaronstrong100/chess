@@ -2,8 +2,8 @@ package dataaccess;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import model.*;
-import shared_exceptions.DataAccessException;
-import shared_exceptions.UnauthorizedException;
+import exceptions.DataAccessException;
+import exceptions.UnauthorizedException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

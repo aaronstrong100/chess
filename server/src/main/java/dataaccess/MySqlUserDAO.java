@@ -1,6 +1,6 @@
 package dataaccess;
 import model.*;
-import shared_exceptions.UnauthorizedException;
+import exceptions.UnauthorizedException;
 import java.sql.SQLException;
 
 public class MySqlUserDAO implements UserDAO{

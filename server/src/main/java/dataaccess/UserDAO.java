@@ -1,5 +1,5 @@
 package dataaccess;
-import shared_exceptions.UnauthorizedException;
+import exceptions.UnauthorizedException;
 
 import model.UserData;
 

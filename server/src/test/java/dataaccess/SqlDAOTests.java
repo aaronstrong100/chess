@@ -5,8 +5,8 @@ import chess.ChessMove;
 import chess.ChessPosition;
 import org.junit.jupiter.api.*;
 import model.*;
-import shared_exceptions.DataAccessException;
-import shared_exceptions.UnauthorizedException;
+import exceptions.DataAccessException;
+import exceptions.UnauthorizedException;
 
 import java.util.ArrayList;
 

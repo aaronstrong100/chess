@@ -1,18 +1,17 @@
 package serverAccess;
 
 import com.google.gson.Gson;
-import shared_exceptions.AlreadyTakenException;
-import shared_exceptions.UnauthorizedException;
+import exceptions.AlreadyTakenException;
+import exceptions.UnauthorizedException;
 import requests.*;
 import results.*;
-import shared_server.JServer;
 
 public class ServerFacade {
     private ServerCommunicator serverCommunicator;
     private Gson gson;
 
-    public ServerFacade(JServer server){
-        this.serverCommunicator = new ServerCommunicator(server);
+    public ServerFacade(int port){
+        this.serverCommunicator = new ServerCommunicator(port);
         gson = new Gson();
     }
 

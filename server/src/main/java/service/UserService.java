@@ -9,8 +9,8 @@ import results.RegisterResult;
 import dataaccess.*;
 import model.AuthData;
 import model.UserData;
-import shared_exceptions.AlreadyTakenException;
-import shared_exceptions.UnauthorizedException;
+import exceptions.AlreadyTakenException;
+import exceptions.UnauthorizedException;
 
 public class UserService {
     private UserDAO userDAO;

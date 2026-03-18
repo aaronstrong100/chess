@@ -8,8 +8,8 @@ import results.JoinGameResult;
 import results.ListGamesResult;
 import dataaccess.GameDAO;
 import dataaccess.AuthDAO;
-import shared_exceptions.DataAccessException;
-import shared_exceptions.AlreadyTakenException;
+import exceptions.DataAccessException;
+import exceptions.AlreadyTakenException;
 
 import model.GameData;
 

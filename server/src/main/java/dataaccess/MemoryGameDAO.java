@@ -6,7 +6,7 @@ import java.util.ListIterator;
 import chess.ChessGame;
 
 import model.GameData;
-import shared_exceptions.DataAccessException;
+import exceptions.DataAccessException;
 
 public class MemoryGameDAO implements GameDAO{
     private ArrayList<GameData> gameData;

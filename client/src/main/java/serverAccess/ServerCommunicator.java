@@ -1,8 +1,7 @@
 package serverAccess;
 import com.google.gson.JsonParser;
-import shared_exceptions.AlreadyTakenException;
-import shared_exceptions.UnauthorizedException;
-import shared_server.JServer;
+import exceptions.AlreadyTakenException;
+import exceptions.UnauthorizedException;
 
 import java.io.IOException;
 import java.net.URI;
@@ -12,19 +11,19 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class ServerCommunicator {
-    private JServer server;
 
     private static final int TIMEOUT_MILLIS = 5000;
     private static final String HOST = "localhost";
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
+    private int port;
 
-    public ServerCommunicator(JServer server){
-        this.server = server;
+    public ServerCommunicator(int port){
+        this.port = port;
     }
 
     public void stop(){
-        this.server.stop();
+
     }
 
     public String getErrorMessage(HttpResponse<String> httpResponse){
@@ -45,7 +44,7 @@ public class ServerCommunicator {
     }
 
     public HttpResponse<String> get(String header, String urlPath)  throws URISyntaxException, IOException, InterruptedException, UnauthorizedException, AlreadyTakenException {
-        String urlString = String.format("http://%s:%d%s", HOST, this.server.getPort(), urlPath);
+        String urlString = String.format("http://%s:%d%s", HOST, port, urlPath);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI(urlString))
                 .timeout(java.time.Duration.ofMillis(TIMEOUT_MILLIS))
@@ -58,7 +57,7 @@ public class ServerCommunicator {
     }
 
     public HttpResponse<String> post(String header, String urlPath, String message) throws URISyntaxException, IOException, InterruptedException, UnauthorizedException, AlreadyTakenException {
-        String urlString = String.format("http://%s:%d%s", HOST, this.server.getPort(), urlPath);
+        String urlString = String.format("http://%s:%d%s", HOST, port, urlPath);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI(urlString))
                 .timeout(java.time.Duration.ofMillis(TIMEOUT_MILLIS))
@@ -71,7 +70,7 @@ public class ServerCommunicator {
     }
 
     public HttpResponse<String> put(String header, String urlPath, String message) throws URISyntaxException, IOException, InterruptedException, UnauthorizedException, AlreadyTakenException {
-        String urlString = String.format("http://%s:%d%s", HOST, this.server.getPort(), urlPath);
+        String urlString = String.format("http://%s:%d%s", HOST, port, urlPath);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI(urlString))
                 .timeout(java.time.Duration.ofMillis(TIMEOUT_MILLIS))
@@ -84,7 +83,7 @@ public class ServerCommunicator {
     }
 
     public HttpResponse<String> delete(String header, String urlPath) throws URISyntaxException, IOException, InterruptedException, UnauthorizedException, AlreadyTakenException {
-        String urlString = String.format("http://%s:%d%s", HOST, this.server.getPort(), urlPath);
+        String urlString = String.format("http://%s:%d%s", HOST, port, urlPath);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI(urlString))
                 .timeout(java.time.Duration.ofMillis(TIMEOUT_MILLIS))

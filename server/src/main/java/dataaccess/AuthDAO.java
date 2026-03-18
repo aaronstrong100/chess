@@ -2,7 +2,7 @@ package dataaccess;
 
 import model.AuthData;
 
-import shared_exceptions.UnauthorizedException;
+import exceptions.UnauthorizedException;
 
 public interface AuthDAO {
     /**

@@ -24,7 +24,7 @@ public class ServerFacadeTests {
             demoGameName = "demoGame";
             server = new Server();
             int port = server.run(0);
-            serverFacade = new ServerFacade(server);
+            serverFacade = new ServerFacade(port);
             serverFacade.clearDataBase();
             RegisterRequest registerRequest = new RegisterRequest(demoUsername,"password","email");
             try {
