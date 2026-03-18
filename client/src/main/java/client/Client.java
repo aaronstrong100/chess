@@ -255,7 +255,13 @@ public class Client {
     }
 
     private void logout(){
-        this.menuLevel = 0;
+        LogoutRequest logoutRequest = new LogoutRequest(this.authToken);
+        try{
+            serverFacade.logout(logoutRequest);
+            this.menuLevel = 0;
+        } catch(Exception e){
+            handleException(e);
+        }
     }
 
     public void createGame() throws ExitException {

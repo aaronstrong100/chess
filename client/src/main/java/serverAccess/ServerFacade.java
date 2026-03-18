@@ -47,18 +47,22 @@ public class ServerFacade {
 
     //javalin.post("/session", new LoginHandler(userService));
     public LoginResult login(LoginRequest loginRequest) throws UnauthorizedException, AlreadyTakenException, RuntimeException {
+        String httpResult = "";
         try{
-            String httpResult = serverCommunicator.post("", "/session", this.gson.toJson(loginRequest)).body();
-            return gson.fromJson(httpResult, LoginResult.class);
-        } catch (UnauthorizedException | AlreadyTakenException e){
-            throw e;
-        } catch (Exception e){
-            throw new RuntimeException();
+            httpResult = serverCommunicator.post("", "/session", this.gson.toJson(loginRequest)).body();
+        } catch (Exception e) {
+            handleException(e);
         }
+        return gson.fromJson(httpResult, LoginResult.class);
     }
 
     //javalin.delete("/session", new LogoutHandler(userService));
-    public void logout(LogoutRequest logoutRequest){
+    public void logout(LogoutRequest logoutRequest) throws UnauthorizedException, AlreadyTakenException, RuntimeException {
+        try{
+            String httpResult = serverCommunicator.delete(logoutRequest.getAuthToken(), "/session").body();
+        } catch(Exception e){
+            handleException(e);
+        }
     }
 
     //javalin.get("/game", new ListGamesHandler(gameService));
