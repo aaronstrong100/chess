@@ -1,10 +1,10 @@
 package ui;
 import static ui.EscapeSequences.*;
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
 
+import chess.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
 public class ChessGamePrinter {
@@ -38,6 +38,10 @@ public class ChessGamePrinter {
     private static final String SET_TEXT_COLOR_BLACK_TEAM = SET_TEXT_COLOR_BLACK;
     private static final String SET_TEXT_COLOR_BACKGROUND = SET_TEXT_COLOR_WHITE;
 
+    private static final String SET_BOARD_LIGHT_HIGHLIGHT = EscapeSequences.SET_BG_COLOR_LIGHT_YELLOW;
+    private static final String SET_BOARD_DARK_HIGHLIGHT = EscapeSequences.SET_BG_COLOR_YELLOW;
+    private static final String SET_BOARD_STARTING_HIGHLIGHT = EscapeSequences.SET_BG_COLOR_RED;
+
     private static final String[] COL_INDICES = {
             " a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "
     };
@@ -66,14 +70,53 @@ public class ChessGamePrinter {
 
             printColIndices(reverse(COL_INDICES));
             for(int i = 0; i<4; i++){
-                printRowWhite(reverse(2*i), setPieceColors[2*i], pieceStrings[2*i]);
-                printRowBlack(reverse(2*i+1), setPieceColors[2*i+1], pieceStrings[2*i+1]);
+                printRowWhite(reverse(2*i), setPieceColors[2*i], reverse(pieceStrings[2*i]));
+                printRowBlack(reverse(2*i+1), setPieceColors[2*i+1], reverse(pieceStrings[2*i+1]));
             }
             printColIndices(reverse(COL_INDICES));
         }
     }
+    public static void printChessBoardHighlightMoves(ChessBoard chessBoard, String player, ChessPosition piecePos){
+        if(chessBoard.getPiece(piecePos)!=null){
+            int[][] highlightMatrix = getHighlightMatrix(chessBoard, piecePos);
+            String[][] pieceStrings = getPieceStrings(chessBoard);
+            String[][] setPieceColors = getPieceColors(chessBoard);
+            if(player.toLowerCase().equals("white")){
+                printColIndices(COL_INDICES);
+                for(int i = 0; i<4; i++){
+                    printRowWhite(2*i, setPieceColors[reverse(2*i)], pieceStrings[reverse(2*i)], highlightMatrix[reverse(2*i)]);
+                    printRowBlack(2*i+1, setPieceColors[reverse(2*i+1)], pieceStrings[reverse(2*i+1)], highlightMatrix[reverse(2*i+1)]);
+                }
+                printColIndices(COL_INDICES);
+            } else {
+
+                printColIndices(reverse(COL_INDICES));
+                for(int i = 0; i<4; i++){
+                    printRowWhite(reverse(2*i), setPieceColors[2*i], reverse(pieceStrings[2*i]), reverse(highlightMatrix[2*i]));
+                    printRowBlack(reverse(2*i+1), setPieceColors[2*i+1], reverse(pieceStrings[2*i+1]), reverse(highlightMatrix[2*i+1]));
+                }
+                printColIndices(reverse(COL_INDICES));
+            }
+        }
+    }
+    public static int[][] getHighlightMatrix(ChessBoard chessBoard, ChessPosition piecePos){
+        Collection<ChessMove> validMoves = MoveCalculator.calculateMoves(chessBoard, piecePos, chessBoard.getPiece(piecePos));
+        int[][] highlightMatrix = new int[8][8];
+        for(ChessMove validMove : validMoves){
+            highlightMatrix[validMove.getEndPosition().getRow()-1][validMove.getEndPosition().getColumn()-1] = 1;
+        }
+        highlightMatrix[piecePos.getRow()-1][piecePos.getColumn()-1] = 2;
+        return highlightMatrix;
+    }
     public static String[] reverse(String[] original){
         String[] reverse = new String[original.length];
+        for(int i = 0; i<original.length; i++){
+            reverse[i] = original[original.length-i-1];
+        }
+        return reverse;
+    }
+    public static int[] reverse(int[] original){
+        int[] reverse = new int[original.length];
         for(int i = 0; i<original.length; i++){
             reverse[i] = original[original.length-i-1];
         }
@@ -124,11 +167,61 @@ public class ChessGamePrinter {
         print(SET_BOARD_BACKGROUND, SET_TEXT_COLOR_BACKGROUND, ROW_INDICES[row]);
         System.out.println();
     }
+    public static void printRowWhite(int row, String[] colors, String[] pieces, int[] highlights){
+        print(SET_BOARD_BACKGROUND, SET_TEXT_COLOR_BACKGROUND, ROW_INDICES[row]);
+        for(int i = 0; i<4; i++){
+            String backgroundColor = SET_BOARD_LIGHT;
+            if(highlights[i*2]==1){
+                backgroundColor = SET_BOARD_LIGHT_HIGHLIGHT;
+            }
+            else if(highlights[i*2]==2){
+                backgroundColor = SET_BOARD_STARTING_HIGHLIGHT;
+            }
+            print(backgroundColor, colors[i*2], pieces[i*2]);
+            if(highlights[i*2+1]==1){
+                backgroundColor = SET_BOARD_DARK_HIGHLIGHT;
+            }
+            else if(highlights[i*2+1]==2){
+                backgroundColor = SET_BOARD_STARTING_HIGHLIGHT;
+            }
+            else{
+                backgroundColor = SET_BOARD_DARK;
+            }
+            print(backgroundColor, colors[i*2+1], pieces[i*2+1]);
+        }
+        print(SET_BOARD_BACKGROUND, SET_TEXT_COLOR_BACKGROUND, ROW_INDICES[row]);
+        System.out.println();
+    }
     public static void printRowBlack(int row, String[] colors, String[] pieces){
         print(SET_BOARD_BACKGROUND, SET_TEXT_COLOR_BACKGROUND, ROW_INDICES[row]);
         for(int i = 0; i<4; i++){
             print(SET_BOARD_DARK, colors[i*2], pieces[i*2]);
             print(SET_BOARD_LIGHT, colors[i*2+1], pieces[i*2+1]);
+        }
+        print(SET_BOARD_BACKGROUND, SET_TEXT_COLOR_BACKGROUND, ROW_INDICES[row]);
+        System.out.println();
+    }
+    public static void printRowBlack(int row, String[] colors, String[] pieces, int[] highlights){
+        print(SET_BOARD_BACKGROUND, SET_TEXT_COLOR_BACKGROUND, ROW_INDICES[row]);
+        for(int i = 0; i<4; i++){
+            String backgroundColor = SET_BOARD_DARK;
+            if(highlights[i*2]==1){
+                backgroundColor = SET_BOARD_DARK_HIGHLIGHT;
+            }
+            else if(highlights[i*2]==2){
+                backgroundColor = SET_BOARD_STARTING_HIGHLIGHT;
+            }
+            print(backgroundColor, colors[i*2], pieces[i*2]);
+            if(highlights[i*2+1]==1){
+                backgroundColor = SET_BOARD_LIGHT_HIGHLIGHT;
+            }
+            else if(highlights[i*2+1]==2){
+                backgroundColor = SET_BOARD_STARTING_HIGHLIGHT;
+            }
+            else{
+                backgroundColor = SET_BOARD_LIGHT;
+            }
+            print(backgroundColor, colors[i*2+1], pieces[i*2+1]);
         }
         print(SET_BOARD_BACKGROUND, SET_TEXT_COLOR_BACKGROUND, ROW_INDICES[row]);
         System.out.println();

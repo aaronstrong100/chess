@@ -1,8 +1,10 @@
 package client;
 
+import java.util.Map;
 import java.util.Scanner;
 
 import chess.ChessGame;
+import chess.ChessPosition;
 import exceptions.AlreadyTakenException;
 import exceptions.UnauthorizedException;
 import model.GameData;
@@ -24,6 +26,17 @@ public class Client {
 
     private static final String ALPHA_NUMERIC = "^[a-zA-Z0-9]+$";
 
+    private static final Map<String, Integer> rowNames = Map.of(
+            "a", 1,
+            "b", 2,
+            "c", 3,
+            "d", 4,
+            "e", 5,
+            "f", 6,
+            "g", 7,
+            "h", 8
+    );
+
     public Client(int port){
         this.serverFacade = new ServerFacade(port);
         this.userInput = new Scanner(System.in);
@@ -42,7 +55,6 @@ public class Client {
                 userInputPostLogin();
             }
             else if(this.menuLevel==2){
-                printGame();
                 userInputGame();
             }
         }
@@ -75,6 +87,10 @@ public class Client {
     private void printIncorrectInputMessage(){
         System.out.println("Your input is invalid. Please type \"help\" to view valid options");
     }
+
+    /**
+     *  main menu methods
+     */
 
     private void printPrelogin(){
         System.out.println("Login menu: Type a command or type \"help\" to proceed:");
@@ -140,21 +156,37 @@ public class Client {
 
     private void printGame(){
         this.chessGame = new ChessGame();
-        if(this.playerType.equals("white") || this.playerType.equals("black")) {
-            ChessGamePrinter.printChessBoard(this.chessGame.getBoard(), this.playerType);
-        } else{
-            ChessGamePrinter.printChessBoard(this.chessGame.getBoard(), "white");
-        }
+        printGameBoard();
         printHelp();
     }
 
     private void userInputGame(){
         try {
             String input = getInput().toLowerCase();
-            printIncorrectInputMessage();
-        }
-        catch (ExitException e){
-            this.menuLevel = 1;
+            switch (input) {
+                case "help":
+                    printHelp();
+                    break;
+                case "redraw chess board":
+                    redrawChessBoard();
+                    break;
+                case "leave":
+                    leave();
+                    break;
+                case "make move":
+                    makeMove();
+                    break;
+                case "resign":
+                    resign();
+                    break;
+                case "highlight legal moves":
+                    highlightLegalMoves();
+                    break;
+                default:
+                    printIncorrectInputMessage();
+            }
+        } catch (ExitException e) {
+            System.out.println("Successfully exited loop");
         }
     }
     private void printHelp(){
@@ -176,10 +208,18 @@ public class Client {
                 System.out.println("Exit - exit any loop which is not a menu");
                 break;
             case 2:
-                System.out.println("The actual game is not yet implemented! Come back later to play!");
-                System.out.println("Type exit to exit the game");
+                System.out.println("Help - display your current options");
+                System.out.println("Redraw Chess Board - redraw the current chess board");
+                System.out.println("Leave - leave the game");
+                System.out.println("Make Move - make a move");
+                System.out.println("Resign - resign from the game");
+                System.out.println("Highlight Legal Moves - highlight legal moves for a certain piece");
         }
     }
+
+    /**
+     *  Login Menu Methods
+     */
 
     private void registerPrompt() throws ExitException{
         String username = usernamePrompt();
@@ -243,6 +283,10 @@ public class Client {
         }
     }
 
+    /**
+     *  Post Login Meny Methods
+     */
+
     private void logout(){
         LogoutRequest logoutRequest = new LogoutRequest(this.authToken);
         try{
@@ -293,7 +337,7 @@ public class Client {
         if(whiteUsername == null){
             whiteUsername = "<available>";
         }
-        String blackUsername = gameData.getWhiteUsername();
+        String blackUsername = gameData.getBlackUsername();
         if(blackUsername==null){
             blackUsername = "<available>";
         }
@@ -315,6 +359,7 @@ public class Client {
             JoinGameResult joinGameResult = serverFacade.joinGame(joinGameRequest);
             this.gameID = joinGameResult.getGameID();
             this.menuLevel = 2;
+            printGame();
         } catch (Exception e) {
             handleException(e);
         }
@@ -343,7 +388,7 @@ public class Client {
             System.out.println("The GameID must be an integer.");
             return gameIdPrompt();
         }
-        if(inputID<consoleGameIndices.length){
+        if(inputID<consoleGameIndices.length && inputID>0){
             return inputID;
         } else {
             System.out.println("The game ID is invalid. Here is a list of the current games: ");
@@ -362,6 +407,63 @@ public class Client {
             System.out.println("Valid colors are black and white.");
             return colorPrompt();
         }
+    }
+
+    /**
+     *   Gameplay methods
+     */
+
+    private void printGameBoard(){
+        if(this.playerType.equals("white") || this.playerType.equals("black")) {
+            ChessGamePrinter.printChessBoard(this.chessGame.getBoard(), this.playerType);
+        } else{
+            ChessGamePrinter.printChessBoard(this.chessGame.getBoard(), "white");
+        }
+    }
+
+    private void redrawChessBoard(){
+        printGameBoard();
+    }
+
+    public void leave(){
+
+    }
+
+    public void makeMove(){
+
+    }
+
+    public void resign(){
+
+    }
+
+    public void highlightLegalMoves() throws ExitException{
+        ChessPosition startPos = chessPositionPrompt();
+        ChessGamePrinter.printChessBoardHighlightMoves(chessGame.getBoard(), this.playerType, startPos);
+    }
+
+    public ChessPosition chessPositionPrompt() throws ExitException{
+        System.out.println("Please type the position of the desired piece in the format A1: ");
+        String piecePos = getInput().toLowerCase();
+        int col = rowNames.get(piecePos.substring(0,1));
+        int row = Integer.parseInt(piecePos.substring(1));
+        System.out.println("Row:" + row + " Col:" + col);
+        try{
+            ChessPosition piecePosition = new ChessPosition(row, col);
+            System.out.println(chessGame.getBoard().getPiece(piecePosition));
+            ChessGame.TeamColor playerColor = ChessGame.TeamColor.WHITE;
+            if(this.playerType.equalsIgnoreCase("black")){
+                playerColor = ChessGame.TeamColor.BLACK;
+            }
+            if(chessGame.getBoard().getPiece(piecePosition).getTeamColor() == playerColor){
+                return piecePosition;
+            }
+        } catch (Exception e) {
+            System.out.println("Please enter a valid piece location.");
+            return chessPositionPrompt();
+        }
+        System.out.println("Please enter a valid piece location.");
+        return chessPositionPrompt();
     }
 
     private static class ExitException extends Exception{
