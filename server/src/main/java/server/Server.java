@@ -1,5 +1,6 @@
 package server;
 
+import WebSocket.WebSocketHandler;
 import requests.LoginRequest;
 import requests.RegisterRequest;
 import requests.LogoutRequest;
@@ -27,6 +28,8 @@ public class Server {
 
     private final Javalin javalin;
 
+    private WebSocketHandler webSocketHandler;
+
     private UserDAO userDAO;
     private AuthDAO authDAO;
     private GameDAO gameDAO;
@@ -49,6 +52,8 @@ public class Server {
         gameService = new GameService(gameDAO, authDAO);
         deleteService = new DeleteService(gameDAO, authDAO, userDAO);
 
+        webSocketHandler = new WebSocketHandler();
+
         javalin.post("/user", new RegisterHandler(userService));
 
         javalin.post("/session", new LoginHandler(userService));
@@ -62,6 +67,12 @@ public class Server {
         javalin.put("/game", new JoinGameHandler(gameService));
 
         javalin.delete("/db", new ClearDataBaseHandler(deleteService));
+
+        javalin.ws("/ws", ws -> {
+            ws.onConnect(webSocketHandler);
+            ws.onMessage(webSocketHandler);
+            ws.onClose(webSocketHandler);
+        });
     }
 
     public int run(int desiredPort) {
