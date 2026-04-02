@@ -11,9 +11,12 @@ import model.GameData;
 import requests.*;
 import results.*;
 import serveraccess.ServerFacade;
+import serveraccess.ServerMessageObserver;
+import serveraccess.WebsocketCommunicator;
 import ui.ChessGamePrinter;
+import websocket.messages.ServerMessage;
 
-public class Client {
+public class Client implements ServerMessageObserver {
     private ServerFacade serverFacade;
     private Scanner userInput;
     private int menuLevel;
@@ -23,6 +26,7 @@ public class Client {
     private String authToken;
     private int[] consoleGameIndices = new int[0];
     private int gameID;
+    private WebsocketCommunicator ws;
 
     private static final String ALPHA_NUMERIC = "^[a-zA-Z0-9]+$";
 
@@ -40,6 +44,11 @@ public class Client {
     public Client(int port){
         this.serverFacade = new ServerFacade(port);
         this.userInput = new Scanner(System.in);
+        this.ws = new WebsocketCommunicator(port, this);
+    }
+
+    public void sendMessage(ServerMessage message){
+        System.out.println(message.toString());
     }
 
     public void run(){
@@ -365,6 +374,7 @@ public class Client {
             this.gameID = joinGameResult.getGameID();
             this.menuLevel = 2;
             printGame();
+            ws.enterGame(this.authToken, this.gameID);
         } catch (Exception e) {
             handleException(e);
         }
