@@ -55,6 +55,7 @@ public class Client {
                 userInputPostLogin();
             }
             else if(this.menuLevel==2){
+                printGameMenu();
                 userInputGame();
             }
         }
@@ -158,6 +159,10 @@ public class Client {
         this.chessGame = new ChessGame();
         printGameBoard();
         printHelp();
+    }
+
+    private void printGameMenu(){
+        System.out.println("Type a command or \"help\" to proceed:");
     }
 
     private void userInputGame(){
