@@ -27,6 +27,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void handleWebsocketException(Session user, Exception e){
         try{
             connectionManager.sendError(user, new ErrorMessage(e.getMessage()));
+            e.printStackTrace();
         } catch (Exception ex) {
 
         }
@@ -78,7 +79,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void leaveGame(int gameID, Session session, String username){
-        connectionManager.add(gameID, session);
+        connectionManager.remove(gameID, session);
         String message = String.format("%s left the game", username);
         try {
             connectionManager.broadcast(gameID, session, new NotificationMessage(message));
@@ -88,7 +89,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void resign(int gameID, Session session, String username){
-        connectionManager.add(gameID, session);
         String message = String.format("%s resigned from the game", username);
         try {
             connectionManager.broadcast(gameID, session, new NotificationMessage(message));
@@ -98,7 +98,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void makeMove(int gameID, Session session, String username){
-        connectionManager.add(gameID, session);
         String message = String.format("%s made a move", username);
         try {
             connectionManager.broadcast(gameID, session, new NotificationMessage(message));

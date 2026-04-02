@@ -99,20 +99,4 @@ public class ServerCommunicator {
         HttpResponse<String> httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         return handleResponse(httpResponse);
     }
-
-    /**
-     * javalin.post("/user", new RegisterHandler(userService));
-     *
-     *         javalin.post("/session", new LoginHandler(userService));
-     *
-     *         javalin.delete("/session", new LogoutHandler(userService));
-     *
-     *         javalin.get("/game", new ListGamesHandler(gameService));
-     *
-     *         javalin.post("/game", new CreateGameHandler(gameService));
-     *
-     *         javalin.put("/game", new JoinGameHandler(gameService));
-     *
-     *         javalin.delete("/db", new ClearDataBaseHandler(deleteService));
-     */
 }
