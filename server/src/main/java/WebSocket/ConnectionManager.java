@@ -1,6 +1,7 @@
 package WebSocket;
 
 import org.eclipse.jetty.websocket.api.Session;
+import websocket.messages.ErrorMessage;
 import websocket.messages.NotificationMessage;
 
 import java.io.IOException;
@@ -22,25 +23,17 @@ public class ConnectionManager {
         connections.get(gameID).remove(session);
     }
 
-    public void broadcast(Session messageSender, NotificationMessage notification) throws IOException {
-        int broadcastingGame = -1;
+    public void broadcast(int broadcastingGame, Session messageSender, NotificationMessage notification) throws IOException {
         String msg = notification.toString();
-        for(int gameID : connections.keySet()){
-            for(Session user : connections.get(gameID)){
-                if(user==messageSender){
-                    broadcastingGame = gameID;
-                }
+        for (Session user : connections.get(broadcastingGame)) {
+            if (user != messageSender) {
+                user.getRemote().sendString(msg);
             }
         }
-        if(broadcastingGame==-1){
-            System.out.println("User is not in a game");
-        }
-        else {
-            for (Session user : connections.get(broadcastingGame)) {
-                if (user != messageSender) {
-                    user.getRemote().sendString(msg);
-                }
-            }
-        }
+    }
+
+    public void sendError(Session user, ErrorMessage error) throws IOException{
+        String msg = error.toString();
+        user.getRemote().sendString(msg);
     }
 }
