@@ -1,14 +1,19 @@
 package WebSocket;
 
 import chess.ChessMove;
+import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import exceptions.UnauthorizedException;
 import io.javalin.websocket.*;
 import org.eclipse.jetty.websocket.api.Session;
 import org.jetbrains.annotations.NotNull;
 import server.Server;
+import websocket.commands.MakeMoveCommand;
+import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
     private final ConnectionManager connectionManager = new ConnectionManager();
@@ -40,7 +45,22 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     @Override
     public void handleMessage(@NotNull WsMessageContext wsMessageContext) throws Exception {
-
+        UserGameCommand command = new Gson().fromJson(wsMessageContext.message(), UserGameCommand.class);
+        switch(command.getCommandType()){
+            case UserGameCommand.CommandType.MAKE_MOVE:
+                command = new Gson().fromJson(wsMessageContext.message(), MakeMoveCommand.class);
+                makeMove(command.getGameID(), wsMessageContext.session, getUsername(command.getAuthToken()));
+                break;
+            case UserGameCommand.CommandType.CONNECT:
+                enterGame(command.getGameID(), wsMessageContext.session, getUsername(command.getAuthToken()));
+                break;
+            case UserGameCommand.CommandType.LEAVE:
+                leaveGame(command.getGameID(), wsMessageContext.session, getUsername(command.getAuthToken()));
+                break;
+            case UserGameCommand.CommandType.RESIGN:
+                resign(command.getGameID(), wsMessageContext.session, getUsername(command.getAuthToken()));
+                break;
+        }
     }
 
     private String getUsername(String authToken) throws UnauthorizedException {
