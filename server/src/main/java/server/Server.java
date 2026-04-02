@@ -52,7 +52,7 @@ public class Server {
         gameService = new GameService(gameDAO, authDAO);
         deleteService = new DeleteService(gameDAO, authDAO, userDAO);
 
-        webSocketHandler = new WebSocketHandler();
+        webSocketHandler = new WebSocketHandler(authDAO);
 
         javalin.post("/user", new RegisterHandler(userService));
 
