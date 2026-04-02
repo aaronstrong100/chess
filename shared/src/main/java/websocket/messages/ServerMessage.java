@@ -8,7 +8,7 @@ import java.util.Objects;
  * Note: You can add to this class, but you should not alter the existing
  * methods.
  */
-public class ServerMessage {
+public abstract class ServerMessage {
     ServerMessageType serverMessageType;
 
     public enum ServerMessageType {
@@ -24,6 +24,8 @@ public class ServerMessage {
     public ServerMessageType getServerMessageType() {
         return this.serverMessageType;
     }
+
+    public abstract String toString();
 
     @Override
     public boolean equals(Object o) {
