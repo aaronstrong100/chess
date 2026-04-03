@@ -441,7 +441,8 @@ public class Client implements ServerMessageObserver {
     }
 
     public void leave(){
-
+        ws.leaveGame(this.authToken, this.gameID);
+        this.menuLevel--;
     }
 
     public void makeMove(){
