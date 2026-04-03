@@ -1,5 +1,6 @@
 package serveraccess;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import jakarta.websocket.*;
 import websocket.commands.UserGameCommand;
@@ -67,8 +68,13 @@ public class WebsocketCommunicator extends Endpoint {
         }
     }
 
-    public void leaveGame(){
-
+    public void leaveGame(String authToken, int gameID){
+        try{
+            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     public void resign(){
