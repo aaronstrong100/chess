@@ -1,10 +1,14 @@
 package WebSocket;
 
+import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
+import dataaccess.GameDAO;
+import exceptions.DataAccessException;
 import exceptions.UnauthorizedException;
 import io.javalin.websocket.*;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.jetbrains.annotations.NotNull;
 import server.Server;
@@ -18,10 +22,12 @@ import websocket.messages.ServerMessage;
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
     private final ConnectionManager connectionManager = new ConnectionManager();
     private AuthDAO authDAO;
+    private GameDAO gameDAO;
 
-    public WebSocketHandler(AuthDAO authDAO){
+    public WebSocketHandler(AuthDAO authDAO, GameDAO gameDAO){
         super();
         this.authDAO = authDAO;
+        this.gameDAO = gameDAO;
     }
 
     private void handleWebsocketException(Session user, Exception e){
@@ -79,12 +85,27 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void leaveGame(int gameID, Session session, String username){
-        connectionManager.remove(gameID, session);
         String message = String.format("%s left the game", username);
         try {
+            removePlayerFromGame(username, gameID);
             connectionManager.broadcast(gameID, session, new NotificationMessage(message));
+            connectionManager.remove(gameID, session);
         } catch (Exception e) {
             handleWebsocketException(session, e);
+        }
+    }
+
+    public void removePlayerFromGame(String username, int gameID) throws DataAccessException, Exception {
+        GameData gameData = gameDAO.getGame(gameID);
+        if(username.equals(gameData.getWhiteUsername())){
+            GameData updatedGameData = gameData.updateWhiteUsername(null);
+            gameDAO.overwriteGame(gameID, updatedGameData);
+        } else if(username.equals(gameData.getBlackUsername())){
+            GameData updatedGameData = gameData.updateBlackUsername(null);
+            gameDAO.overwriteGame(gameID, updatedGameData);
+        }
+        else {
+            throw new Exception("Error: the player is not in the game.");
         }
     }
 
