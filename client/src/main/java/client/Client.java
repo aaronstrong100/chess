@@ -488,7 +488,8 @@ public class Client implements ServerMessageObserver {
     }
 
     public void resign(){
-
+        ws.resign(this.authToken, this.gameID, this.playerType);
+        this.menuLevel = 1;
     }
 
     public void highlightLegalMoves() throws ExitException{

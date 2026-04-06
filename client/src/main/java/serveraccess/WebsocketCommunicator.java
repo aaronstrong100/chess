@@ -77,8 +77,14 @@ public class WebsocketCommunicator extends Endpoint {
         }
     }
 
-    public void resign(){
+    public void resign(String authToken, int gameID, String playerType){
+        try{
+            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID, playerType);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
 
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void makeMove(){

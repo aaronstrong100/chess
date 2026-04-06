@@ -65,7 +65,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 leaveGame(command.getGameID(), wsMessageContext.session, getUsername(command.getAuthToken()), command.getUserType());
                 break;
             case UserGameCommand.CommandType.RESIGN:
-                resign(command.getGameID(), wsMessageContext.session, getUsername(command.getAuthToken()));
+                resign(command.getGameID(), wsMessageContext.session, getUsername(command.getAuthToken()), command.getUserType());
                 break;
         }
     }
@@ -106,8 +106,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void resign(int gameID, Session session, String username){
-        String message = String.format("%s resigned from the game", username);
+    private void resign(int gameID, Session session, String username, String userType){
+        String message = String.format("%s (%s) resigned from the game", username, userType);
         try {
             connectionManager.broadcast(gameID, session, new NotificationMessage(message));
         } catch (Exception e) {
