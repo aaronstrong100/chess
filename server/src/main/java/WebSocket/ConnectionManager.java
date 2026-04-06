@@ -34,6 +34,6 @@ public class ConnectionManager {
 
     public void sendError(Session user, ErrorMessage error) throws IOException{
         String msg = error.toString();
-        user.getRemote().sendString(new Gson().toJson(error));
+        user.getRemote().sendString(new Gson().toJson(msg));
     }
 }

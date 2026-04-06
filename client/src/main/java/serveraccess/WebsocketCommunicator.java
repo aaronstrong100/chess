@@ -59,18 +59,18 @@ public class WebsocketCommunicator extends Endpoint {
 
     }
 
-    public void enterGame(String authToken, int gameID){
+    public void enterGame(String authToken, int gameID, String playerType){
         try{
-            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
+            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, playerType);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
 
-    public void leaveGame(String authToken, int gameID){
+    public void leaveGame(String authToken, int gameID, String playerType){
         try{
-            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
+            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID, playerType);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             ex.printStackTrace();

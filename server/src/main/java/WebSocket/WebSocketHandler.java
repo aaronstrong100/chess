@@ -59,10 +59,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 makeMove(command.getGameID(), wsMessageContext.session, getUsername(command.getAuthToken()));
                 break;
             case UserGameCommand.CommandType.CONNECT:
-                enterGame(command.getGameID(), wsMessageContext.session, getUsername(command.getAuthToken()));
+                enterGame(command.getGameID(), wsMessageContext.session, getUsername(command.getAuthToken()), command.getUserType());
                 break;
             case UserGameCommand.CommandType.LEAVE:
-                leaveGame(command.getGameID(), wsMessageContext.session, getUsername(command.getAuthToken()));
+                leaveGame(command.getGameID(), wsMessageContext.session, getUsername(command.getAuthToken()), command.getUserType());
                 break;
             case UserGameCommand.CommandType.RESIGN:
                 resign(command.getGameID(), wsMessageContext.session, getUsername(command.getAuthToken()));
@@ -74,9 +74,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         return authDAO.getAuthData(authToken).getUsername();
     }
 
-    private void enterGame(int gameID, Session session, String username){
+    private void enterGame(int gameID, Session session, String username, String userType){
         connectionManager.add(gameID, session);
-        String message = String.format("%s entered the game", username);
+        String message = String.format("%s entered the game as ", username, userType);
         try {
             connectionManager.broadcast(gameID, session, new NotificationMessage(message));
         } catch (Exception e) {
@@ -84,8 +84,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void leaveGame(int gameID, Session session, String username){
-        String message = String.format("%s left the game", username);
+    private void leaveGame(int gameID, Session session, String username, String userType){
+        String message = String.format("%s (%s) left the game", username, userType);
         try {
             removePlayerFromGame(username, gameID);
             connectionManager.broadcast(gameID, session, new NotificationMessage(message));
@@ -103,9 +103,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         } else if(username.equals(gameData.getBlackUsername())){
             GameData updatedGameData = gameData.updateBlackUsername(null);
             gameDAO.overwriteGame(gameID, updatedGameData);
-        }
-        else {
-            throw new Exception("Error: the player is not in the game.");
         }
     }
 

@@ -67,6 +67,10 @@ public class Client implements ServerMessageObserver {
                 printGameMenu();
                 userInputGame();
             }
+            else if(this.menuLevel==3){
+                printGameMenu();
+                userInputGameObserve();
+            }
         }
     }
 
@@ -203,6 +207,31 @@ public class Client implements ServerMessageObserver {
             System.out.println("Successfully exited loop");
         }
     }
+
+    private void userInputGameObserve(){
+        try {
+            String input = getInput().toLowerCase();
+            switch (input) {
+                case "help":
+                    printHelp();
+                    break;
+                case "redraw chess board":
+                    redrawChessBoard();
+                    break;
+                case "leave":
+                    leave();
+                    break;
+                case "highlight legal moves":
+                    highlightLegalMoves();
+                    break;
+                default:
+                    printIncorrectInputMessage();
+            }
+        } catch (ExitException e) {
+            System.out.println("Successfully exited loop");
+        }
+    }
+
     private void printHelp(){
         switch (menuLevel){
             case 0:
@@ -228,6 +257,13 @@ public class Client implements ServerMessageObserver {
                 System.out.println("Make Move - make a move");
                 System.out.println("Resign - resign from the game");
                 System.out.println("Highlight Legal Moves - highlight legal moves for a certain piece");
+                break;
+            case 3:
+                System.out.println("Help - display your current options");
+                System.out.println("Redraw Chess Board - redraw the current chess board");
+                System.out.println("Leave - leave the game");
+                System.out.println("Highlight Legal Moves - highlight legal moves for a certain piece");
+                break;
         }
     }
 
@@ -374,7 +410,7 @@ public class Client implements ServerMessageObserver {
             this.gameID = joinGameResult.getGameID();
             this.menuLevel = 2;
             printGame();
-            ws.enterGame(this.authToken, this.gameID);
+            ws.enterGame(this.authToken, this.gameID, this.playerType);
         } catch (Exception e) {
             handleException(e);
         }
@@ -388,7 +424,9 @@ public class Client implements ServerMessageObserver {
         try {
             JoinGameResult joinGameResult = serverFacade.joinGame(joinGameRequest);
             this.gameID = joinGameResult.getGameID();
-            this.menuLevel = 2;
+            this.menuLevel = 3;
+            printGame();
+            ws.enterGame(this.authToken, this.gameID, this.playerType);
         } catch (Exception e){
             handleException(e);
         }
@@ -441,8 +479,8 @@ public class Client implements ServerMessageObserver {
     }
 
     public void leave(){
-        ws.leaveGame(this.authToken, this.gameID);
-        this.menuLevel--;
+        ws.leaveGame(this.authToken, this.gameID, this.playerType);
+        this.menuLevel = 1;
     }
 
     public void makeMove(){
