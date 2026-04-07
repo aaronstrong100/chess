@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import chess.ChessPosition;
 import exceptions.AlreadyTakenException;
 import exceptions.UnauthorizedException;
@@ -14,6 +15,7 @@ import serveraccess.ServerFacade;
 import serveraccess.ServerMessageObserver;
 import serveraccess.WebsocketCommunicator;
 import ui.ChessGamePrinter;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 
 public class Client implements ServerMessageObserver {
@@ -48,7 +50,12 @@ public class Client implements ServerMessageObserver {
     }
 
     public void sendMessage(ServerMessage message){
-        System.out.println(message.toString());
+        if(message instanceof LoadGameMessage gameMessage){
+            this.chessGame = gameMessage.getGame();
+        }
+        else {
+            System.out.println(message.toString());
+        }
     }
 
     public void run(){
@@ -483,8 +490,29 @@ public class Client implements ServerMessageObserver {
         this.menuLevel = 1;
     }
 
-    public void makeMove(){
-
+    public void makeMove() throws ExitException {
+        if((this.playerType.equalsIgnoreCase("white") && this.chessGame.getTeamTurn()==ChessGame.TeamColor.BLACK)
+        ||(this.playerType.equalsIgnoreCase("black") && this.chessGame.getTeamTurn()==ChessGame.TeamColor.WHITE)){
+            System.out.println("It is currently not your turn");
+            return;
+        }
+        System.out.println("Please type the position of the piece you would like to move in the format A1: ");
+        String pos = getInput().toLowerCase();
+        int col = rowNames.get(pos.substring(0,1));
+        int row = Integer.parseInt(pos.substring(1));
+        ChessPosition piecePosition = new ChessPosition(row, col);
+        System.out.println("Please type the position which you would like to move the piece to in the format A1: ");
+        pos = getInput().toLowerCase();
+        col = rowNames.get(pos.substring(0,1));
+        row = Integer.parseInt(pos.substring(1));
+        ChessPosition newPosition = new ChessPosition(row, col);
+        ChessMove move = new ChessMove(piecePosition, newPosition);
+        try{
+            ws.makeMove(this.authToken, this.gameID, this.playerType, move);
+        } catch (Exception e){
+            System.out.println("Invalid move, please enter a valid move");
+            makeMove();
+        }
     }
 
     public void resign(){
@@ -492,12 +520,12 @@ public class Client implements ServerMessageObserver {
         this.menuLevel = 1;
     }
 
-    public void highlightLegalMoves() throws ExitException{
+    public void highlightLegalMoves() throws ExitException {
         ChessPosition startPos = chessPositionPrompt();
         ChessGamePrinter.printChessBoardHighlightMoves(chessGame.getBoard(), this.playerType, startPos);
     }
 
-    public ChessPosition chessPositionPrompt() throws ExitException{
+    public ChessPosition chessPositionPrompt() throws ExitException {
         System.out.println("Please type the position of the desired piece in the format A1: ");
         String piecePos = getInput().toLowerCase();
         int col = rowNames.get(piecePos.substring(0,1));
@@ -510,7 +538,7 @@ public class Client implements ServerMessageObserver {
             if(this.playerType.equalsIgnoreCase("black")){
                 playerColor = ChessGame.TeamColor.BLACK;
             }
-            if(chessGame.getBoard().getPiece(piecePosition).getTeamColor() == playerColor){
+            if(chessGame.getBoard().getPiece(piecePosition).getTeamColor() == playerColor || this.playerType.equalsIgnoreCase("observer")){
                 return piecePosition;
             }
         } catch (Exception e) {

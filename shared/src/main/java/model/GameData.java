@@ -37,6 +37,9 @@ public class GameData {
     public GameData updateBlackUsername(String newBlackUsername){
         return new GameData(this.gameID, this.whiteUsername, newBlackUsername, this.gameName, this.game);
     }
+    public GameData updateChessGame(ChessGame newGame){
+        return new GameData(this.gameID, this.whiteUsername, this.blackUsername, this.gameName, newGame);
+    }
     public String getGameName(){
         return this.gameName;
     }

@@ -3,6 +3,7 @@ package WebSocket;
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 
 import java.io.IOException;
@@ -29,6 +30,12 @@ public class ConnectionManager {
             if (user != messageSender) {
                 user.getRemote().sendString(new Gson().toJson(notification));
             }
+        }
+    }
+
+    public void loadGameBroadcast(int broadcastingGame, LoadGameMessage gameUpdate) throws IOException {
+        for (Session user : connections.get(broadcastingGame)) {
+            user.getRemote().sendString(new Gson().toJson(gameUpdate));
         }
     }
 

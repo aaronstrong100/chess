@@ -55,8 +55,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         UserGameCommand command = new Gson().fromJson(wsMessageContext.message(), UserGameCommand.class);
         switch(command.getCommandType()){
             case UserGameCommand.CommandType.MAKE_MOVE:
-                command = new Gson().fromJson(wsMessageContext.message(), MakeMoveCommand.class);
-                makeMove(command.getGameID(), wsMessageContext.session, getUsername(command.getAuthToken()));
+                MakeMoveCommand moveCommand = new Gson().fromJson(wsMessageContext.message(), MakeMoveCommand.class);
+                makeMove(moveCommand.getGameID(), wsMessageContext.session, getUsername(moveCommand.getAuthToken()), moveCommand.getUserType(), moveCommand.getMove());
                 break;
             case UserGameCommand.CommandType.CONNECT:
                 enterGame(command.getGameID(), wsMessageContext.session, getUsername(command.getAuthToken()), command.getUserType());
@@ -76,7 +76,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     private void enterGame(int gameID, Session session, String username, String userType){
         connectionManager.add(gameID, session);
-        String message = String.format("%s entered the game as ", username, userType);
+        String message = String.format("%s entered the game as %s", username, userType);
         try {
             connectionManager.broadcast(gameID, session, new NotificationMessage(message));
         } catch (Exception e) {
@@ -95,7 +95,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    public void removePlayerFromGame(String username, int gameID) throws DataAccessException, Exception {
+    public void removePlayerFromGame(String username, int gameID) throws Exception {
         GameData gameData = gameDAO.getGame(gameID);
         if(username.equals(gameData.getWhiteUsername())){
             GameData updatedGameData = gameData.updateWhiteUsername(null);
@@ -115,8 +115,22 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void makeMove(int gameID, Session session, String username){
-        String message = String.format("%s made a move", username);
+    private void makeMove(int gameID, Session session, String username, String userType, ChessMove move){
+        try{
+            GameData gameData = gameDAO.getGame(gameID);
+            ChessGame game = gameData.getGame();
+            game.makeMove(move);
+            gameDAO.overwriteGame(gameID, gameData.updateChessGame(game));
+            connectionManager.loadGameBroadcast(gameID, new LoadGameMessage(game));
+        } catch (Exception e) {
+            try{
+                connectionManager.sendError(session, new ErrorMessage("invalid move"));
+            } catch (Exception ex){
+                ex.printStackTrace();
+            }
+            return;
+        }
+        String message = String.format("%s (%s) made a move", username, userType);
         try {
             connectionManager.broadcast(gameID, session, new NotificationMessage(message));
         } catch (Exception e) {
