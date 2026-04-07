@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class ConnectionManager {
-    public final HashMap<Integer, Collection<Session>> connections = new HashMap<>();
+    private final HashMap<Integer, Collection<Session>> connections = new HashMap<>();
 
     public void add(int gameID, Session session) {
         if(!connections.containsKey(gameID)){
@@ -40,7 +40,6 @@ public class ConnectionManager {
     }
 
     public void sendError(Session user, ErrorMessage error) throws IOException{
-        String msg = error.toString();
-        user.getRemote().sendString(new Gson().toJson(msg));
+        user.getRemote().sendString(new Gson().toJson(error));
     }
 }

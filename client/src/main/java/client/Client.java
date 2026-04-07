@@ -24,7 +24,7 @@ public class Client implements ServerMessageObserver {
     private int menuLevel;
     private String user;
     private String playerType;
-    private ChessGame chessGame;
+    private ChessGame chessGame = null;
     private String authToken;
     private int[] consoleGameIndices = new int[0];
     private int gameID;
@@ -32,7 +32,7 @@ public class Client implements ServerMessageObserver {
 
     private static final String ALPHA_NUMERIC = "^[a-zA-Z0-9]+$";
 
-    private static final Map<String, Integer> rowNames = Map.of(
+    private static final Map<String, Integer> ROW_NAMES = Map.of(
             "a", 1,
             "b", 2,
             "c", 3,
@@ -50,16 +50,19 @@ public class Client implements ServerMessageObserver {
     }
 
     public void sendMessage(ServerMessage message){
-        if(message instanceof LoadGameMessage gameMessage){
-            this.chessGame = gameMessage.getGame();
-        }
-        else {
+        if (message instanceof LoadGameMessage gameMessage) {
+            if (this.chessGame==null || !gameMessage.getGame().getBoard().equals(this.chessGame.getBoard())) {
+                this.chessGame = gameMessage.getGame();
+                printGameBoard();
+                printGameMenu();
+            }
+        } else {
             System.out.println(message.toString());
         }
     }
 
     public void run(){
-        System.out.print(ChessGamePrinter.SET_BOARD_BACKGROUND);
+        System.out.print(ChessGamePrinter.SET_BOARD_BACKGROUND); //remove?
         this.menuLevel = 0;
         while(this.menuLevel>=0){
             if(this.menuLevel==0){
@@ -71,11 +74,11 @@ public class Client implements ServerMessageObserver {
                 userInputPostLogin();
             }
             else if(this.menuLevel==2){
-                printGameMenu();
+                //printGameMenu();
                 userInputGame();
             }
             else if(this.menuLevel==3){
-                printGameMenu();
+                //printGameMenu();
                 userInputGameObserve();
             }
         }
@@ -176,7 +179,6 @@ public class Client implements ServerMessageObserver {
     }
 
     private void printGame(){
-        this.chessGame = new ChessGame();
         printGameBoard();
         printHelp();
     }
@@ -416,7 +418,7 @@ public class Client implements ServerMessageObserver {
             JoinGameResult joinGameResult = serverFacade.joinGame(joinGameRequest);
             this.gameID = joinGameResult.getGameID();
             this.menuLevel = 2;
-            printGame();
+            //printGame();
             ws.enterGame(this.authToken, this.gameID, this.playerType);
         } catch (Exception e) {
             handleException(e);
@@ -432,7 +434,7 @@ public class Client implements ServerMessageObserver {
             JoinGameResult joinGameResult = serverFacade.joinGame(joinGameRequest);
             this.gameID = joinGameResult.getGameID();
             this.menuLevel = 3;
-            printGame();
+            //printGame();
             ws.enterGame(this.authToken, this.gameID, this.playerType);
         } catch (Exception e){
             handleException(e);
@@ -496,18 +498,18 @@ public class Client implements ServerMessageObserver {
             System.out.println("It is currently not your turn");
             return;
         }
-        System.out.println("Please type the position of the piece you would like to move in the format A1: ");
-        String pos = getInput().toLowerCase();
-        int col = rowNames.get(pos.substring(0,1));
-        int row = Integer.parseInt(pos.substring(1));
-        ChessPosition piecePosition = new ChessPosition(row, col);
-        System.out.println("Please type the position which you would like to move the piece to in the format A1: ");
-        pos = getInput().toLowerCase();
-        col = rowNames.get(pos.substring(0,1));
-        row = Integer.parseInt(pos.substring(1));
-        ChessPosition newPosition = new ChessPosition(row, col);
-        ChessMove move = new ChessMove(piecePosition, newPosition);
         try{
+            System.out.println("Please type the position of the piece you would like to move in the format A1: ");
+            String pos = getInput().toLowerCase();
+            int col = ROW_NAMES.get(pos.substring(0,1));
+            int row = Integer.parseInt(pos.substring(1));
+            ChessPosition piecePosition = new ChessPosition(row, col);
+            System.out.println("Please type the position which you would like to move the piece to in the format A1: ");
+            pos = getInput().toLowerCase();
+            col = ROW_NAMES.get(pos.substring(0,1));
+            row = Integer.parseInt(pos.substring(1));
+            ChessPosition newPosition = new ChessPosition(row, col);
+            ChessMove move = new ChessMove(piecePosition, newPosition);
             ws.makeMove(this.authToken, this.gameID, this.playerType, move);
         } catch (Exception e){
             System.out.println("Invalid move, please enter a valid move");
@@ -528,10 +530,11 @@ public class Client implements ServerMessageObserver {
     public ChessPosition chessPositionPrompt() throws ExitException {
         System.out.println("Please type the position of the desired piece in the format A1: ");
         String piecePos = getInput().toLowerCase();
-        int col = rowNames.get(piecePos.substring(0,1));
-        int row = Integer.parseInt(piecePos.substring(1));
-        System.out.println("Row:" + row + " Col:" + col);
         try{
+            int col = ROW_NAMES.get(piecePos.substring(0,1));
+            int row = Integer.parseInt(piecePos.substring(1));
+            //if(col==null || row>8 || row<1 || row==null)
+            System.out.println("Row:" + row + " Col:" + col);
             ChessPosition piecePosition = new ChessPosition(row, col);
             System.out.println(chessGame.getBoard().getPiece(piecePosition));
             ChessGame.TeamColor playerColor = ChessGame.TeamColor.WHITE;

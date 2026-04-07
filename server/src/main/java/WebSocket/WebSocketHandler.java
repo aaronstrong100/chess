@@ -78,6 +78,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connectionManager.add(gameID, session);
         String message = String.format("%s entered the game as %s", username, userType);
         try {
+            //send the game data
+            GameData gameData = gameDAO.getGame(gameID);
+            ChessGame game = gameData.getGame();
+            System.out.println(game);
+            connectionManager.loadGameBroadcast(gameID, new LoadGameMessage(game));
             connectionManager.broadcast(gameID, session, new NotificationMessage(message));
         } catch (Exception e) {
             handleWebsocketException(session, e);
