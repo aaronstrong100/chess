@@ -99,7 +99,7 @@ public class ChessGamePrinter {
             }
         }
     }
-    public static int[][] getHighlightMatrix(ChessGame chessGame, ChessPosition piecePos){
+    private static int[][] getHighlightMatrix(ChessGame chessGame, ChessPosition piecePos){
         Collection<ChessMove> validMoves = chessGame.validMoves(piecePos);
         int[][] highlightMatrix = new int[8][8];
         for(ChessMove validMove : validMoves){
@@ -108,24 +108,24 @@ public class ChessGamePrinter {
         highlightMatrix[piecePos.getRow()-1][piecePos.getColumn()-1] = 2;
         return highlightMatrix;
     }
-    public static String[] reverse(String[] original){
+    private static String[] reverse(String[] original){
         String[] reverse = new String[original.length];
         for(int i = 0; i<original.length; i++){
             reverse[i] = original[original.length-i-1];
         }
         return reverse;
     }
-    public static int[] reverse(int[] original){
+    private static int[] reverse(int[] original){
         int[] reverse = new int[original.length];
         for(int i = 0; i<original.length; i++){
             reverse[i] = original[original.length-i-1];
         }
         return reverse;
     }
-    public static int reverse(int i){
+    private static int reverse(int i){
         return 7-i;
     }
-    public static String[][] getPieceStrings(ChessBoard chessBoard){
+    private static String[][] getPieceStrings(ChessBoard chessBoard){
         String[][] pieceStrings = new String[8][8];
         for(int row = 0; row < 8; row++){
             for(int col = 0; col < 8; col++){
@@ -134,7 +134,7 @@ public class ChessGamePrinter {
         }
         return pieceStrings;
     }
-    public static String[][] getPieceColors(ChessBoard chessBoard){
+    private static String[][] getPieceColors(ChessBoard chessBoard){
         String[][] setPieceColors = new String[8][8];
         for(int row = 0; row < 8; row++){
             for(int col = 0; col < 8; col++){
@@ -143,13 +143,13 @@ public class ChessGamePrinter {
         }
         return setPieceColors;
     }
-    public static String pieceToString(ChessPiece chessPiece){
+    private static String pieceToString(ChessPiece chessPiece){
         if(chessPiece==null){
             return EMPTY;
         }
         return PIECE_STRINGS.get(chessPiece.getPieceType());
     }
-    public static String setPieceColor(ChessPiece chessPiece){
+    private static String setPieceColor(ChessPiece chessPiece){
         if(chessPiece==null){
             return null;
         } else if (chessPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
@@ -158,7 +158,7 @@ public class ChessGamePrinter {
             return SET_TEXT_COLOR_BLACK_TEAM;
         }
     }
-    public static void printRowWhite(int row, String[] colors, String[] pieces){
+    private static void printRowWhite(int row, String[] colors, String[] pieces){
         print(SET_BOARD_BACKGROUND, SET_TEXT_COLOR_BACKGROUND, ROW_INDICES[row]);
         for(int i = 0; i<4; i++){
             print(SET_BOARD_LIGHT, colors[i*2], pieces[i*2]);
@@ -167,7 +167,7 @@ public class ChessGamePrinter {
         print(SET_BOARD_BACKGROUND, SET_TEXT_COLOR_BACKGROUND, ROW_INDICES[row]);
         System.out.println();
     }
-    public static void printRowWhite(int row, String[] colors, String[] pieces, int[] highlights){
+    private static void printRowWhite(int row, String[] colors, String[] pieces, int[] highlights){
         print(SET_BOARD_BACKGROUND, SET_TEXT_COLOR_BACKGROUND, ROW_INDICES[row]);
         for(int i = 0; i<4; i++){
             String backgroundColor = SET_BOARD_LIGHT;
@@ -192,7 +192,7 @@ public class ChessGamePrinter {
         print(SET_BOARD_BACKGROUND, SET_TEXT_COLOR_BACKGROUND, ROW_INDICES[row]);
         System.out.println();
     }
-    public static void printRowBlack(int row, String[] colors, String[] pieces){
+    private static void printRowBlack(int row, String[] colors, String[] pieces){
         print(SET_BOARD_BACKGROUND, SET_TEXT_COLOR_BACKGROUND, ROW_INDICES[row]);
         for(int i = 0; i<4; i++){
             print(SET_BOARD_DARK, colors[i*2], pieces[i*2]);
@@ -201,7 +201,7 @@ public class ChessGamePrinter {
         print(SET_BOARD_BACKGROUND, SET_TEXT_COLOR_BACKGROUND, ROW_INDICES[row]);
         System.out.println();
     }
-    public static void printRowBlack(int row, String[] colors, String[] pieces, int[] highlights){
+    private static void printRowBlack(int row, String[] colors, String[] pieces, int[] highlights){
         print(SET_BOARD_BACKGROUND, SET_TEXT_COLOR_BACKGROUND, ROW_INDICES[row]);
         for(int i = 0; i<4; i++){
             String backgroundColor = SET_BOARD_DARK;
@@ -226,7 +226,7 @@ public class ChessGamePrinter {
         print(SET_BOARD_BACKGROUND, SET_TEXT_COLOR_BACKGROUND, ROW_INDICES[row]);
         System.out.println();
     }
-    public static void printColIndices(String[] indices){
+    private static void printColIndices(String[] indices){
         print(SET_BOARD_BACKGROUND, null, EMPTY);
         for(String index: indices){
             print(null, null, index);
@@ -234,7 +234,7 @@ public class ChessGamePrinter {
         print(null, null, EMPTY);
         System.out.println();
     }
-    public static void print(String setColor, String setTextColor, String printString){
+    private static void print(String setColor, String setTextColor, String printString){
         if(setColor!=null) {
             System.out.print(setColor);
         }

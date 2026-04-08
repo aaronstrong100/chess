@@ -367,7 +367,7 @@ public class Client implements ServerMessageObserver {
         }
     }
 
-    public void createGame() throws ExitException {
+    private void createGame() throws ExitException {
         String gameName = gameNamePrompt();
         CreateGameRequest createGameRequest = new CreateGameRequest(gameName, this.authToken);
         try{
@@ -497,14 +497,14 @@ public class Client implements ServerMessageObserver {
         printGameBoard();
     }
 
-    public void leave(){
+    private void leave(){
         ws.leaveGame(this.authToken, this.gameID, this.playerType);
         this.chessGame = null;
         this.menuLevel = 1;
         gameOver = false;
     }
 
-    public void makeMove() throws ExitException {
+    private void makeMove() throws ExitException {
         if((this.playerType.equalsIgnoreCase("white") && this.chessGame.getTeamTurn()==ChessGame.TeamColor.BLACK)
         ||(this.playerType.equalsIgnoreCase("black") && this.chessGame.getTeamTurn()==ChessGame.TeamColor.WHITE)){
             System.out.println("It is currently not your turn");
@@ -529,19 +529,19 @@ public class Client implements ServerMessageObserver {
         }
     }
 
-    public void resign(){
+    private void resign(){
         ws.resign(this.authToken, this.gameID, this.playerType);
         this.chessGame = null;
         this.menuLevel = 1;
         gameOver = false;
     }
 
-    public void highlightLegalMoves() throws ExitException {
+    private void highlightLegalMoves() throws ExitException {
         ChessPosition startPos = chessPositionPrompt();
         ChessGamePrinter.printChessBoardHighlightMoves(chessGame, this.playerType, startPos);
     }
 
-    public ChessPosition chessPositionPrompt() throws ExitException {
+    private ChessPosition chessPositionPrompt() throws ExitException {
         System.out.println("Please type the position of the desired piece in the format A1: ");
         String piecePos = getInput().toLowerCase();
         try{
