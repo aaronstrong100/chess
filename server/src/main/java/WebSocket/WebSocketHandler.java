@@ -94,7 +94,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void leaveGame(int gameID, Session session, String username, String userType){
         String message = String.format("%s (%s) left the game", username, userType);
         try {
-            removePlayerFromGame(username, gameID);
+            if(!gameOver(gameID)){
+                removePlayerFromGame(username, gameID);
+            }
             connectionManager.broadcast(gameID, session, new NotificationMessage(message));
             connectionManager.remove(gameID, session);
         } catch (Exception e) {
@@ -102,7 +104,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    public void removePlayerFromGame(String username, int gameID) throws Exception {
+    public void removePlayerFromGame(String username, int gameID) throws DataAccessException {
         GameData gameData = gameDAO.getGame(gameID);
         if(username.equals(gameData.getWhiteUsername())){
             GameData updatedGameData = gameData.updateWhiteUsername(null);
@@ -113,10 +115,22 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
+    private void setGameOver(int gameID) throws DataAccessException {
+        GameData gameData = gameDAO.getGame(gameID);
+        GameData updatedGameData = gameData.updateGameOver(true);
+        gameDAO.overwriteGame(gameID, updatedGameData);
+    }
+
+    private boolean gameOver(int gameID) throws DataAccessException {
+        GameData gameData = gameDAO.getGame(gameID);
+        return gameData.gameOver();
+    }
+
     private void resign(int gameID, Session session, String username, String userType){
         String message = String.format("%s (%s) resigned from the game", username, userType);
         try {
             connectionManager.broadcast(gameID, session, new NotificationMessage(message));
+            setGameOver(gameID);
         } catch (Exception e) {
             handleWebsocketException(session, e);
         }
@@ -133,6 +147,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             connectionManager.broadcast(gameID, session, new NotificationMessage(message));
             if(!handleInCheckmate(gameID, game, gameData.getWhiteUsername(), gameData.getBlackUsername())) {
                 handleInCheck(gameID, game, gameData.getWhiteUsername(), gameData.getBlackUsername());
+            } else {
+                setGameOver(gameID);
             }
         } catch (Exception e) {
             handleWebsocketException(session, e);

@@ -22,12 +22,12 @@ public class Client implements ServerMessageObserver {
     private ServerFacade serverFacade;
     private Scanner userInput;
     private int menuLevel;
-    private String user;
     private String playerType;
     private ChessGame chessGame = null;
     private String authToken;
     private int[] consoleGameIndices = new int[0];
     private int gameID;
+    private boolean gameOver = false;
     private WebsocketCommunicator ws;
 
     private static final String ALPHA_NUMERIC = "^[a-zA-Z0-9]+$";
@@ -57,6 +57,10 @@ public class Client implements ServerMessageObserver {
                 printGameMenu();
             }
         } else {
+            String msg = message.toString();
+            if(msg.contains("checkmate") || msg.contains("resigned")){
+                gameOver = true;
+            }
             System.out.println(message.toString());
         }
     }
@@ -190,27 +194,36 @@ public class Client implements ServerMessageObserver {
     private void userInputGame(){
         try {
             String input = getInput().toLowerCase();
-            switch (input) {
-                case "help":
-                    printHelp();
-                    break;
-                case "redraw chess board":
-                    redrawChessBoard();
-                    break;
-                case "leave":
+            if(gameOver){
+                if(!input.equals("leave")){
+                    printGameOver();
+                } else {
                     leave();
-                    break;
-                case "make move":
-                    makeMove();
-                    break;
-                case "resign":
-                    resign();
-                    break;
-                case "highlight legal moves":
-                    highlightLegalMoves();
-                    break;
-                default:
-                    printIncorrectInputMessage();
+                }
+            }
+            else {
+                switch (input) {
+                    case "help":
+                        printHelp();
+                        break;
+                    case "redraw chess board":
+                        redrawChessBoard();
+                        break;
+                    case "leave":
+                        leave();
+                        break;
+                    case "make move":
+                        makeMove();
+                        break;
+                    case "resign":
+                        resign();
+                        break;
+                    case "highlight legal moves":
+                        highlightLegalMoves();
+                        break;
+                    default:
+                        printIncorrectInputMessage();
+                }
             }
         } catch (ExitException e) {
             System.out.println("Successfully exited loop");
@@ -282,7 +295,6 @@ public class Client implements ServerMessageObserver {
 
     private void registerPrompt() throws ExitException{
         String username = usernamePrompt();
-        this.user = username;
         String password = passwordPrompt();
         String email = emailPrompt();
         //Check for failures in request
@@ -298,7 +310,6 @@ public class Client implements ServerMessageObserver {
 
     private void loginPrompt() throws ExitException{
         String username = usernamePrompt();
-        this.user = username;
         String password = passwordPrompt();
         LoginRequest loginRequest = new LoginRequest(username, password);
         try {
@@ -490,6 +501,7 @@ public class Client implements ServerMessageObserver {
     public void leave(){
         ws.leaveGame(this.authToken, this.gameID, this.playerType);
         this.menuLevel = 1;
+        gameOver = false;
     }
 
     public void makeMove() throws ExitException {
@@ -520,6 +532,7 @@ public class Client implements ServerMessageObserver {
     public void resign(){
         ws.resign(this.authToken, this.gameID, this.playerType);
         this.menuLevel = 1;
+        gameOver = false;
     }
 
     public void highlightLegalMoves() throws ExitException {
@@ -550,6 +563,10 @@ public class Client implements ServerMessageObserver {
         }
         System.out.println("Please enter a valid piece location.");
         return chessPositionPrompt();
+    }
+
+    private void printGameOver(){
+        System.out.println("The game is over. Type \"leave\" to leave the game.");
     }
 
     private static class ExitException extends Exception{

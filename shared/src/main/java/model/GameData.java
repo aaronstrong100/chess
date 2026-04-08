@@ -8,12 +8,22 @@ public class GameData {
     private final String blackUsername;
     private final String gameName;
     private transient final ChessGame game;
+    private final boolean gameOver;
+    public GameData(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game, boolean gameOver){
+        this.gameID = gameID;
+        this.whiteUsername = whiteUsername;
+        this.blackUsername = blackUsername;
+        this.gameName = gameName;
+        this.game = game;
+        this.gameOver = gameOver;
+    }
     public GameData(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game){
         this.gameID = gameID;
         this.whiteUsername = whiteUsername;
         this.blackUsername = blackUsername;
         this.gameName = gameName;
         this.game = game;
+        this.gameOver = false;
     }
     public GameData(int gameID, String gameName){
         this.gameID = gameID;
@@ -21,6 +31,7 @@ public class GameData {
         this.blackUsername = null;
         this.gameName = gameName;
         this.game = new ChessGame();
+        this.gameOver = false;
     }
     public int getGameID(){
         return this.gameID;
@@ -45,5 +56,11 @@ public class GameData {
     }
     public ChessGame getGame(){
         return this.game;
+    }
+    public boolean gameOver(){
+        return this.gameOver();
+    }
+    public GameData updateGameOver(boolean gameOver){
+        return new GameData(this.gameID, this.whiteUsername, this.blackUsername, this.gameName, this.game, gameOver);
     }
 }
