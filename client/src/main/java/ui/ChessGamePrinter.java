@@ -76,11 +76,11 @@ public class ChessGamePrinter {
             printColIndices(reverse(COL_INDICES));
         }
     }
-    public static void printChessBoardHighlightMoves(ChessBoard chessBoard, String player, ChessPosition piecePos){
-        if(chessBoard.getPiece(piecePos)!=null){
-            int[][] highlightMatrix = getHighlightMatrix(chessBoard, piecePos);
-            String[][] pieceStrings = getPieceStrings(chessBoard);
-            String[][] setPieceColors = getPieceColors(chessBoard);
+    public static void printChessBoardHighlightMoves(ChessGame chessGame, String player, ChessPosition piecePos){
+        if(chessGame.getBoard().getPiece(piecePos)!=null){
+            int[][] highlightMatrix = getHighlightMatrix(chessGame, piecePos);
+            String[][] pieceStrings = getPieceStrings(chessGame.getBoard());
+            String[][] setPieceColors = getPieceColors(chessGame.getBoard());
             if(player.toLowerCase().equals("white")){
                 printColIndices(COL_INDICES);
                 for(int i = 0; i<4; i++){
@@ -92,15 +92,15 @@ public class ChessGamePrinter {
 
                 printColIndices(reverse(COL_INDICES));
                 for(int i = 0; i<4; i++){
-                    printRowWhite(reverse(2*i), setPieceColors[2*i], reverse(pieceStrings[2*i]), reverse(highlightMatrix[2*i]));
-                    printRowBlack(reverse(2*i+1), setPieceColors[2*i+1], reverse(pieceStrings[2*i+1]), reverse(highlightMatrix[2*i+1]));
+                    printRowWhite(reverse(2*i), reverse(setPieceColors[2*i]), reverse(pieceStrings[2*i]), reverse(highlightMatrix[2*i]));
+                    printRowBlack(reverse(2*i+1), reverse(setPieceColors[2*i+1]), reverse(pieceStrings[2*i+1]), reverse(highlightMatrix[2*i+1]));
                 }
                 printColIndices(reverse(COL_INDICES));
             }
         }
     }
-    public static int[][] getHighlightMatrix(ChessBoard chessBoard, ChessPosition piecePos){
-        Collection<ChessMove> validMoves = MoveCalculator.calculateMoves(chessBoard, piecePos, chessBoard.getPiece(piecePos));
+    public static int[][] getHighlightMatrix(ChessGame chessGame, ChessPosition piecePos){
+        Collection<ChessMove> validMoves = chessGame.validMoves(piecePos);
         int[][] highlightMatrix = new int[8][8];
         for(ChessMove validMove : validMoves){
             highlightMatrix[validMove.getEndPosition().getRow()-1][validMove.getEndPosition().getColumn()-1] = 1;

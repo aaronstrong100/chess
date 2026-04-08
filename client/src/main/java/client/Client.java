@@ -538,7 +538,7 @@ public class Client implements ServerMessageObserver {
 
     public void highlightLegalMoves() throws ExitException {
         ChessPosition startPos = chessPositionPrompt();
-        ChessGamePrinter.printChessBoardHighlightMoves(chessGame.getBoard(), this.playerType, startPos);
+        ChessGamePrinter.printChessBoardHighlightMoves(chessGame, this.playerType, startPos);
     }
 
     public ChessPosition chessPositionPrompt() throws ExitException {
@@ -547,23 +547,14 @@ public class Client implements ServerMessageObserver {
         try{
             int col = ROW_NAMES.get(piecePos.substring(0,1));
             int row = Integer.parseInt(piecePos.substring(1));
-            //if(col==null || row>8 || row<1 || row==null)
             System.out.println("Row:" + row + " Col:" + col);
             ChessPosition piecePosition = new ChessPosition(row, col);
-            System.out.println(chessGame.getBoard().getPiece(piecePosition));
-            ChessGame.TeamColor playerColor = ChessGame.TeamColor.WHITE;
-            if(this.playerType.equalsIgnoreCase("black")){
-                playerColor = ChessGame.TeamColor.BLACK;
-            }
-            if(chessGame.getBoard().getPiece(piecePosition).getTeamColor() == playerColor || this.playerType.equalsIgnoreCase("observer")){
-                return piecePosition;
-            }
+            chessGame.getBoard().getPiece(piecePosition).getPieceType();
+            return piecePosition;
         } catch (Exception e) {
             System.out.println("Please enter a valid piece location.");
             return chessPositionPrompt();
         }
-        System.out.println("Please enter a valid piece location.");
-        return chessPositionPrompt();
     }
 
     private void printGameOver(){
