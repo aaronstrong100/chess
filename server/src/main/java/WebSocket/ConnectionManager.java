@@ -14,6 +14,10 @@ import java.util.HashSet;
 public class ConnectionManager {
     private final HashMap<Integer, Collection<Session>> connections = new HashMap<>();
 
+    public void clearConnections(){
+        this.connections.clear();
+    }
+
     public void add(int gameID, Session session) {
         if(!connections.containsKey(gameID)){
             connections.put(gameID, new HashSet<Session>());
@@ -45,7 +49,15 @@ public class ConnectionManager {
         }
     }
 
-    public void sendError(Session user, ErrorMessage error) throws IOException{
-        user.getRemote().sendString(new Gson().toJson(error));
+    public void loadGameBroadcast(Session joiningUser, LoadGameMessage gameUpdate) throws IOException {
+        joiningUser.getRemote().sendString(new Gson().toJson(gameUpdate));
+    }
+
+    public void sendError(Session user, ErrorMessage error){
+        try {
+            user.getRemote().sendString(new Gson().toJson(error));
+        } catch (IOException e) {
+            System.out.println("Error sending the error");
+        }
     }
 }

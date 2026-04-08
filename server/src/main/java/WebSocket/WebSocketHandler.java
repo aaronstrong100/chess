@@ -20,6 +20,8 @@ import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
+import java.io.IOException;
+
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
     private final ConnectionManager connectionManager = new ConnectionManager();
     private AuthDAO authDAO;
@@ -33,10 +35,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         this.gameDAO = gameDAO;
     }
 
+    public ConnectionManager getConnectionManager(){
+        return this.connectionManager;
+    }
+
     private void handleWebsocketException(Session user, Exception e){
         try{
             connectionManager.sendError(user, new ErrorMessage(e.getMessage()));
-            e.printStackTrace();
         } catch (Exception ex) {
 
         }
@@ -54,49 +59,80 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     @Override
-    public void handleMessage(@NotNull WsMessageContext wsMessageContext) throws Exception {
+    public void handleMessage(@NotNull WsMessageContext wsMessageContext){
         UserGameCommand command = new Gson().fromJson(wsMessageContext.message(), UserGameCommand.class);
-        switch(command.getCommandType()){
-            case UserGameCommand.CommandType.MAKE_MOVE:
-                MakeMoveCommand moveCommand = new Gson().fromJson(wsMessageContext.message(), MakeMoveCommand.class);
-                makeMove(moveCommand.getGameID(), wsMessageContext.session, getUsername(moveCommand.getAuthToken()), moveCommand.getUserType(), moveCommand.getMove());
-                break;
-            case UserGameCommand.CommandType.CONNECT:
-                enterGame(command.getGameID(), wsMessageContext.session, getUsername(command.getAuthToken()), command.getUserType());
-                break;
-            case UserGameCommand.CommandType.LEAVE:
-                leaveGame(command.getGameID(), wsMessageContext.session, getUsername(command.getAuthToken()), command.getUserType());
-                break;
-            case UserGameCommand.CommandType.RESIGN:
-                resign(command.getGameID(), wsMessageContext.session, getUsername(command.getAuthToken()), command.getUserType());
-                break;
+        Session session = wsMessageContext.session;
+        if(checkAuthToken(session, command.getAuthToken())) {
+            switch (command.getCommandType()) {
+                case UserGameCommand.CommandType.MAKE_MOVE:
+                    MakeMoveCommand moveCommand = new Gson().fromJson(wsMessageContext.message(), MakeMoveCommand.class);
+                    makeMove(moveCommand.getGameID(), session, getUsername(session, moveCommand.getAuthToken()), getUserType(moveCommand.getGameID(), session, moveCommand.getAuthToken()), moveCommand.getMove());
+                    break;
+                case UserGameCommand.CommandType.CONNECT:
+                    enterGame(command.getGameID(), session, getUsername(session, command.getAuthToken()), getUserType(command.getGameID(), session, command.getAuthToken()));
+                    break;
+                case UserGameCommand.CommandType.LEAVE:
+                    leaveGame(command.getGameID(), session, getUsername(session, command.getAuthToken()), getUserType(command.getGameID(), session, command.getAuthToken()));
+                    break;
+                case UserGameCommand.CommandType.RESIGN:
+                    resign(command.getGameID(), session, getUsername(session, command.getAuthToken()), getUserType(command.getGameID(), session, command.getAuthToken()));
+                    break;
+            }
         }
     }
 
-    private String getUsername(String authToken) throws UnauthorizedException {
-        return authDAO.getAuthData(authToken).getUsername();
+    private boolean checkAuthToken(Session session, String authToken){
+        try{
+            authDAO.getAuthData(authToken);
+            return true;
+        } catch (Exception e){
+            connectionManager.sendError(session, new ErrorMessage("Please enter a valid authToken"));
+            return false;
+        }
+    }
+
+    private String getUsername(Session session, String authToken){
+        try {
+            return authDAO.getAuthData(authToken).getUsername();
+        } catch (UnauthorizedException e){
+            connectionManager.sendError(session, new ErrorMessage("Please enter a valid authToken"));
+        }
+        return null;
+    }
+
+    private String getUserType(int gameID, Session session, String authToken){
+        try {
+            GameData gameData = gameDAO.getGame(gameID);
+            String username = getUsername(session, authToken);
+            if(username.equals(gameData.getWhiteUsername())){
+                return "white";
+            } else if(username.equals(gameData.getBlackUsername())){
+                return "black";
+            } else {
+                return "observer";
+            }
+        } catch (DataAccessException e) {
+            handleWebsocketException(session, e);
+        }
+        return "observer";
     }
 
     private void enterGame(int gameID, Session session, String username, String userType){
         try {
             if (!gameOver(gameID)) {
+                    //send the game data
+                GameData gameData = gameDAO.getGame(gameID);
                 connectionManager.add(gameID, session);
                 String message = String.format("%s entered the game as %s", username, userType);
-                try {
-                    //send the game data
-                    GameData gameData = gameDAO.getGame(gameID);
-                    ChessGame game = gameData.getGame();
-                    connectionManager.loadGameBroadcast(gameID, new LoadGameMessage(game));
-                    connectionManager.broadcast(gameID, session, new NotificationMessage(message));
-                } catch (Exception e) {
-                    handleWebsocketException(session, e);
-                }
+                ChessGame game = gameData.getGame();
+                connectionManager.loadGameBroadcast(session, new LoadGameMessage(game));
+                connectionManager.broadcast(gameID, session, new NotificationMessage(message));
             }
             else {
-                connectionManager.sendError(session, new ErrorMessage("The game you are trying to join is over"));
+                //connectionManager.sendError(session, new ErrorMessage("The game you are trying to join is over"));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            //connectionManager.sendError(session, new ErrorMessage("Please enter a valid game ID"));
         }
     }
 
@@ -136,12 +172,33 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void resign(int gameID, Session session, String username, String userType){
-        String message = String.format("%s (%s) resigned from the game", username, userType);
-        try {
-            connectionManager.broadcast(gameID, session, new NotificationMessage(message));
-            setGameOver(gameID);
-        } catch (Exception e) {
-            handleWebsocketException(session, e);
+        if(!userType.equals("observer")) {
+            try {
+                GameData gameData = gameDAO.getGame(gameID);
+                if(!gameData.gameOver()) {
+                    String message = String.format("%s (%s) resigned from the game", username, userType);
+                    connectionManager.broadcastAll(gameID, new NotificationMessage(message));
+                    setGameOver(gameID);
+                }
+                else{
+                    connectionManager.sendError(session, new ErrorMessage("The game is over. You cannot resign."));
+                }
+            } catch (Exception e) {
+                handleWebsocketException(session, e);
+            }
+        } else {
+            connectionManager.sendError(session, new ErrorMessage("An observer cannot resign"));
+        }
+    }
+
+    private boolean turnMatches(String userType, ChessGame.TeamColor turn){
+        if(turn==ChessGame.TeamColor.BLACK && userType.equalsIgnoreCase("black")){
+            return true;
+        } else if (turn==ChessGame.TeamColor.WHITE && userType.equalsIgnoreCase("white")){
+            return true;
+        }
+        else {
+            return false;
         }
     }
 
@@ -149,15 +206,24 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         try{
             GameData gameData = gameDAO.getGame(gameID);
             ChessGame game = gameData.getGame();
-            game.makeMove(move);
-            gameDAO.overwriteGame(gameID, gameData.updateChessGame(game));
-            connectionManager.loadGameBroadcast(gameID, new LoadGameMessage(game));
-            String message = String.format("%s (%s) made the move %s", username, userType, moveToString(move));
-            connectionManager.broadcast(gameID, session, new NotificationMessage(message));
-            if(!handleInCheckmate(gameID, game, gameData.getWhiteUsername(), gameData.getBlackUsername())) {
-                handleInCheck(gameID, game, gameData.getWhiteUsername(), gameData.getBlackUsername());
+            if(turnMatches(userType, game.getTeamTurn())) {
+                if(!gameData.gameOver()) {
+                    game.makeMove(move);
+                    gameDAO.overwriteGame(gameID, gameData.updateChessGame(game));
+                    connectionManager.loadGameBroadcast(gameID, new LoadGameMessage(game));
+                    String message = String.format("%s (%s) made the move %s", username, userType, moveToString(move));
+                    connectionManager.broadcast(gameID, session, new NotificationMessage(message));
+                    if (!handleInCheckmate(gameID, game, gameData.getWhiteUsername(), gameData.getBlackUsername())) {
+                        handleInCheck(gameID, game, gameData.getWhiteUsername(), gameData.getBlackUsername());
+                    } else {
+                        setGameOver(gameID);
+                    }
+                }
+                else {
+                    connectionManager.sendError(session, new ErrorMessage("The game is over."));
+                }
             } else {
-                setGameOver(gameID);
+                connectionManager.sendError(session, new ErrorMessage("It is not your turn."));
             }
         } catch (Exception e) {
             handleWebsocketException(session, e);

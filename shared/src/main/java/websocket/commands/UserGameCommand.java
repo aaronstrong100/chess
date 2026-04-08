@@ -16,13 +16,10 @@ public class UserGameCommand {
 
     private final Integer gameID;
 
-    private final String userType;
-
-    public UserGameCommand(CommandType commandType, String authToken, Integer gameID, String userType) {
+    public UserGameCommand(CommandType commandType, String authToken, Integer gameID) {
         this.commandType = commandType;
         this.authToken = authToken;
         this.gameID = gameID;
-        this.userType = userType;
     }
 
     public enum CommandType {
@@ -42,10 +39,6 @@ public class UserGameCommand {
 
     public Integer getGameID() {
         return gameID;
-    }
-
-    public String getUserType(){
-        return userType;
     }
 
     @Override

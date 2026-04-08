@@ -48,11 +48,11 @@ public class Server {
         authDAO = new MySqlAuthDAO();
         gameDAO = new MySqlGameDAO();
 
+        webSocketHandler = new WebSocketHandler(authDAO, gameDAO);
+
         userService = new UserService(userDAO, authDAO);
         gameService = new GameService(gameDAO, authDAO);
-        deleteService = new DeleteService(gameDAO, authDAO, userDAO);
-
-        webSocketHandler = new WebSocketHandler(authDAO, gameDAO);
+        deleteService = new DeleteService(gameDAO, authDAO, userDAO, webSocketHandler.getConnectionManager());
 
         javalin.post("/user", new RegisterHandler(userService));
 

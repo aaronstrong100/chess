@@ -156,7 +156,7 @@ public class ChessGame {
                 this.validMoves(move.getStartPosition()).contains(move))
         {
             if(move.getPromotionPiece()!=null){
-                this.board.addPiece(move.getEndPosition(), new ChessPiece(this.turn,move.getPromotionPiece()));
+                this.board.addPiece(move.getEndPosition(), new ChessPiece(this.turn, move.getPromotionPiece()));
             }
             else{
                 this.board.addPiece(move.getEndPosition(), this.board.getPiece(move.getStartPosition()));

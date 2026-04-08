@@ -63,7 +63,7 @@ public class WebsocketCommunicator extends Endpoint {
 
     public void enterGame(String authToken, int gameID, String playerType){
         try{
-            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, playerType);
+            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -72,7 +72,7 @@ public class WebsocketCommunicator extends Endpoint {
 
     public void leaveGame(String authToken, int gameID, String playerType){
         try{
-            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID, playerType);
+            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -81,7 +81,7 @@ public class WebsocketCommunicator extends Endpoint {
 
     public void resign(String authToken, int gameID, String playerType){
         try{
-            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID, playerType);
+            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
 
         } catch (Exception e){
