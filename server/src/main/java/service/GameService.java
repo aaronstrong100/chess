@@ -28,9 +28,12 @@ public class GameService {
         this.authDAO.getAuthData(createGameRequest.getAuthToken());
         return new CreateGameResult(this.gameDAO.createGame(createGameRequest.getGameName()));
     }
-    public JoinGameResult joinGame(JoinGameRequest joinGameRequest) throws DataAccessException, Exception{
+    public JoinGameResult joinGame(JoinGameRequest joinGameRequest) throws Exception{
         String username = this.authDAO.getAuthData(joinGameRequest.getAuthToken()).getUsername();
         GameData gameData = this.gameDAO.getGame(joinGameRequest.getGameID());
+        if(gameData.gameOver()){
+            throw new AlreadyTakenException("The game you are trying to join is over");
+        }
         if(joinGameRequest.getPlayerColor().equalsIgnoreCase("WHITE")){
             if(gameData.getWhiteUsername() == null){
                 this.gameDAO.overwriteGame(joinGameRequest.getGameID(),gameData.updateWhiteUsername(username));

@@ -429,7 +429,6 @@ public class Client implements ServerMessageObserver {
             JoinGameResult joinGameResult = serverFacade.joinGame(joinGameRequest);
             this.gameID = joinGameResult.getGameID();
             this.menuLevel = 2;
-            //printGame();
             ws.enterGame(this.authToken, this.gameID, this.playerType);
         } catch (Exception e) {
             handleException(e);
@@ -500,6 +499,7 @@ public class Client implements ServerMessageObserver {
 
     public void leave(){
         ws.leaveGame(this.authToken, this.gameID, this.playerType);
+        this.chessGame = null;
         this.menuLevel = 1;
         gameOver = false;
     }
@@ -531,6 +531,7 @@ public class Client implements ServerMessageObserver {
 
     public void resign(){
         ws.resign(this.authToken, this.gameID, this.playerType);
+        this.chessGame = null;
         this.menuLevel = 1;
         gameOver = false;
     }

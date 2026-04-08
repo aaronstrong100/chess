@@ -58,7 +58,7 @@ public class GameData {
         return this.game;
     }
     public boolean gameOver(){
-        return this.gameOver();
+        return this.gameOver;
     }
     public GameData updateGameOver(boolean gameOver){
         return new GameData(this.gameID, this.whiteUsername, this.blackUsername, this.gameName, this.game, gameOver);

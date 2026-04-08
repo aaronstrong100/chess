@@ -78,16 +78,25 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void enterGame(int gameID, Session session, String username, String userType){
-        connectionManager.add(gameID, session);
-        String message = String.format("%s entered the game as %s", username, userType);
         try {
-            //send the game data
-            GameData gameData = gameDAO.getGame(gameID);
-            ChessGame game = gameData.getGame();
-            connectionManager.loadGameBroadcast(gameID, new LoadGameMessage(game));
-            connectionManager.broadcast(gameID, session, new NotificationMessage(message));
+            if (!gameOver(gameID)) {
+                connectionManager.add(gameID, session);
+                String message = String.format("%s entered the game as %s", username, userType);
+                try {
+                    //send the game data
+                    GameData gameData = gameDAO.getGame(gameID);
+                    ChessGame game = gameData.getGame();
+                    connectionManager.loadGameBroadcast(gameID, new LoadGameMessage(game));
+                    connectionManager.broadcast(gameID, session, new NotificationMessage(message));
+                } catch (Exception e) {
+                    handleWebsocketException(session, e);
+                }
+            }
+            else {
+                connectionManager.sendError(session, new ErrorMessage("The game you are trying to join is over"));
+            }
         } catch (Exception e) {
-            handleWebsocketException(session, e);
+            e.printStackTrace();
         }
     }
 
