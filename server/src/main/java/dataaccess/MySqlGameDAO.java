@@ -103,7 +103,8 @@ public class MySqlGameDAO implements GameDAO{
     public void overwriteGame(int gameID, GameData updatedGame) throws DataAccessException {
         Gson gson = new Gson();
         try (var conn = DatabaseManager.getConnection()) {
-            var overwriteGameStatement = "UPDATE game_data SET white_username=?, black_username=?, game_name=?, chess_game=?, game_over=? WHERE gameID=?";
+            var overwriteGameStatement = "UPDATE game_data SET white_username=?, black_username=?, game_name=?, chess_game=?, game_over=? " +
+                    "WHERE gameID=?";
             try (var preparedOverwriteGameStatement = conn.prepareStatement(overwriteGameStatement)) {
                 preparedOverwriteGameStatement.setString(1, updatedGame.getWhiteUsername());
                 preparedOverwriteGameStatement.setString(2, updatedGame.getBlackUsername());

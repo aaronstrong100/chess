@@ -228,12 +228,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private String moveToString(ChessMove move){
-        /*
-        String pos = getInput().toLowerCase();
-            int col = ROW_NAMES.get(pos.substring(0,1));
-            int row = Integer.parseInt(pos.substring(1));
-            ChessPosition piecePosition = new ChessPosition(row, col);
-         */
         ChessPosition startPosition = move.getStartPosition();
         String startPositionString = COLUMN_NAMES[startPosition.getColumn()-1] + startPosition.getRow();
         ChessPosition endPosition = move.getEndPosition();
