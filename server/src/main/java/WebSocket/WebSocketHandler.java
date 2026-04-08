@@ -2,6 +2,7 @@ package WebSocket;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
@@ -23,6 +24,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private final ConnectionManager connectionManager = new ConnectionManager();
     private AuthDAO authDAO;
     private GameDAO gameDAO;
+
+    private static final String[] COLUMN_NAMES = {"a", "b", "c", "d", "e", "f", "g", "h"};
 
     public WebSocketHandler(AuthDAO authDAO, GameDAO gameDAO){
         super();
@@ -126,7 +129,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             game.makeMove(move);
             gameDAO.overwriteGame(gameID, gameData.updateChessGame(game));
             connectionManager.loadGameBroadcast(gameID, new LoadGameMessage(game));
-            String message = String.format("%s (%s) made a move", username, userType);
+            String message = String.format("%s (%s) made the move %s", username, userType, moveToString(move));
             connectionManager.broadcast(gameID, session, new NotificationMessage(message));
             if(!handleInCheckmate(gameID, game, gameData.getWhiteUsername(), gameData.getBlackUsername())) {
                 handleInCheck(gameID, game, gameData.getWhiteUsername(), gameData.getBlackUsername());
@@ -134,6 +137,20 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         } catch (Exception e) {
             handleWebsocketException(session, e);
         }
+    }
+
+    private String moveToString(ChessMove move){
+        /*
+        String pos = getInput().toLowerCase();
+            int col = ROW_NAMES.get(pos.substring(0,1));
+            int row = Integer.parseInt(pos.substring(1));
+            ChessPosition piecePosition = new ChessPosition(row, col);
+         */
+        ChessPosition startPosition = move.getStartPosition();
+        String startPositionString = COLUMN_NAMES[startPosition.getColumn()-1] + startPosition.getRow();
+        ChessPosition endPosition = move.getEndPosition();
+        String endPositionString = COLUMN_NAMES[endPosition.getColumn()-1] + endPosition.getRow();
+        return String.format("%s -> %s", startPositionString, endPositionString);
     }
 
     private void handleInCheck(int gameID, ChessGame game, String whiteUsername, String blackUsername){
