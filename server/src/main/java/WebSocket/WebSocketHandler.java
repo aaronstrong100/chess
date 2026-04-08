@@ -81,7 +81,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             //send the game data
             GameData gameData = gameDAO.getGame(gameID);
             ChessGame game = gameData.getGame();
-            System.out.println(game);
             connectionManager.loadGameBroadcast(gameID, new LoadGameMessage(game));
             connectionManager.broadcast(gameID, session, new NotificationMessage(message));
         } catch (Exception e) {
@@ -127,19 +126,28 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             game.makeMove(move);
             gameDAO.overwriteGame(gameID, gameData.updateChessGame(game));
             connectionManager.loadGameBroadcast(gameID, new LoadGameMessage(game));
-        } catch (Exception e) {
-            try{
-                connectionManager.sendError(session, new ErrorMessage("invalid move"));
-            } catch (Exception ex){
-                ex.printStackTrace();
-            }
-            return;
-        }
-        String message = String.format("%s (%s) made a move", username, userType);
-        try {
+            String message = String.format("%s (%s) made a move", username, userType);
             connectionManager.broadcast(gameID, session, new NotificationMessage(message));
+            handleInCheck(gameID, game, gameData.getWhiteUsername(), gameData.getBlackUsername());
         } catch (Exception e) {
             handleWebsocketException(session, e);
+        }
+    }
+
+    private void handleInCheck(int gameID, ChessGame game, String whiteUsername, String blackUsername){
+        String message = "";
+        if(game.isInCheck(ChessGame.TeamColor.BLACK)){
+            message = String.format("%s (black) is in check.", blackUsername);
+        } else if(game.isInCheck(ChessGame.TeamColor.WHITE)){
+            message = String.format("%s (white) is in check.", whiteUsername);
+        }
+        else{
+            return;
+        }
+        try {
+            connectionManager.broadcastAll(gameID, new NotificationMessage(message));
+        } catch (Exception e){
+
         }
     }
 }

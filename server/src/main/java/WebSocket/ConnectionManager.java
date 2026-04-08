@@ -33,6 +33,12 @@ public class ConnectionManager {
         }
     }
 
+    public void broadcastAll(int broadcastingGame, NotificationMessage notification) throws IOException {
+        for (Session user : connections.get(broadcastingGame)) {
+            user.getRemote().sendString(new Gson().toJson(notification));
+        }
+    }
+
     public void loadGameBroadcast(int broadcastingGame, LoadGameMessage gameUpdate) throws IOException {
         for (Session user : connections.get(broadcastingGame)) {
             user.getRemote().sendString(new Gson().toJson(gameUpdate));
