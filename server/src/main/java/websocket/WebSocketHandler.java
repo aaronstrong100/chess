@@ -1,4 +1,4 @@
-package WebSocket;
+package websocket;
 
 import chess.ChessGame;
 import chess.ChessMove;
@@ -12,15 +12,11 @@ import io.javalin.websocket.*;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.jetbrains.annotations.NotNull;
-import server.Server;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
-import websocket.messages.ServerMessage;
-
-import java.io.IOException;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
     private final ConnectionManager connectionManager = new ConnectionManager();
@@ -66,16 +62,20 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             switch (command.getCommandType()) {
                 case UserGameCommand.CommandType.MAKE_MOVE:
                     MakeMoveCommand moveCommand = new Gson().fromJson(wsMessageContext.message(), MakeMoveCommand.class);
-                    makeMove(moveCommand.getGameID(), session, getUsername(session, moveCommand.getAuthToken()), getUserType(moveCommand.getGameID(), session, moveCommand.getAuthToken()), moveCommand.getMove());
+                    makeMove(moveCommand.getGameID(), session, getUsername(session, moveCommand.getAuthToken()), getUserType(moveCommand.getGameID(),
+                            session, moveCommand.getAuthToken()), moveCommand.getMove());
                     break;
                 case UserGameCommand.CommandType.CONNECT:
-                    enterGame(command.getGameID(), session, getUsername(session, command.getAuthToken()), getUserType(command.getGameID(), session, command.getAuthToken()));
+                    enterGame(command.getGameID(), session, getUsername(session, command.getAuthToken()), getUserType(command.getGameID(), session,
+                            command.getAuthToken()));
                     break;
                 case UserGameCommand.CommandType.LEAVE:
-                    leaveGame(command.getGameID(), session, getUsername(session, command.getAuthToken()), getUserType(command.getGameID(), session, command.getAuthToken()));
+                    leaveGame(command.getGameID(), session, getUsername(session, command.getAuthToken()), getUserType(command.getGameID(), session,
+                            command.getAuthToken()));
                     break;
                 case UserGameCommand.CommandType.RESIGN:
-                    resign(command.getGameID(), session, getUsername(session, command.getAuthToken()), getUserType(command.getGameID(), session, command.getAuthToken()));
+                    resign(command.getGameID(), session, getUsername(session, command.getAuthToken()), getUserType(command.getGameID(), session,
+                            command.getAuthToken()));
                     break;
             }
         }
@@ -120,7 +120,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void enterGame(int gameID, Session session, String username, String userType){
         try {
             if (!gameOver(gameID)) {
-                    //send the game data
                 GameData gameData = gameDAO.getGame(gameID);
                 connectionManager.add(gameID, session);
                 String message = String.format("%s entered the game as %s", username, userType);
@@ -129,10 +128,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 connectionManager.broadcast(gameID, session, new NotificationMessage(message));
             }
             else {
-                //connectionManager.sendError(session, new ErrorMessage("The game you are trying to join is over"));
             }
         } catch (Exception e) {
-            //connectionManager.sendError(session, new ErrorMessage("Please enter a valid game ID"));
         }
     }
 

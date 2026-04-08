@@ -1,6 +1,6 @@
 package server;
 
-import WebSocket.WebSocketHandler;
+import websocket.WebSocketHandler;
 import requests.LoginRequest;
 import requests.RegisterRequest;
 import requests.LogoutRequest;

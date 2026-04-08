@@ -2,21 +2,16 @@ package client;
 
 import java.util.Map;
 import java.util.Scanner;
-
 import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
-import exceptions.AlreadyTakenException;
-import exceptions.UnauthorizedException;
+import exceptions.*;
 import model.GameData;
 import requests.*;
 import results.*;
-import serveraccess.ServerFacade;
-import serveraccess.ServerMessageObserver;
-import serveraccess.WebsocketCommunicator;
+import serveraccess.*;
 import ui.ChessGamePrinter;
-import websocket.messages.LoadGameMessage;
-import websocket.messages.ServerMessage;
+import websocket.messages.*;
 
 public class Client implements ServerMessageObserver {
     private ServerFacade serverFacade;
@@ -29,19 +24,9 @@ public class Client implements ServerMessageObserver {
     private int gameID;
     private boolean gameOver = false;
     private WebsocketCommunicator ws;
-
     private static final String ALPHA_NUMERIC = "^[a-zA-Z0-9]+$";
-
-    private static final Map<String, Integer> ROW_NAMES = Map.of(
-            "a", 1,
-            "b", 2,
-            "c", 3,
-            "d", 4,
-            "e", 5,
-            "f", 6,
-            "g", 7,
-            "h", 8
-    );
+    private static final Map<String, Integer> ROW_NAMES = Map.of("a", 1, "b", 2, "c", 3, "d", 4, "e", 5,
+            "f", 6, "g", 7, "h", 8);
 
     public Client(int port){
         this.serverFacade = new ServerFacade(port);
@@ -66,7 +51,6 @@ public class Client implements ServerMessageObserver {
     }
 
     public void run(){
-        System.out.print(ChessGamePrinter.SET_BOARD_BACKGROUND); //remove?
         this.menuLevel = 0;
         while(this.menuLevel>=0){
             if(this.menuLevel==0){
@@ -78,11 +62,9 @@ public class Client implements ServerMessageObserver {
                 userInputPostLogin();
             }
             else if(this.menuLevel==2){
-                //printGameMenu();
                 userInputGame();
             }
             else if(this.menuLevel==3){
-                //printGameMenu();
                 userInputGameObserve();
             }
         }
@@ -116,9 +98,7 @@ public class Client implements ServerMessageObserver {
         System.out.println("Your input is invalid. Please type \"help\" to view valid options");
     }
 
-    /**
-     *  main menu methods
-     */
+     //  main menu methods
 
     private void printPrelogin(){
         System.out.println("Login menu: Type a command or type \"help\" to proceed:");
@@ -182,11 +162,6 @@ public class Client implements ServerMessageObserver {
         }
     }
 
-    private void printGame(){
-        printGameBoard();
-        printHelp();
-    }
-
     private void printGameMenu(){
         System.out.println("Type a command or \"help\" to proceed:");
     }
@@ -207,7 +182,7 @@ public class Client implements ServerMessageObserver {
                         printHelp();
                         break;
                     case "redraw chess board":
-                        redrawChessBoard();
+                        printGameBoard();
                         break;
                     case "leave":
                         leave();
@@ -238,7 +213,7 @@ public class Client implements ServerMessageObserver {
                     printHelp();
                     break;
                 case "redraw chess board":
-                    redrawChessBoard();
+                    printGameBoard();
                     break;
                 case "leave":
                     leave();
@@ -289,16 +264,10 @@ public class Client implements ServerMessageObserver {
         }
     }
 
-    /**
-     *  Login Menu Methods
-     */
+     //  Login Menu Methods
 
     private void registerPrompt() throws ExitException{
-        String username = usernamePrompt();
-        String password = passwordPrompt();
-        String email = emailPrompt();
-        //Check for failures in request
-        RegisterRequest registerRequest = new RegisterRequest(username, password, email);
+        RegisterRequest registerRequest = new RegisterRequest(usernamePrompt(), passwordPrompt(), emailPrompt());
         try {
             RegisterResult registerResult = serverFacade.register(registerRequest);
             this.authToken = registerResult.getAuthToken();
@@ -309,9 +278,7 @@ public class Client implements ServerMessageObserver {
     }
 
     private void loginPrompt() throws ExitException{
-        String username = usernamePrompt();
-        String password = passwordPrompt();
-        LoginRequest loginRequest = new LoginRequest(username, password);
+        LoginRequest loginRequest = new LoginRequest(usernamePrompt(), passwordPrompt());
         try {
             LoginResult loginResult = serverFacade.login(loginRequest);
             this.authToken = loginResult.getAuthToken();
@@ -352,10 +319,7 @@ public class Client implements ServerMessageObserver {
             return emailPrompt();
         }
     }
-
-    /**
-     *  Post Login Meny Methods
-     */
+     //  Post Login Menu Methods
 
     private void logout(){
         LogoutRequest logoutRequest = new LogoutRequest(this.authToken);
@@ -366,7 +330,6 @@ public class Client implements ServerMessageObserver {
             handleException(e);
         }
     }
-
     private void createGame() throws ExitException {
         String gameName = gameNamePrompt();
         CreateGameRequest createGameRequest = new CreateGameRequest(gameName, this.authToken);
@@ -377,7 +340,6 @@ public class Client implements ServerMessageObserver {
             handleException(e);
         }
     }
-
     private void listGames(){
         ListGamesResult listGamesResult = refreshGames();
         System.out.println("Current games:");
@@ -385,7 +347,6 @@ public class Client implements ServerMessageObserver {
             printGameData(listGamesResult.getGames().get(i), i);
         }
     }
-
     private ListGamesResult refreshGames(){
         ListGamesRequest listGamesRequest = new ListGamesRequest(this.authToken);
         ListGamesResult listGamesResult = null;
@@ -400,7 +361,6 @@ public class Client implements ServerMessageObserver {
         }
         return listGamesResult;
     }
-
     private void printGameData(GameData gameData, int consoleGameIndex){
         System.out.print((consoleGameIndex+1) + ". ");
         String whiteUsername = gameData.getWhiteUsername();
@@ -413,17 +373,14 @@ public class Client implements ServerMessageObserver {
         }
         System.out.println(gameData.getGameName() + ": White user: " + whiteUsername + ", Black user: " + blackUsername);
     }
-
     private String gameNamePrompt() throws ExitException {
         System.out.println("Please enter name of new game:");
         return getInput();
     }
-
     private void playGamePrompt() throws ExitException {
         refreshGames();
         int gameIDInput = gameIdPrompt();
-        String color = colorPrompt();
-        this.playerType = color;
+        this.playerType = colorPrompt();
         JoinGameRequest joinGameRequest = new JoinGameRequest(this.playerType, this.consoleGameIndices[gameIDInput], this.authToken);
         try {
             JoinGameResult joinGameResult = serverFacade.joinGame(joinGameRequest);
@@ -434,7 +391,6 @@ public class Client implements ServerMessageObserver {
             handleException(e);
         }
     }
-
     private void observeGamePrompt() throws ExitException {
         refreshGames();
         int gameIDInput = gameIdPrompt();
@@ -444,13 +400,11 @@ public class Client implements ServerMessageObserver {
             JoinGameResult joinGameResult = serverFacade.joinGame(joinGameRequest);
             this.gameID = joinGameResult.getGameID();
             this.menuLevel = 3;
-            //printGame();
             ws.enterGame(this.authToken, this.gameID, this.playerType);
         } catch (Exception e){
             handleException(e);
         }
     }
-
     private int gameIdPrompt() throws ExitException {
         System.out.println("Please enter the game ID: ");
         int inputID;
@@ -468,11 +422,9 @@ public class Client implements ServerMessageObserver {
             return gameIdPrompt();
         }
     }
-
     private String colorPrompt() throws ExitException {
         System.out.println("Please enter the color you wish to play as: ");
         String color = this.getInput().toLowerCase();
-        //Add logic to check that the color is not taken
         if(color.equals("white") || color.equals("black")){
             return color;
         } else {
@@ -480,10 +432,7 @@ public class Client implements ServerMessageObserver {
             return colorPrompt();
         }
     }
-
-    /**
-     *   Gameplay methods
-     */
+     //  Gameplay methods
 
     private void printGameBoard(){
         if(this.playerType.equals("white") || this.playerType.equals("black")) {
@@ -492,35 +441,25 @@ public class Client implements ServerMessageObserver {
             ChessGamePrinter.printChessBoard(this.chessGame.getBoard(), "white");
         }
     }
-
-    private void redrawChessBoard(){
-        printGameBoard();
-    }
-
     private void leave(){
         ws.leaveGame(this.authToken, this.gameID, this.playerType);
         this.chessGame = null;
         this.menuLevel = 1;
         gameOver = false;
     }
-
     private void makeMove() throws ExitException {
         if((this.playerType.equalsIgnoreCase("white") && this.chessGame.getTeamTurn()==ChessGame.TeamColor.BLACK)
-        ||(this.playerType.equalsIgnoreCase("black") && this.chessGame.getTeamTurn()==ChessGame.TeamColor.WHITE)){
+                ||(this.playerType.equalsIgnoreCase("black") && this.chessGame.getTeamTurn()==ChessGame.TeamColor.WHITE)){
             System.out.println("It is currently not your turn");
             return;
         }
         try{
             System.out.println("Please type the position of the piece you would like to move in the format A1: ");
             String pos = getInput().toLowerCase();
-            int col = ROW_NAMES.get(pos.substring(0,1));
-            int row = Integer.parseInt(pos.substring(1));
-            ChessPosition piecePosition = new ChessPosition(row, col);
+            ChessPosition piecePosition = new ChessPosition(Integer.parseInt(pos.substring(1)), ROW_NAMES.get(pos.substring(0,1)));
             System.out.println("Please type the position which you would like to move the piece to in the format A1: ");
             pos = getInput().toLowerCase();
-            col = ROW_NAMES.get(pos.substring(0,1));
-            row = Integer.parseInt(pos.substring(1));
-            ChessPosition newPosition = new ChessPosition(row, col);
+            ChessPosition newPosition = new ChessPosition(Integer.parseInt(pos.substring(1)), ROW_NAMES.get(pos.substring(0,1)));
             ChessMove move = new ChessMove(piecePosition, newPosition);
             ws.makeMove(this.authToken, this.gameID, this.playerType, move);
         } catch (Exception e){
@@ -528,27 +467,21 @@ public class Client implements ServerMessageObserver {
             makeMove();
         }
     }
-
     private void resign(){
         ws.resign(this.authToken, this.gameID, this.playerType);
         this.chessGame = null;
         this.menuLevel = 1;
         gameOver = false;
     }
-
     private void highlightLegalMoves() throws ExitException {
         ChessPosition startPos = chessPositionPrompt();
         ChessGamePrinter.printChessBoardHighlightMoves(chessGame, this.playerType, startPos);
     }
-
     private ChessPosition chessPositionPrompt() throws ExitException {
         System.out.println("Please type the position of the desired piece in the format A1: ");
         String piecePos = getInput().toLowerCase();
         try{
-            int col = ROW_NAMES.get(piecePos.substring(0,1));
-            int row = Integer.parseInt(piecePos.substring(1));
-            System.out.println("Row:" + row + " Col:" + col);
-            ChessPosition piecePosition = new ChessPosition(row, col);
+            ChessPosition piecePosition = new ChessPosition(Integer.parseInt(piecePos.substring(1)), ROW_NAMES.get(piecePos.substring(0,1)));
             chessGame.getBoard().getPiece(piecePosition).getPieceType();
             return piecePosition;
         } catch (Exception e) {
@@ -556,11 +489,9 @@ public class Client implements ServerMessageObserver {
             return chessPositionPrompt();
         }
     }
-
     private void printGameOver(){
         System.out.println("The game is over. Type \"leave\" to leave the game.");
     }
-
     private static class ExitException extends Exception{
         public ExitException(){
             super();

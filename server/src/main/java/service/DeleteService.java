@@ -1,6 +1,6 @@
 package service;
 
-import WebSocket.ConnectionManager;
+import websocket.ConnectionManager;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
