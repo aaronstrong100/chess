@@ -70,8 +70,8 @@ public class ChessGamePrinter {
 
             printColIndices(reverse(COL_INDICES));
             for(int i = 0; i<4; i++){
-                printRowWhite(reverse(2*i), setPieceColors[2*i], reverse(pieceStrings[2*i]));
-                printRowBlack(reverse(2*i+1), setPieceColors[2*i+1], reverse(pieceStrings[2*i+1]));
+                printRowWhite(reverse(2*i), reverse(setPieceColors[2*i]), reverse(pieceStrings[2*i]));
+                printRowBlack(reverse(2*i+1), reverse(setPieceColors[2*i+1]), reverse(pieceStrings[2*i+1]));
             }
             printColIndices(reverse(COL_INDICES));
         }
@@ -152,7 +152,7 @@ public class ChessGamePrinter {
     public static String setPieceColor(ChessPiece chessPiece){
         if(chessPiece==null){
             return null;
-        } else if (chessPiece.getTeamColor()== ChessGame.TeamColor.WHITE){
+        } else if (chessPiece.getTeamColor() == ChessGame.TeamColor.WHITE){
             return SET_TEXT_COLOR_WHITE_TEAM;
         } else {
             return SET_TEXT_COLOR_BLACK_TEAM;
