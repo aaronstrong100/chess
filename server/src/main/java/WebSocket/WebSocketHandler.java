@@ -128,7 +128,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             connectionManager.loadGameBroadcast(gameID, new LoadGameMessage(game));
             String message = String.format("%s (%s) made a move", username, userType);
             connectionManager.broadcast(gameID, session, new NotificationMessage(message));
-            handleInCheck(gameID, game, gameData.getWhiteUsername(), gameData.getBlackUsername());
+            if(!handleInCheckmate(gameID, game, gameData.getWhiteUsername(), gameData.getBlackUsername())) {
+                handleInCheck(gameID, game, gameData.getWhiteUsername(), gameData.getBlackUsername());
+            }
         } catch (Exception e) {
             handleWebsocketException(session, e);
         }
@@ -149,5 +151,23 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         } catch (Exception e){
 
         }
+    }
+
+    private boolean handleInCheckmate(int gameID, ChessGame game, String whiteUsername, String blackUsername){
+        String message = "";
+        if(game.isInCheckmate(ChessGame.TeamColor.BLACK)){
+            message = String.format("%s (black) is in checkmate. %s (white) wins.", blackUsername, whiteUsername);
+        } else if(game.isInCheckmate(ChessGame.TeamColor.WHITE)){
+            message = String.format("%s (white) is in checkmate. %s (black) wins.", whiteUsername, whiteUsername);
+        }
+        else{
+            return false;
+        }
+        try {
+            connectionManager.broadcastAll(gameID, new NotificationMessage(message));
+        } catch (Exception e){
+
+        }
+        return true;
     }
 }
