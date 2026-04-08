@@ -36,6 +36,7 @@ public class DatabaseManager {
               `black_username` varchar(256) DEFAULT NULL,
               `game_name` varchar(256) NOT NULL,
               `chess_game` TEXT NOT NULL,
+              `game_over` BOOL NOT NULL,
               PRIMARY KEY (`gameID`),
               FOREIGN KEY (`white_username`) REFERENCES user_data(`username`),
               FOREIGN KEY (`black_username`) REFERENCES user_data(`username`)
